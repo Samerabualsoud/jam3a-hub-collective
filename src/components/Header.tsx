@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Users, ShoppingBag, Globe, Menu, X, User } from 'lucide-react';
@@ -36,14 +37,11 @@ const Header = () => {
           <Link to="/" className="text-sm font-medium text-foreground hover:text-jam3a-purple">
             Home
           </Link>
-          <Link to="/shop" className="text-sm font-medium text-foreground hover:text-jam3a-purple">
-            Shop
-          </Link>
           <Link to="/about" className="text-sm font-medium text-foreground hover:text-jam3a-purple">
             About Us
           </Link>
           <Link to="/start-jam3a" className="text-sm font-medium text-foreground hover:text-jam3a-purple">
-            Start a Jam3a
+            Join/Start a Jam3a
           </Link>
           <Link to="/how-it-works" className="text-sm font-medium text-foreground hover:text-jam3a-purple">
             How It Works
@@ -92,7 +90,7 @@ const Header = () => {
           </DropdownMenu>
           
           <Button className="bg-jam3a-purple hover:bg-jam3a-deep-purple">
-            <Link to="/start-jam3a" className="text-white">Start a Jam3a</Link>
+            <Link to="/start-jam3a" className="text-white">Join/Start a Jam3a</Link>
           </Button>
         </div>
 
@@ -119,13 +117,6 @@ const Header = () => {
               Home
             </Link>
             <Link 
-              to="/shop" 
-              className="text-lg font-medium p-2 hover:bg-gray-100 rounded"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Shop
-            </Link>
-            <Link 
               to="/about" 
               className="text-lg font-medium p-2 hover:bg-gray-100 rounded"
               onClick={() => setIsMenuOpen(false)}
@@ -137,7 +128,7 @@ const Header = () => {
               className="text-lg font-medium p-2 hover:bg-gray-100 rounded"
               onClick={() => setIsMenuOpen(false)}
             >
-              Start a Jam3a
+              Join/Start a Jam3a
             </Link>
             <Link 
               to="/how-it-works" 
@@ -178,7 +169,7 @@ const Header = () => {
               className="bg-jam3a-purple hover:bg-jam3a-deep-purple mt-4"
               onClick={() => setIsMenuOpen(false)}
             >
-              <Link to="/start-jam3a" className="text-white">Start a Jam3a</Link>
+              <Link to="/start-jam3a" className="text-white">Join/Start a Jam3a</Link>
             </Button>
             <div className="flex justify-between items-center mt-4 p-2">
               <Button 
