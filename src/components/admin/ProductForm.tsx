@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -11,24 +10,45 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-const ProductForm = ({ initialData, onSubmit, onCancel }) => {
-  const form = useForm({
+const productSchema = z.object({
+  name: z.string().min(1, "Product name is required"),
+  category: z.string().min(1, "Category is required"),
+  price: z.coerce.number().min(0, "Price must be a positive number"),
+  stock: z.coerce.number().int().min(0, "Stock must be a positive integer"),
+});
+
+type ProductFormValues = z.infer<typeof productSchema>;
+
+interface ProductFormProps {
+  initialData: {
+    id?: number;
+    name?: string;
+    category?: string;
+    price?: number;
+    stock?: number;
+  };
+  onSubmit: (data: any) => void;
+  onCancel: () => void;
+}
+
+const ProductForm = ({ initialData, onSubmit, onCancel }: ProductFormProps) => {
+  const form = useForm<ProductFormValues>({
+    resolver: zodResolver(productSchema),
     defaultValues: {
       name: initialData.name || "",
       category: initialData.category || "",
-      price: initialData.price || "",
-      stock: initialData.stock || "",
+      price: initialData.price || 0,
+      stock: initialData.stock || 0,
     },
   });
 
-  const handleSubmit = (data) => {
-    // Convert price and stock to numbers
+  const handleSubmit = (data: ProductFormValues) => {
     const formattedData = {
       ...data,
       id: initialData.id,
-      price: Number(data.price),
-      stock: Number(data.stock),
     };
     onSubmit(formattedData);
   };
