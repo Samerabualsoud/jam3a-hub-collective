@@ -83,6 +83,9 @@ const Header = () => {
               <DropdownMenuItem>
                 <Link to="/my-jam3a" className="w-full">My Jam3a Deals</Link>
               </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Link to="/admin" className="w-full">Admin Panel</Link>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           
@@ -154,6 +157,13 @@ const Header = () => {
               onClick={() => setIsMenuOpen(false)}
             >
               Register
+            </Link>
+            <Link 
+              to="/admin" 
+              className="text-lg font-medium p-2 hover:bg-gray-100 rounded"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Admin Panel
             </Link>
             <Button 
               className="bg-jam3a-purple hover:bg-jam3a-deep-purple mt-4"
