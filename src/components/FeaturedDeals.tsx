@@ -79,7 +79,7 @@ const FeaturedDeals = () => {
   const featuredProducts = [
     {
       id: 1,
-      image: "https://images.unsplash.com/photo-1603921326210-6edd2d60ca68?auto=format&fit=crop&w=1600&q=80",
+      image: "https://images.unsplash.com/photo-1616348436168-de43ad0db179?auto=format&fit=crop&w=1600&q=80",
       title: "iPhone 16 Pro Max 256GB",
       originalPrice: 4999,
       discountedPrice: 4199,
@@ -90,7 +90,7 @@ const FeaturedDeals = () => {
     },
     {
       id: 2,
-      image: "https://images.unsplash.com/photo-1591337676887-a217a6970a8a?auto=format&fit=crop&w=1600&q=80",
+      image: "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?auto=format&fit=crop&w=1600&q=80",
       title: "Samsung Galaxy S25 Ultra",
       originalPrice: 4599,
       discountedPrice: 3899,
@@ -101,7 +101,7 @@ const FeaturedDeals = () => {
     },
     {
       id: 3,
-      image: "https://images.unsplash.com/photo-1600086827875-a63b01f1335c?auto=format&fit=crop&w=1600&q=80",
+      image: "https://images.unsplash.com/photo-1615380547903-c456276b7702?auto=format&fit=crop&w=1600&q=80",
       title: "Galaxy Z Fold 6",
       originalPrice: 6999,
       discountedPrice: 5799,
@@ -112,7 +112,7 @@ const FeaturedDeals = () => {
     },
     {
       id: 4,
-      image: "https://images.unsplash.com/photo-1617997455403-41f333d44d5b?auto=format&fit=crop&w=1600&q=80",
+      image: "https://images.unsplash.com/photo-1675264710674-942dd359ac0a?auto=format&fit=crop&w=1600&q=80",
       title: "Galaxy Z Flip 6",
       originalPrice: 3999,
       discountedPrice: 3299,

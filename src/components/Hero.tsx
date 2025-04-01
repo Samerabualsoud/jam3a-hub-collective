@@ -64,7 +64,7 @@ const Hero = () => {
                   </div>
                   <div className="mt-4">
                     <img
-                      src="https://images.unsplash.com/photo-1603921326210-6edd2d60ca68?auto=format&fit=crop&w=1600&q=80"
+                      src="https://images.unsplash.com/photo-1616348436168-de43ad0db179?auto=format&fit=crop&w=1600&q=80"
                       alt="iPhone 16 Pro"
                       className="h-60 w-full rounded-lg object-cover"
                     />
