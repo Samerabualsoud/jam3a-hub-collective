@@ -1,11 +1,12 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Users, TrendingUp, ShieldCheck, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { useLanguage } from './Header';
 
 const AboutUsContent = () => {
-  const [language, setLanguage] = useState<'en' | 'ar'>('en');
+  const { language } = useLanguage();
 
   const content = {
     en: {

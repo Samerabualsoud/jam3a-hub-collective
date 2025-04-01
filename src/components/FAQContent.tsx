@@ -14,11 +14,11 @@ const FAQContent = () => {
   const faqItems = [
     {
       question: {
-        en: "What is Jama3a?",
+        en: "What is Jam3a?",
         ar: "ما هي جمعة؟"
       },
       answer: {
-        en: "Jama3a is a social shopping platform where people team up to get better prices on products. Instead of buying alone, users join together in a group (called a \"Jam3a\") to unlock exclusive group discounts.",
+        en: "Jam3a is a social shopping platform where people team up to get better prices on products. Instead of buying alone, users join together in a group (called a \"Jam3a\") to unlock exclusive group discounts.",
         ar: "جمعة هي منصة تسوق اجتماعي، حيث يجتمع الأشخاص معًا لشراء المنتجات بأسعار أفضل. بدلاً من الشراء الفردي، يشتركون في مجموعة تُسمى \"جمعة\" للحصول على خصومات جماعية."
       }
     },
@@ -54,7 +54,7 @@ const FAQContent = () => {
     },
     {
       question: {
-        en: "Is it safe to shop on Jama3a?",
+        en: "Is it safe to shop on Jam3a?",
         ar: "هل التسوق على جمعة آمن؟"
       },
       answer: {
@@ -64,11 +64,11 @@ const FAQContent = () => {
     },
     {
       question: {
-        en: "Who can use Jama3a?",
+        en: "Who can use Jam3a?",
         ar: "من يمكنه استخدام جمعة؟"
       },
       answer: {
-        en: "Anyone in Saudi Arabia can use Jama3a! Whether you're shopping alone or with friends, Jama3a is for anyone who loves saving smartly.",
+        en: "Anyone in Saudi Arabia can use Jam3a! Whether you're shopping alone or with friends, Jam3a is for anyone who loves saving smartly.",
         ar: "أي شخص في السعودية يمكنه استخدام جمعة! سواء كنت تتسوق بمفردك أو مع أصدقائك، جمعة تناسب كل من يحب التوفير الذكي."
       }
     }
