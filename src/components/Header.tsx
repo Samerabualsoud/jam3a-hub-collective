@@ -10,14 +10,23 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useState } from 'react';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { useToast } from '@/hooks/use-toast';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [language, setLanguage] = useState<'en' | 'ar'>('en');
+  const { toast } = useToast();
 
-  const toggleLanguage = () => {
-    setLanguage(prev => prev === 'en' ? 'ar' : 'en');
-    // In a production app, we would also change the document direction and load translations
+  const toggleLanguage = (value: string) => {
+    if (value) {
+      const newLang = value as 'en' | 'ar';
+      setLanguage(newLang);
+      toast({
+        title: newLang === 'en' ? 'Language Changed' : 'تم تغيير اللغة',
+        description: newLang === 'en' ? 'Website language is now English' : 'لغة الموقع الآن هي العربية',
+      });
+    }
   };
 
   return (
@@ -34,62 +43,65 @@ const Header = () => {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-6">
-          <Link to="/" className="text-sm font-medium text-foreground hover:text-jam3a-purple">
+          <Link to="/" className="text-sm font-medium text-foreground hover:text-jam3a-purple transition-colors">
             Home
           </Link>
-          <Link to="/about" className="text-sm font-medium text-foreground hover:text-jam3a-purple">
+          <Link to="/about" className="text-sm font-medium text-foreground hover:text-jam3a-purple transition-colors">
             About Us
           </Link>
-          <Link to="/start-jam3a" className="text-sm font-medium text-foreground hover:text-jam3a-purple">
+          <Link to="/start-jam3a" className="text-sm font-medium text-foreground hover:text-jam3a-purple transition-colors">
             Join/Start a Jam3a
           </Link>
-          <Link to="/how-it-works" className="text-sm font-medium text-foreground hover:text-jam3a-purple">
+          <Link to="/how-it-works" className="text-sm font-medium text-foreground hover:text-jam3a-purple transition-colors">
             How It Works
           </Link>
-          <Link to="/sellers" className="text-sm font-medium text-foreground hover:text-jam3a-purple">
+          <Link to="/sellers" className="text-sm font-medium text-foreground hover:text-jam3a-purple transition-colors">
             For Sellers
           </Link>
         </nav>
 
         <div className="hidden md:flex items-center gap-4">
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="text-foreground" 
-            onClick={toggleLanguage}
+          <ToggleGroup 
+            type="single" 
+            value={language} 
+            onValueChange={toggleLanguage}
+            className="bg-gray-50 border rounded-full shadow-sm p-1"
           >
-            <Globe className="h-5 w-5" />
-            <span className="sr-only">Toggle language</span>
-            <span className="ml-2 text-xs font-medium">{language === 'en' ? 'EN' : 'AR'}</span>
-          </Button>
+            <ToggleGroupItem value="en" aria-label="Toggle English" className="rounded-full data-[state=on]:bg-jam3a-purple data-[state=on]:text-white">
+              EN
+            </ToggleGroupItem>
+            <ToggleGroupItem value="ar" aria-label="Toggle Arabic" className="rounded-full data-[state=on]:bg-jam3a-purple data-[state=on]:text-white">
+              AR
+            </ToggleGroupItem>
+          </ToggleGroup>
           
-          <Button variant="ghost" size="icon" className="text-foreground">
+          <Button variant="ghost" size="icon" className="text-foreground hover:text-jam3a-purple transition-colors">
             <ShoppingBag className="h-5 w-5" />
           </Button>
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="text-foreground">
+              <Button variant="ghost" size="icon" className="text-foreground hover:text-jam3a-purple transition-colors">
                 <User className="h-5 w-5" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem>
-                <Link to="/login" className="w-full">Sign In</Link>
+            <DropdownMenuContent align="end" className="w-56 border border-gray-200 shadow-md">
+              <DropdownMenuItem className="hover:bg-jam3a-purple-50">
+                <Link to="/login" className="w-full flex items-center">Sign In</Link>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Link to="/register" className="w-full">Register</Link>
+              <DropdownMenuItem className="hover:bg-jam3a-purple-50">
+                <Link to="/register" className="w-full flex items-center">Register</Link>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Link to="/my-jam3a" className="w-full">My Jam3a Deals</Link>
+              <DropdownMenuItem className="hover:bg-jam3a-purple-50">
+                <Link to="/my-jam3a" className="w-full flex items-center">My Jam3a Deals</Link>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Link to="/admin" className="w-full">Admin Panel</Link>
+              <DropdownMenuItem className="hover:bg-jam3a-purple-50">
+                <Link to="/admin" className="w-full flex items-center">Admin Panel</Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           
-          <Button className="bg-jam3a-purple hover:bg-jam3a-deep-purple">
+          <Button className="bg-jam3a-purple hover:bg-jam3a-deep-purple transition-colors">
             <Link to="/start-jam3a" className="text-white">Join/Start a Jam3a</Link>
           </Button>
         </div>
@@ -111,56 +123,56 @@ const Header = () => {
           <nav className="container mx-auto px-4 py-6 flex flex-col gap-4">
             <Link 
               to="/" 
-              className="text-lg font-medium p-2 hover:bg-gray-100 rounded"
+              className="text-lg font-medium p-2 hover:bg-jam3a-purple-50 rounded transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               Home
             </Link>
             <Link 
               to="/about" 
-              className="text-lg font-medium p-2 hover:bg-gray-100 rounded"
+              className="text-lg font-medium p-2 hover:bg-jam3a-purple-50 rounded transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               About Us
             </Link>
             <Link 
               to="/start-jam3a" 
-              className="text-lg font-medium p-2 hover:bg-gray-100 rounded"
+              className="text-lg font-medium p-2 hover:bg-jam3a-purple-50 rounded transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               Join/Start a Jam3a
             </Link>
             <Link 
               to="/how-it-works" 
-              className="text-lg font-medium p-2 hover:bg-gray-100 rounded"
+              className="text-lg font-medium p-2 hover:bg-jam3a-purple-50 rounded transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               How It Works
             </Link>
             <Link 
               to="/sellers" 
-              className="text-lg font-medium p-2 hover:bg-gray-100 rounded"
+              className="text-lg font-medium p-2 hover:bg-jam3a-purple-50 rounded transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               For Sellers
             </Link>
             <Link 
               to="/login" 
-              className="text-lg font-medium p-2 hover:bg-gray-100 rounded"
+              className="text-lg font-medium p-2 hover:bg-jam3a-purple-50 rounded transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               Sign In
             </Link>
             <Link 
               to="/register" 
-              className="text-lg font-medium p-2 hover:bg-gray-100 rounded"
+              className="text-lg font-medium p-2 hover:bg-jam3a-purple-50 rounded transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               Register
             </Link>
             <Link 
               to="/admin" 
-              className="text-lg font-medium p-2 hover:bg-gray-100 rounded"
+              className="text-lg font-medium p-2 hover:bg-jam3a-purple-50 rounded transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               Admin Panel
@@ -171,15 +183,20 @@ const Header = () => {
             >
               <Link to="/start-jam3a" className="text-white">Join/Start a Jam3a</Link>
             </Button>
-            <div className="flex justify-between items-center mt-4 p-2">
-              <Button 
-                variant="outline" 
-                onClick={toggleLanguage}
-                className="flex items-center gap-2"
+            <div className="flex justify-center items-center mt-4 p-2">
+              <ToggleGroup 
+                type="single" 
+                value={language} 
+                onValueChange={toggleLanguage}
+                className="w-full max-w-xs border rounded-lg shadow-sm p-1"
               >
-                <Globe className="h-5 w-5" />
-                Switch to {language === 'en' ? 'Arabic' : 'English'}
-              </Button>
+                <ToggleGroupItem value="en" className="flex-1 data-[state=on]:bg-jam3a-purple data-[state=on]:text-white">
+                  <Globe className="h-4 w-4 mr-1 inline-block" /> English
+                </ToggleGroupItem>
+                <ToggleGroupItem value="ar" className="flex-1 data-[state=on]:bg-jam3a-purple data-[state=on]:text-white">
+                  <Globe className="h-4 w-4 mr-1 inline-block" /> العربية
+                </ToggleGroupItem>
+              </ToggleGroup>
             </div>
           </nav>
         </div>

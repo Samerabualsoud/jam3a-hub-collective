@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,7 +62,13 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+				// Add Jam3a brand colors
+				'jam3a-purple': '#8B5CF6',
+				'jam3a-deep-purple': '#7C3AED',
+				'jam3a-light-purple': '#A78BFA',
+				'jam3a-purple-50': '#F5F3FF',
+				'jam3a-accent': '#EC4899',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -84,11 +91,25 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'pulse-soft': {
+					'0%, 100%': { opacity: '1' },
+					'50%': { opacity: '0.7' }
+				},
+				'float': {
+					'0%, 100%': { transform: 'translateY(0)' },
+					'50%': { transform: 'translateY(-10px)' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'pulse-soft': 'pulse-soft 3s infinite ease-in-out',
+				'float': 'float 5s infinite ease-in-out'
+			},
+			boxShadow: {
+				'jam3a': '0 10px 25px -5px rgba(139, 92, 246, 0.3)',
+				'jam3a-lg': '0 20px 35px -10px rgba(139, 92, 246, 0.4)'
 			}
 		}
 	},

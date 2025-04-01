@@ -1,15 +1,24 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Users, ArrowRight, Globe } from 'lucide-react';
+import { Users, ArrowRight, Globe, Check, PlusCircle, TrendingUp, BadgePercent, Clock, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { useToast } from '@/hooks/use-toast';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { motion } from 'framer-motion';
 
 const StartJam3a: React.FC = () => {
   const [language, setLanguage] = useState<'en' | 'ar'>('en');
+  const [selectedStepIndex, setSelectedStepIndex] = useState(0);
+  const { toast } = useToast();
   
   const toggleLanguage = () => {
     setLanguage(prev => prev === 'en' ? 'ar' : 'en');
+    toast({
+      title: language === 'en' ? 'تم تغيير اللغة إلى العربية' : 'Language changed to English',
+      description: language === 'en' ? 'يمكنك الآن تصفح الموقع باللغة العربية' : 'You can now browse the site in English',
+    });
   };
 
   const content = {
@@ -20,22 +29,37 @@ const StartJam3a: React.FC = () => {
       steps: [
         {
           title: "Pick Your Product",
-          description: "Choose from our curated selection of premium tech gadgets and more."
+          description: "Choose from our curated selection of premium tech gadgets and more.",
+          icon: PlusCircle
         },
         {
           title: "Set Your Group Size",
-          description: "Decide how many people you want in your group. The bigger the group, the bigger the savings!"
+          description: "Decide how many people you want in your group. The bigger the group, the bigger the savings!",
+          icon: Users
         },
         {
           title: "Invite Friends",
-          description: "Share your unique Jam3a link with friends, family, or colleagues via WhatsApp, social media, or email."
+          description: "Share your unique Jam3a link with friends, family, or colleagues via WhatsApp, social media, or email.",
+          icon: TrendingUp
         }
       ],
       benefits: [
-        "Save up to 30% on retail prices",
-        "No payment until the group is complete",
-        "Full refund if the group doesn't fill",
-        "Secure transactions and guaranteed delivery"
+        {
+          text: "Save up to 30% on retail prices",
+          icon: BadgePercent
+        },
+        {
+          text: "No payment until the group is complete",
+          icon: Clock
+        },
+        {
+          text: "Full refund if the group doesn't fill",
+          icon: ShieldCheck
+        },
+        {
+          text: "Secure transactions and guaranteed delivery",
+          icon: Check
+        }
       ],
       cta: "Start Your Jam3a Now",
       orJoin: "or",
@@ -48,22 +72,37 @@ const StartJam3a: React.FC = () => {
       steps: [
         {
           title: "اختر منتجك",
-          description: "اختر من بين مجموعتنا المنتقاة من الأجهزة التقنية الفاخرة والمزيد."
+          description: "اختر من بين مجموعتنا المنتقاة من الأجهزة التقنية الفاخرة والمزيد.",
+          icon: PlusCircle
         },
         {
           title: "حدد حجم المجموعة",
-          description: "قرر عدد الأشخاص الذين تريدهم في مجموعتك. كلما كبرت المجموعة، زادت التوفير!"
+          description: "قرر عدد الأشخاص الذين تريدهم في مجموعتك. كلما كبرت المجموعة، زادت التوفير!",
+          icon: Users
         },
         {
           title: "ادعُ أصدقائك",
-          description: "شارك رابط جمعتك الفريد مع الأصدقاء أو العائلة أو الزملاء عبر واتساب أو وسائل التواصل الاجتماعي أو البريد الإلكتروني."
+          description: "شارك رابط جمعتك الفريد مع الأصدقاء أو العائلة أو الزملاء عبر واتساب أو وسائل التواصل الاجتماعي أو البريد الإلكتروني.",
+          icon: TrendingUp
         }
       ],
       benefits: [
-        "وفر حتى 30٪ من أسعار التجزئة",
-        "لا دفع حتى تكتمل المجموعة",
-        "استرداد كامل إذا لم تكتمل المجموعة",
-        "معاملات آمنة وتسليم مضمون"
+        {
+          text: "وفر حتى 30٪ من أسعار التجزئة",
+          icon: BadgePercent
+        },
+        {
+          text: "لا دفع حتى تكتمل المجموعة",
+          icon: Clock
+        },
+        {
+          text: "استرداد كامل إذا لم تكتمل المجموعة",
+          icon: ShieldCheck
+        },
+        {
+          text: "معاملات آمنة وتسليم مضمون",
+          icon: Check
+        }
       ],
       cta: "ابدأ جمعتك الآن",
       orJoin: "أو",
@@ -72,16 +111,31 @@ const StartJam3a: React.FC = () => {
   };
 
   return (
-    <section className="py-16 md:py-24 bg-gradient-to-br from-white to-purple-50">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="flex flex-col items-center text-center mb-10">
-          <Button variant="outline" size="sm" onClick={toggleLanguage} className="mb-6">
-            <Globe className="h-4 w-4 mr-2" />
-            {language === 'en' ? 'عربي' : 'English'}
-          </Button>
+    <section className="py-16 md:py-24 bg-gradient-to-br from-white to-jam3a-purple-50 overflow-hidden">
+      <div className="container mx-auto px-4 md:px-6 relative">
+        {/* Background decoration elements */}
+        <div className="absolute -top-20 -right-20 w-64 h-64 bg-jam3a-purple/5 rounded-full filter blur-3xl"></div>
+        <div className="absolute -bottom-32 -left-20 w-80 h-80 bg-jam3a-accent/5 rounded-full filter blur-3xl"></div>
+        
+        <div className="flex flex-col items-center text-center mb-10 relative z-10">
+          <ToggleGroup 
+            type="single" 
+            value={language} 
+            onValueChange={(value) => value && setLanguage(value as 'en' | 'ar')}
+            className="mb-6 bg-white border rounded-full shadow-sm p-1"
+          >
+            <ToggleGroupItem value="en" aria-label="Toggle English" className="data-[state=on]:bg-jam3a-purple data-[state=on]:text-white rounded-full">
+              <Globe className="h-4 w-4 mr-1" />
+              EN
+            </ToggleGroupItem>
+            <ToggleGroupItem value="ar" aria-label="Toggle Arabic" className="data-[state=on]:bg-jam3a-purple data-[state=on]:text-white rounded-full">
+              <Globe className="h-4 w-4 mr-1" />
+              AR
+            </ToggleGroupItem>
+          </ToggleGroup>
           
           <div dir={language === 'ar' ? 'rtl' : 'ltr'} className="max-w-3xl">
-            <h2 className="text-3xl font-bold tracking-tight md:text-4xl mb-3">
+            <h2 className="text-3xl font-bold tracking-tight md:text-4xl mb-3 bg-clip-text text-transparent bg-gradient-to-r from-jam3a-deep-purple to-jam3a-accent">
               {content[language].title}
             </h2>
             <p className="text-lg text-jam3a-purple font-medium mb-4">
@@ -93,31 +147,77 @@ const StartJam3a: React.FC = () => {
           </div>
         </div>
 
-        <div dir={language === 'ar' ? 'rtl' : 'ltr'} className="grid md:grid-cols-3 gap-6 mb-12">
-          {content[language].steps.map((step, index) => (
-            <Card key={index} className="border-2 border-jam3a-purple/10 hover:border-jam3a-purple/30 transition-colors">
+        <div dir={language === 'ar' ? 'rtl' : 'ltr'} className="max-w-5xl mx-auto mb-12">
+          {/* Step selector for mobile */}
+          <div className="md:hidden mb-6">
+            <ToggleGroup 
+              type="single" 
+              value={String(selectedStepIndex)} 
+              onValueChange={(value) => setSelectedStepIndex(Number(value))}
+              className="w-full border rounded-lg shadow-sm p-1"
+            >
+              {content[language].steps.map((_, index) => (
+                <ToggleGroupItem 
+                  key={index} 
+                  value={String(index)} 
+                  aria-label={`Step ${index + 1}`}
+                  className="flex-1 data-[state=on]:bg-jam3a-purple data-[state=on]:text-white"
+                >
+                  {index + 1}
+                </ToggleGroupItem>
+              ))}
+            </ToggleGroup>
+            
+            <Card className="mt-4 border-2 border-jam3a-purple/10 hover:border-jam3a-purple/30 transition-colors shadow-jam3a">
               <CardContent className="p-6">
                 <div className="flex items-center mb-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-jam3a-purple/10 text-jam3a-purple">
-                    <span className="font-bold">{index + 1}</span>
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-jam3a-purple/10 text-jam3a-purple">
+                    {React.createElement(content[language].steps[selectedStepIndex].icon, { size: 24 })}
                   </div>
-                  <h3 className="font-semibold text-lg ml-3">{step.title}</h3>
+                  <h3 className="font-semibold text-lg ml-3">{content[language].steps[selectedStepIndex].title}</h3>
                 </div>
-                <p className="text-muted-foreground">{step.description}</p>
+                <p className="text-muted-foreground">{content[language].steps[selectedStepIndex].description}</p>
               </CardContent>
             </Card>
-          ))}
+          </div>
+          
+          {/* Desktop steps */}
+          <div className="hidden md:grid md:grid-cols-3 gap-6">
+            {content[language].steps.map((step, index) => (
+              <Card 
+                key={index} 
+                className="border-2 border-jam3a-purple/10 hover:border-jam3a-purple/30 transition-all duration-300 hover:shadow-jam3a transform hover:-translate-y-1"
+              >
+                <CardContent className="p-6">
+                  <div className="flex items-center mb-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-jam3a-purple/10 text-jam3a-purple">
+                      {React.createElement(step.icon, { size: 24 })}
+                      <span className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-jam3a-purple text-white text-xs font-bold">
+                        {index + 1}
+                      </span>
+                    </div>
+                    <h3 className="font-semibold text-lg ml-3">{step.title}</h3>
+                  </div>
+                  <p className="text-muted-foreground">{step.description}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
 
-        <div dir={language === 'ar' ? 'rtl' : 'ltr'} className="bg-gradient-to-r from-jam3a-purple to-jam3a-accent rounded-2xl p-8 text-white mb-12">
+        <div dir={language === 'ar' ? 'rtl' : 'ltr'} className="bg-gradient-to-r from-jam3a-purple to-jam3a-accent rounded-2xl p-8 text-white mb-12 shadow-jam3a-lg transform hover:-translate-y-1 transition-transform duration-300">
           <div className="text-center mb-6">
-            <h3 className="text-xl font-semibold mb-4">
+            <h3 className="text-xl font-semibold mb-6">
               {language === 'en' ? 'Why Start a Jam3a?' : 'لماذا تبدأ جمعة؟'}
             </h3>
             <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4">
               {content[language].benefits.map((benefit, index) => (
-                <div key={index} className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                  {benefit}
+                <div 
+                  key={index} 
+                  className="bg-white/10 backdrop-blur-sm rounded-lg p-4 flex flex-col items-center text-center hover:bg-white/20 transition-colors duration-300"
+                >
+                  {React.createElement(benefit.icon, { className: "h-6 w-6 mb-2" })}
+                  {benefit.text}
                 </div>
               ))}
             </div>
@@ -125,16 +225,18 @@ const StartJam3a: React.FC = () => {
         </div>
 
         <div className="flex flex-col items-center space-y-4">
-          <Button size="lg" className="bg-jam3a-purple hover:bg-jam3a-deep-purple text-white px-8">
+          <Button 
+            size="lg" 
+            className="bg-jam3a-purple hover:bg-jam3a-deep-purple text-white px-8 py-6 text-lg shadow-jam3a hover:shadow-jam3a-lg transition-all duration-300 hover:-translate-y-1"
+          >
             <Link to="/start-jam3a" className="flex items-center gap-2">
               {content[language].cta}
-              {language === 'en' ? <ArrowRight className="h-4 w-4" /> : null}
-              {language === 'ar' ? null : null}
+              {language === 'en' ? <ArrowRight className="h-5 w-5" /> : <ArrowRight className="h-5 w-5 transform rotate-180" />}
             </Link>
           </Button>
-          <div dir={language === 'ar' ? 'rtl' : 'ltr'} className="flex items-center gap-2">
+          <div dir={language === 'ar' ? 'rtl' : 'ltr'} className="flex items-center gap-2 mt-2">
             <span className="text-muted-foreground">{content[language].orJoin}</span>
-            <Button variant="link" className="text-jam3a-purple">
+            <Button variant="link" className="text-jam3a-purple hover:text-jam3a-deep-purple">
               <Link to="/shop" className="flex items-center gap-1">
                 <Users className="h-4 w-4" />
                 {content[language].joinExisting}
