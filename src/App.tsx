@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
+import Admin from "./pages/Admin";
 
 const App = () => {
   // Create a client
@@ -35,6 +36,7 @@ const App = () => {
             <Route path="/privacy" element={<Index />} />
             <Route path="/terms" element={<Index />} />
             <Route path="/contact" element={<Index />} />
+            <Route path="/admin/*" element={<Admin />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
