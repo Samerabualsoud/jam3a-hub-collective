@@ -8,6 +8,7 @@ import WhyChooseUs from '@/components/WhyChooseUs';
 import JoinWaitlist from '@/components/JoinWaitlist';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
+import StartJam3a from '@/components/StartJam3a';
 
 const Index = () => {
   return (
@@ -18,6 +19,7 @@ const Index = () => {
         <HowItWorks />
         <FeaturedDeals />
         <BilingualProductListing />
+        <StartJam3a />
         <WhyChooseUs />
         <JoinWaitlist />
       </main>
