@@ -75,9 +75,9 @@ const FAQContent = () => {
   ];
 
   return (
-    <section className="bg-white py-10 md:py-14">
+    <section className="bg-white py-8 md:py-12">
       <div className="container mx-auto px-4 md:px-6" dir={language === 'ar' ? 'rtl' : 'ltr'}>
-        <div className="mx-auto max-w-3xl text-center mb-10">
+        <div className="mx-auto max-w-3xl text-center mb-8">
           <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
             {language === 'en' ? 'Frequently Asked Questions' : 'الأسئلة الشائعة'}
           </h1>

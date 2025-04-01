@@ -54,7 +54,7 @@ const HowItWorks = () => {
   ];
 
   return (
-    <section className="bg-white py-10 md:py-14">
+    <section className="bg-white py-8 md:py-12">
       <div className="container mx-auto px-4 md:px-6" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
@@ -66,7 +66,7 @@ const HowItWorks = () => {
               : 'خطوات بسيطة لتوفير المال من خلال قوة الشراء الجماعي'}
           </p>
         </div>
-        <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {steps.map((step, index) => (
             <div key={index} className="flex flex-col items-center text-center">
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-jam3a-purple/10">

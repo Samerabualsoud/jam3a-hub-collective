@@ -9,7 +9,7 @@ const Footer = () => {
 
   return (
     <footer className="bg-gray-900 text-white" dir={language === 'ar' ? 'rtl' : 'ltr'}>
-      <div className="container mx-auto px-4 py-12 md:px-6">
+      <div className="container mx-auto px-4 py-8 md:px-6">
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           <div>
             <Link to="/" className="flex items-center gap-2">
@@ -120,7 +120,7 @@ const Footer = () => {
             </ul>
           </div>
         </div>
-        <div className="mt-12 border-t border-gray-800 pt-8">
+        <div className="mt-8 border-t border-gray-800 pt-6">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <p className="text-sm text-gray-400">
               &copy; {new Date().getFullYear()} Jam3a. {language === 'en' ? 'All rights reserved.' : 'جميع الحقوق محفوظة.'}

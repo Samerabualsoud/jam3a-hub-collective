@@ -161,7 +161,7 @@ const FeaturedDeals = () => {
   ];
 
   return (
-    <section className="bg-gray-50 py-16 md:py-24">
+    <section className="bg-gray-50 py-12 md:py-16">
       <div className="container mx-auto px-4 md:px-6" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
           <div>
@@ -180,7 +180,7 @@ const FeaturedDeals = () => {
             </Link>
           </Button>
         </div>
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {featuredProducts.map((product) => (
             <ProductCard key={product.id} {...product} />
           ))}
