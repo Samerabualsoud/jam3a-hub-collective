@@ -49,9 +49,6 @@ const Header = () => {
           <Link to="/about" className="text-sm font-medium text-foreground hover:text-jam3a-purple transition-colors">
             About Us
           </Link>
-          <Link to="/start-jam3a" className="text-sm font-medium text-foreground hover:text-jam3a-purple transition-colors">
-            Join/Start a Jam3a
-          </Link>
           <Link to="/how-it-works" className="text-sm font-medium text-foreground hover:text-jam3a-purple transition-colors">
             How It Works
           </Link>
@@ -134,13 +131,6 @@ const Header = () => {
               onClick={() => setIsMenuOpen(false)}
             >
               About Us
-            </Link>
-            <Link 
-              to="/start-jam3a" 
-              className="text-lg font-medium p-2 hover:bg-jam3a-purple-50 rounded transition-colors"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Join/Start a Jam3a
             </Link>
             <Link 
               to="/how-it-works" 
