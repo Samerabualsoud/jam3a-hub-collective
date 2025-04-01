@@ -13,6 +13,10 @@ import Admin from "./pages/Admin";
 import AboutUs from "./pages/AboutUs";
 import { LanguageProvider } from "./components/Header";
 import FAQ from "./pages/FAQ";
+import ShopAllDeals from "./pages/ShopAllDeals";
+import StartJam3a from "./pages/StartJam3a";
+import HowItWorks from "./pages/HowItWorks";
+import FAQPage from "./pages/FAQPage";
 
 const App = () => {
   // Create a client
@@ -27,15 +31,16 @@ const App = () => {
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
-              <Route path="/start-jam3a" element={<Index />} />
-              <Route path="/how-it-works" element={<Index />} />
+              <Route path="/start-jam3a" element={<StartJam3a />} />
+              <Route path="/how-it-works" element={<HowItWorks />} />
               <Route path="/sellers" element={<Index />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/my-jam3a" element={<Index />} />
               <Route path="/product/:id" element={<Index />} />
               <Route path="/about" element={<AboutUs />} />
-              <Route path="/faq" element={<FAQ />} />
+              <Route path="/faq" element={<FAQPage />} />
+              <Route path="/shop-all-deals" element={<ShopAllDeals />} />
               <Route path="/privacy" element={<Index />} />
               <Route path="/terms" element={<Index />} />
               <Route path="/contact" element={<Index />} />
