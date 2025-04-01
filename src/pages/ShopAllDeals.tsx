@@ -9,10 +9,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
 import { Clock, Users, Tag, Filter } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
 
 const ShopAllDeals = () => {
   const { language } = useLanguage();
   const isRtl = language === 'ar';
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
   const content = {
     en: {
@@ -219,6 +223,17 @@ const ShopAllDeals = () => {
 
   const currentContent = content[language];
 
+  // Function to handle joining a Jam3a
+  const handleJoinJam3a = (deal) => {
+    navigate(`/join-jam3a?product=${encodeURIComponent(deal.title)}&price=${deal.currentPrice}`);
+    toast({
+      title: language === 'en' ? "Joining Jam3a" : "الانضمام إلى الجمعة",
+      description: language === 'en' 
+        ? `You're joining the Jam3a for ${deal.title}` 
+        : `أنت تنضم إلى الجمعة لـ ${deal.title}`
+    });
+  };
+
   return (
     <div className={`flex min-h-screen flex-col ${isRtl ? 'rtl' : 'ltr'}`}>
       <Header />
@@ -280,23 +295,23 @@ const ShopAllDeals = () => {
                       
                       <div>
                         <label className="text-sm font-medium mb-1 block">{currentContent.filters.priceRange}</label>
-                        <div className="pt-4 pb-2">
+                        <div className="pt-2 pb-6">
                           <Slider defaultValue={[0, 10000]} min={0} max={10000} step={100} />
-                        </div>
-                        <div className="flex justify-between text-sm text-muted-foreground">
-                          <span>0 SAR</span>
-                          <span>10,000 SAR</span>
+                          <div className="flex justify-between text-sm text-muted-foreground mt-2">
+                            <span>0 SAR</span>
+                            <span>10,000 SAR</span>
+                          </div>
                         </div>
                       </div>
                       
                       <div>
                         <label className="text-sm font-medium mb-1 block">{currentContent.filters.groupSize}</label>
-                        <div className="pt-4 pb-2">
+                        <div className="pt-2 pb-6">
                           <Slider defaultValue={[0, 10]} min={0} max={10} step={1} />
-                        </div>
-                        <div className="flex justify-between text-sm text-muted-foreground">
-                          <span>2+</span>
-                          <span>10+</span>
+                          <div className="flex justify-between text-sm text-muted-foreground mt-2">
+                            <span>0</span>
+                            <span>10+</span>
+                          </div>
                         </div>
                       </div>
                       
@@ -375,7 +390,10 @@ const ShopAllDeals = () => {
                                 ></div>
                               </div>
                               
-                              <Button className="w-full bg-jam3a-purple hover:bg-jam3a-deep-purple">
+                              <Button 
+                                className="w-full bg-jam3a-purple hover:bg-jam3a-deep-purple"
+                                onClick={() => handleJoinJam3a(deal)}
+                              >
                                 {deal.buttonText}
                               </Button>
                             </div>
@@ -427,7 +445,10 @@ const ShopAllDeals = () => {
                                   ></div>
                                 </div>
                                 
-                                <Button className="w-full bg-jam3a-purple hover:bg-jam3a-deep-purple">
+                                <Button 
+                                  className="w-full bg-jam3a-purple hover:bg-jam3a-deep-purple"
+                                  onClick={() => handleJoinJam3a(deal)}
+                                >
                                   {deal.buttonText}
                                 </Button>
                               </div>
@@ -479,7 +500,10 @@ const ShopAllDeals = () => {
                                   ></div>
                                 </div>
                                 
-                                <Button className="w-full bg-jam3a-purple hover:bg-jam3a-deep-purple">
+                                <Button 
+                                  className="w-full bg-jam3a-purple hover:bg-jam3a-deep-purple"
+                                  onClick={() => handleJoinJam3a(deal)}
+                                >
                                   {deal.buttonText}
                                 </Button>
                               </div>
@@ -492,7 +516,7 @@ const ShopAllDeals = () => {
                   <TabsContent value="new" className="mt-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {currentContent.deals
-                        .filter((deal, index) => index >= 3) // Just for demo, filter some deals
+                        .filter((deal, index) => index >= 4) // Just for demo, filter some deals
                         .map((deal, index) => (
                           <Card key={index} className="overflow-hidden">
                             <div className="relative">
@@ -531,7 +555,10 @@ const ShopAllDeals = () => {
                                   ></div>
                                 </div>
                                 
-                                <Button className="w-full bg-jam3a-purple hover:bg-jam3a-deep-purple">
+                                <Button 
+                                  className="w-full bg-jam3a-purple hover:bg-jam3a-deep-purple"
+                                  onClick={() => handleJoinJam3a(deal)}
+                                >
                                   {deal.buttonText}
                                 </Button>
                               </div>
@@ -541,17 +568,16 @@ const ShopAllDeals = () => {
                     </div>
                   </TabsContent>
                 </Tabs>
+                
+                <div className="flex justify-center mt-8">
+                  <Button className="bg-jam3a-purple hover:bg-jam3a-deep-purple">
+                    <Link to="/start-jam3a" className="text-white">
+                      {currentContent.startJam3a}
+                    </Link>
+                  </Button>
+                </div>
               </div>
             </div>
-          </div>
-        </section>
-        
-        <section className="py-12 bg-gradient-to-b from-white to-purple-50">
-          <div className="container mx-auto px-4 text-center">
-            <h2 className="text-2xl font-bold mb-6">{currentContent.startJam3a}</h2>
-            <Button size="lg" className="bg-jam3a-purple hover:bg-jam3a-deep-purple">
-              {currentContent.startJam3a}
-            </Button>
           </div>
         </section>
       </main>

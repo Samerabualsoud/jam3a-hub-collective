@@ -25,6 +25,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Phone, User, Mail, Lock, ArrowRight } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 // Login form schema
 const loginSchema = z.object({
@@ -48,6 +49,7 @@ const otpSchema = z.object({
 const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { login } = useAuth();
   const [activeTab, setActiveTab] = useState<"login" | "register">("login");
   const [showOTPVerification, setShowOTPVerification] = useState<boolean>(false);
   const [otpValue, setOTPValue] = useState<string>("");
@@ -83,6 +85,14 @@ const Login = () => {
 
   const onLoginSubmit = (data: z.infer<typeof loginSchema>) => {
     console.log("Login data:", data);
+    
+    // Use the authentication context to login
+    login({
+      id: "user-" + Date.now(),
+      name: "User",
+      email: data.email,
+      isAdmin: data.email.includes("admin")
+    });
     
     // Simulate login success
     toast({

@@ -1,17 +1,19 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Users, ShoppingBag, Globe, Menu, X, User } from 'lucide-react';
+import { Users, ShoppingBag, Globe, Menu, X, User, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { useState, createContext, useContext } from 'react';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 
 // Create a context for language
 export const LanguageContext = createContext<{
@@ -39,6 +41,7 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { language, setLanguage } = useLanguage();
   const { toast } = useToast();
+  const { user, isAuthenticated, logout } = useAuth();
 
   const toggleLanguage = (value: string) => {
     if (value) {
@@ -49,6 +52,14 @@ const Header = () => {
         description: newLang === 'en' ? 'Website language is now English' : 'لغة الموقع الآن هي العربية',
       });
     }
+  };
+
+  const handleLogout = () => {
+    logout();
+    toast({
+      title: language === 'en' ? 'Logged Out' : 'تم تسجيل الخروج',
+      description: language === 'en' ? 'You have been logged out successfully' : 'تم تسجيل خروجك بنجاح',
+    });
   };
 
   return (
@@ -108,26 +119,45 @@ const Header = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56 border border-gray-200 shadow-md">
-              <DropdownMenuItem className="hover:bg-jam3a-purple-50">
-                <Link to="/login" className="w-full flex items-center">
-                  {language === 'en' ? 'Sign In' : 'تسجيل الدخول'}
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="hover:bg-jam3a-purple-50">
-                <Link to="/register" className="w-full flex items-center">
-                  {language === 'en' ? 'Register' : 'التسجيل'}
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="hover:bg-jam3a-purple-50">
-                <Link to="/my-jam3a" className="w-full flex items-center">
-                  {language === 'en' ? 'My Jam3a Deals' : 'صفقات جمعتي'}
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="hover:bg-jam3a-purple-50">
-                <Link to="/admin" className="w-full flex items-center">
-                  {language === 'en' ? 'Admin Panel' : 'لوحة الإدارة'}
-                </Link>
-              </DropdownMenuItem>
+              {isAuthenticated ? (
+                <>
+                  <DropdownMenuItem className="font-medium">
+                    <span>{user?.name}</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="hover:bg-jam3a-purple-50">
+                    <Link to="/my-jam3a" className="w-full flex items-center">
+                      {language === 'en' ? 'My Jam3a Deals' : 'صفقات جمعتي'}
+                    </Link>
+                  </DropdownMenuItem>
+                  {user?.isAdmin && (
+                    <DropdownMenuItem className="hover:bg-jam3a-purple-50">
+                      <Link to="/admin" className="w-full flex items-center">
+                        {language === 'en' ? 'Admin Panel' : 'لوحة الإدارة'}
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuItem className="hover:bg-jam3a-purple-50" onClick={handleLogout}>
+                    <div className="w-full flex items-center">
+                      <LogOut className="h-4 w-4 mr-2" />
+                      {language === 'en' ? 'Sign Out' : 'تسجيل الخروج'}
+                    </div>
+                  </DropdownMenuItem>
+                </>
+              ) : (
+                <>
+                  <DropdownMenuItem className="hover:bg-jam3a-purple-50">
+                    <Link to="/login" className="w-full flex items-center">
+                      {language === 'en' ? 'Sign In' : 'تسجيل الدخول'}
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="hover:bg-jam3a-purple-50">
+                    <Link to="/register" className="w-full flex items-center">
+                      {language === 'en' ? 'Register' : 'التسجيل'}
+                    </Link>
+                  </DropdownMenuItem>
+                </>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
           
