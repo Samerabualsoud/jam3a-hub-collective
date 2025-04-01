@@ -1,15 +1,11 @@
 
 import React, { useState } from 'react';
-import { Users, TrendingUp, ShieldCheck, Share2, Globe } from 'lucide-react';
+import { Users, TrendingUp, ShieldCheck, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
 const AboutUsContent = () => {
   const [language, setLanguage] = useState<'en' | 'ar'>('en');
-
-  const toggleLanguage = () => {
-    setLanguage(prev => prev === 'en' ? 'ar' : 'en');
-  };
 
   const content = {
     en: {
@@ -100,18 +96,6 @@ const AboutUsContent = () => {
   return (
     <div className={`py-16 ${isRtl ? 'rtl' : 'ltr'}`}>
       <div className="container mx-auto px-4 md:px-6">
-        {/* Language Toggle */}
-        <div className="flex justify-end mb-8">
-          <Button 
-            variant="ghost" 
-            onClick={toggleLanguage}
-            className="flex items-center gap-2"
-          >
-            <Globe className="h-5 w-5" />
-            <span>{language === 'en' ? 'العربية' : 'English'}</span>
-          </Button>
-        </div>
-
         {/* Header Section */}
         <div className="mb-16 text-center">
           <h1 className="text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl mb-6">

@@ -8,8 +8,7 @@ import {
   ChevronLeft,
   BadgePercent,
   Clock,
-  Shield,
-  Globe
+  Shield
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -55,10 +54,6 @@ interface Product {
 
 const BilingualProductListing: React.FC = () => {
   const [language, setLanguage] = useState<'en' | 'ar'>('en');
-  
-  const toggleLanguage = () => {
-    setLanguage(prev => prev === 'en' ? 'ar' : 'en');
-  };
 
   const productData: Product[] = [
     {
@@ -190,10 +185,6 @@ const BilingualProductListing: React.FC = () => {
               ? 'Watch prices drop as more people join. The bigger the group, the bigger the savings!'
               : 'شاهد انخفاض الأسعار مع انضمام المزيد من الأشخاص. كلما كبرت المجموعة، زادت التوفير!'}
           </p>
-          <Button variant="outline" size="sm" onClick={toggleLanguage} className="mt-2">
-            <Globe className="h-4 w-4 mr-2" />
-            {language === 'en' ? 'عربي' : 'English'}
-          </Button>
         </div>
 
         <Carousel

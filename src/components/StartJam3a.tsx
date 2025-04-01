@@ -1,25 +1,16 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Users, ArrowRight, Globe, Check, PlusCircle, TrendingUp, BadgePercent, Clock, ShieldCheck } from 'lucide-react';
+import { Users, ArrowRight, PlusCircle, TrendingUp, BadgePercent, Clock, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { motion } from 'framer-motion';
 
 const StartJam3a: React.FC = () => {
   const [language, setLanguage] = useState<'en' | 'ar'>('en');
   const [selectedStepIndex, setSelectedStepIndex] = useState(0);
   const { toast } = useToast();
-  
-  const toggleLanguage = () => {
-    setLanguage(prev => prev === 'en' ? 'ar' : 'en');
-    toast({
-      title: language === 'en' ? 'تم تغيير اللغة إلى العربية' : 'Language changed to English',
-      description: language === 'en' ? 'يمكنك الآن تصفح الموقع باللغة العربية' : 'You can now browse the site in English',
-    });
-  };
 
   const content = {
     en: {
@@ -58,7 +49,7 @@ const StartJam3a: React.FC = () => {
         },
         {
           text: "Secure transactions and guaranteed delivery",
-          icon: Check
+          icon: ShieldCheck
         }
       ],
       cta: "Start Your Jam3a Now",
@@ -101,7 +92,7 @@ const StartJam3a: React.FC = () => {
         },
         {
           text: "معاملات آمنة وتسليم مضمون",
-          icon: Check
+          icon: ShieldCheck
         }
       ],
       cta: "ابدأ جمعتك الآن",
@@ -118,22 +109,6 @@ const StartJam3a: React.FC = () => {
         <div className="absolute -bottom-32 -left-20 w-80 h-80 bg-jam3a-accent/5 rounded-full filter blur-3xl"></div>
         
         <div className="flex flex-col items-center text-center mb-10 relative z-10">
-          <ToggleGroup 
-            type="single" 
-            value={language} 
-            onValueChange={(value) => value && setLanguage(value as 'en' | 'ar')}
-            className="mb-6 bg-white border rounded-full shadow-sm p-1"
-          >
-            <ToggleGroupItem value="en" aria-label="Toggle English" className="data-[state=on]:bg-jam3a-purple data-[state=on]:text-white rounded-full">
-              <Globe className="h-4 w-4 mr-1" />
-              EN
-            </ToggleGroupItem>
-            <ToggleGroupItem value="ar" aria-label="Toggle Arabic" className="data-[state=on]:bg-jam3a-purple data-[state=on]:text-white rounded-full">
-              <Globe className="h-4 w-4 mr-1" />
-              AR
-            </ToggleGroupItem>
-          </ToggleGroup>
-          
           <div dir={language === 'ar' ? 'rtl' : 'ltr'} className="max-w-3xl">
             <h2 className="text-3xl font-bold tracking-tight md:text-4xl mb-3 bg-clip-text text-transparent bg-gradient-to-r from-jam3a-deep-purple to-jam3a-accent">
               {content[language].title}
@@ -150,23 +125,17 @@ const StartJam3a: React.FC = () => {
         <div dir={language === 'ar' ? 'rtl' : 'ltr'} className="max-w-5xl mx-auto mb-12">
           {/* Step selector for mobile */}
           <div className="md:hidden mb-6">
-            <ToggleGroup 
-              type="single" 
-              value={String(selectedStepIndex)} 
-              onValueChange={(value) => setSelectedStepIndex(Number(value))}
-              className="w-full border rounded-lg shadow-sm p-1"
-            >
+            <div className="w-full border rounded-lg shadow-sm p-1 flex">
               {content[language].steps.map((_, index) => (
-                <ToggleGroupItem 
+                <button 
                   key={index} 
-                  value={String(index)} 
-                  aria-label={`Step ${index + 1}`}
-                  className="flex-1 data-[state=on]:bg-jam3a-purple data-[state=on]:text-white"
+                  className={`flex-1 py-2 rounded-md ${selectedStepIndex === index ? 'bg-jam3a-purple text-white' : 'bg-transparent text-foreground'}`}
+                  onClick={() => setSelectedStepIndex(index)}
                 >
                   {index + 1}
-                </ToggleGroupItem>
+                </button>
               ))}
-            </ToggleGroup>
+            </div>
             
             <Card className="mt-4 border-2 border-jam3a-purple/10 hover:border-jam3a-purple/30 transition-colors shadow-jam3a">
               <CardContent className="p-6">
