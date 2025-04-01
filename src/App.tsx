@@ -10,6 +10,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
+import AboutUs from "./pages/AboutUs";
 
 const App = () => {
   // Create a client
@@ -31,8 +32,8 @@ const App = () => {
             <Route path="/register" element={<Register />} />
             <Route path="/my-jam3a" element={<Index />} />
             <Route path="/product/:id" element={<Index />} />
+            <Route path="/about" element={<AboutUs />} />
             <Route path="/faq" element={<Index />} />
-            <Route path="/about" element={<Index />} />
             <Route path="/privacy" element={<Index />} />
             <Route path="/terms" element={<Index />} />
             <Route path="/contact" element={<Index />} />

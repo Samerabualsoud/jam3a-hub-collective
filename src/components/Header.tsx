@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Users, ShoppingBag, Globe, Menu, X, User } from 'lucide-react';
@@ -39,6 +38,9 @@ const Header = () => {
           </Link>
           <Link to="/shop" className="text-sm font-medium text-foreground hover:text-jam3a-purple">
             Shop
+          </Link>
+          <Link to="/about" className="text-sm font-medium text-foreground hover:text-jam3a-purple">
+            About Us
           </Link>
           <Link to="/start-jam3a" className="text-sm font-medium text-foreground hover:text-jam3a-purple">
             Start a Jam3a
@@ -122,6 +124,13 @@ const Header = () => {
               onClick={() => setIsMenuOpen(false)}
             >
               Shop
+            </Link>
+            <Link 
+              to="/about" 
+              className="text-lg font-medium p-2 hover:bg-gray-100 rounded"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              About Us
             </Link>
             <Link 
               to="/start-jam3a" 
