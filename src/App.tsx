@@ -5,6 +5,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -21,8 +23,8 @@ const App = () => (
           <Route path="/start-jam3a" element={<Index />} />
           <Route path="/how-it-works" element={<Index />} />
           <Route path="/sellers" element={<Index />} />
-          <Route path="/login" element={<Index />} />
-          <Route path="/register" element={<Index />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route path="/my-jam3a" element={<Index />} />
           <Route path="/product/:id" element={<Index />} />
           <Route path="/faq" element={<Index />} />
