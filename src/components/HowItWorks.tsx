@@ -27,21 +27,21 @@ const steps = [
 
 const HowItWorks = () => {
   return (
-    <section className="bg-white py-16 md:py-24">
+    <section className="bg-white py-10 md:py-14">
       <div className="container mx-auto px-4 md:px-6">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-bold tracking-tight md:text-4xl">How Jam3a Works</h2>
-          <p className="mt-4 text-muted-foreground">
+          <p className="mt-3 text-muted-foreground">
             Simple steps to save money through the power of group buying
           </p>
         </div>
-        <div className="mt-16 grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {steps.map((step, index) => (
             <div key={index} className="flex flex-col items-center text-center">
-              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-jam3a-purple/10">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-jam3a-purple/10">
                 {step.icon}
               </div>
-              <h3 className="mt-6 text-xl font-semibold">{step.title}</h3>
+              <h3 className="mt-4 text-xl font-semibold">{step.title}</h3>
               <p className="mt-2 text-muted-foreground">{step.description}</p>
               {index < steps.length - 1 && (
                 <div className="hidden lg:block absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-1/2">

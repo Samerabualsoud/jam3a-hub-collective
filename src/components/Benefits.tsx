@@ -72,27 +72,27 @@ const Benefits = () => {
   const isRtl = language === 'ar';
 
   return (
-    <section className={`py-16 bg-gradient-to-br from-purple-50 to-white ${isRtl ? 'rtl' : 'ltr'}`}>
+    <section className={`py-10 bg-gradient-to-br from-purple-50 to-white ${isRtl ? 'rtl' : 'ltr'}`}>
       <div className="container mx-auto px-4 md:px-6">
         {/* Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl mb-4">
+        <div className="text-center mb-10">
+          <h2 className="text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl mb-3">
             {currentContent.title}
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             {currentContent.subtitle}
           </p>
-          <p className="mt-4 text-lg max-w-3xl mx-auto">
+          <p className="mt-3 text-lg max-w-3xl mx-auto">
             {currentContent.description}
           </p>
         </div>
 
         {/* Benefits Grid */}
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4 mb-16">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-10">
           {currentContent.benefits.map((benefit, index) => (
             <Card key={index} className="border-2 hover:border-jam3a-purple hover:shadow-lg transition-all">
-              <CardContent className="p-6">
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-jam3a-purple/10 mb-4">
+              <CardContent className="p-5">
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-jam3a-purple/10 mb-3">
                   {benefit.icon}
                 </div>
                 <h3 className="text-xl font-semibold mb-2">{benefit.title}</h3>
@@ -104,7 +104,7 @@ const Benefits = () => {
 
         {/* CTA Section */}
         <div className="text-center">
-          <h3 className="text-2xl font-bold mb-6">{currentContent.cta}</h3>
+          <h3 className="text-2xl font-bold mb-4">{currentContent.cta}</h3>
           <Button size="lg" className="bg-jam3a-purple hover:bg-jam3a-deep-purple text-white">
             {currentContent.startShopping}
           </Button>

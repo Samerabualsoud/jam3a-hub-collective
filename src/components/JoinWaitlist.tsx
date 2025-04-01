@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Users, ArrowRight, Send } from 'lucide-react';
+import { Users, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
@@ -39,7 +39,7 @@ const JoinWaitlist = () => {
   };
 
   return (
-    <section className="bg-gradient-to-br from-jam3a-purple to-jam3a-accent py-16 md:py-24 relative overflow-hidden">
+    <section className="bg-gradient-to-br from-jam3a-purple to-jam3a-accent py-10 md:py-14 relative overflow-hidden">
       {/* Background decoration elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-10">
         <div className="absolute -top-20 -right-20 w-64 h-64 bg-white rounded-full"></div>
@@ -50,20 +50,20 @@ const JoinWaitlist = () => {
 
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         <div className="mx-auto max-w-3xl text-center">
-          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-white shadow-jam3a animate-float">
-            <Users className="h-10 w-10 text-jam3a-purple" />
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-jam3a animate-float">
+            <Users className="h-8 w-8 text-jam3a-purple" />
           </div>
-          <h2 className="text-3xl font-bold tracking-tight text-white md:text-4xl mb-4">
+          <h2 className="text-3xl font-bold tracking-tight text-white md:text-4xl mb-3">
             Join the Jam3a Revolution
           </h2>
-          <p className="mt-4 text-lg text-white/90">
+          <p className="mt-3 text-lg text-white/90">
             Be among the first to experience the future of group buying in Saudi Arabia.
             Sign up now to receive exclusive early access and special offers.
           </p>
           
-          <form onSubmit={handleSubmit} className="mt-8">
+          <form onSubmit={handleSubmit} className="mt-6">
             <div className="grid gap-4">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
                 <div className="flex-grow">
                   <Input
                     type="email"
@@ -106,7 +106,7 @@ const JoinWaitlist = () => {
             </div>
           </form>
           
-          <p className="mt-6 text-sm text-white/70">
+          <p className="mt-4 text-sm text-white/70">
             By joining, you agree to receive updates from Jam3a. 
             We respect your privacy and will never share your information.
           </p>
