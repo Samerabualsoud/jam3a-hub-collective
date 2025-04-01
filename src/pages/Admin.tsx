@@ -9,6 +9,9 @@ import ProductsManager from "@/components/admin/ProductsManager";
 import UsersManager from "@/components/admin/UsersManager";
 import OrdersManager from "@/components/admin/OrdersManager";
 import Settings from "@/components/admin/Settings";
+import ContentManager from "@/components/admin/ContentManager";
+import AnalyticsIntegration from "@/components/admin/AnalyticsIntegration";
+import PaymentIntegration from "@/components/admin/PaymentIntegration";
 
 const Admin = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -45,11 +48,14 @@ const Admin = () => {
       </div>
 
       <Tabs defaultValue="dashboard" value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-8">
           <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
           <TabsTrigger value="products">Products</TabsTrigger>
           <TabsTrigger value="users">Users</TabsTrigger>
           <TabsTrigger value="orders">Orders</TabsTrigger>
+          <TabsTrigger value="content">Content</TabsTrigger>
+          <TabsTrigger value="payments">Payments</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
           <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
         <TabsContent value="dashboard">
@@ -63,6 +69,15 @@ const Admin = () => {
         </TabsContent>
         <TabsContent value="orders">
           <OrdersManager />
+        </TabsContent>
+        <TabsContent value="content">
+          <ContentManager />
+        </TabsContent>
+        <TabsContent value="payments">
+          <PaymentIntegration />
+        </TabsContent>
+        <TabsContent value="analytics">
+          <AnalyticsIntegration />
         </TabsContent>
         <TabsContent value="settings">
           <Settings />
