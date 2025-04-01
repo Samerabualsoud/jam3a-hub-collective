@@ -11,6 +11,8 @@ import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
 import AboutUs from "./pages/AboutUs";
+import { LanguageProvider } from "./components/Header";
+import FAQ from "./pages/FAQ";
 
 const App = () => {
   // Create a client
@@ -19,28 +21,30 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/start-jam3a" element={<Index />} />
-            <Route path="/how-it-works" element={<Index />} />
-            <Route path="/sellers" element={<Index />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/my-jam3a" element={<Index />} />
-            <Route path="/product/:id" element={<Index />} />
-            <Route path="/about" element={<AboutUs />} />
-            <Route path="/faq" element={<Index />} />
-            <Route path="/privacy" element={<Index />} />
-            <Route path="/terms" element={<Index />} />
-            <Route path="/contact" element={<Index />} />
-            <Route path="/admin/*" element={<Admin />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+        <LanguageProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/start-jam3a" element={<Index />} />
+              <Route path="/how-it-works" element={<Index />} />
+              <Route path="/sellers" element={<Index />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/my-jam3a" element={<Index />} />
+              <Route path="/product/:id" element={<Index />} />
+              <Route path="/about" element={<AboutUs />} />
+              <Route path="/faq" element={<FAQ />} />
+              <Route path="/privacy" element={<Index />} />
+              <Route path="/terms" element={<Index />} />
+              <Route path="/contact" element={<Index />} />
+              <Route path="/admin/*" element={<Admin />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </LanguageProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );
