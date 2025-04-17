@@ -24,88 +24,143 @@ interface Deal {
 export const useSupabaseApi = () => {
   const { supabaseClient } = useSessionContext();
 
-  const getProducts = async () => {
-    const { data, error } = await supabaseClient
-      .from('products')
-      .select('*')
-      .order('created_at', { ascending: false });
+  const validateClient = () => {
+    if (!supabaseClient || typeof supabaseClient.from !== 'function') {
+      throw new Error('Supabase client is not initialized properly');
+    }
+    return supabaseClient;
+  };
 
-    if (error) throw error;
-    return data;
+  const getProducts = async () => {
+    try {
+      const client = validateClient();
+      const { data, error } = await client
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      console.error('Error getting products:', error);
+      return [];
+    }
   };
 
   const createProduct = async (product: Product) => {
-    const { data, error } = await supabaseClient
-      .from('products')
-      .insert(product)
-      .select()
-      .single();
+    try {
+      const client = validateClient();
+      const { data, error } = await client
+        .from('products')
+        .insert(product)
+        .select()
+        .single();
 
-    if (error) throw error;
-    return data;
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error creating product:', error);
+      throw error;
+    }
   };
 
   const updateProduct = async (id: number, product: Partial<Product>) => {
-    const { data, error } = await supabaseClient
-      .from('products')
-      .update(product)
-      .eq('id', id)
-      .select()
-      .single();
+    try {
+      const client = validateClient();
+      const { data, error } = await client
+        .from('products')
+        .update(product)
+        .eq('id', id)
+        .select()
+        .single();
 
-    if (error) throw error;
-    return data;
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error updating product:', error);
+      throw error;
+    }
   };
 
   const deleteProduct = async (id: number) => {
-    const { error } = await supabaseClient
-      .from('products')
-      .delete()
-      .eq('id', id);
+    try {
+      const client = validateClient();
+      const { error } = await client
+        .from('products')
+        .delete()
+        .eq('id', id);
 
-    if (error) throw error;
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      throw error;
+    }
   };
 
   const getDeals = async () => {
-    const { data, error } = await supabaseClient
-      .from('deals')
-      .select('*, products(name)')
-      .order('created_at', { ascending: false });
+    try {
+      const client = validateClient();
+      const { data, error } = await client
+        .from('deals')
+        .select('*, products(name)')
+        .order('created_at', { ascending: false });
 
-    if (error) throw error;
-    return data;
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      console.error('Error getting deals:', error);
+      return [];
+    }
   };
 
   const createDeal = async (deal: Deal) => {
-    const { data, error } = await supabaseClient
-      .from('deals')
-      .insert(deal)
-      .select()
-      .single();
+    try {
+      const client = validateClient();
+      const { data, error } = await client
+        .from('deals')
+        .insert(deal)
+        .select()
+        .single();
 
-    if (error) throw error;
-    return data;
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error creating deal:', error);
+      throw error;
+    }
   };
 
   const updateDeal = async (id: number, deal: Partial<Deal>) => {
-    const { data, error } = await supabaseClient
-      .from('deals')
-      .update(deal)
-      .eq('id', id)
-      .select()
-      .single();
+    try {
+      const client = validateClient();
+      const { data, error } = await client
+        .from('deals')
+        .update(deal)
+        .eq('id', id)
+        .select()
+        .single();
 
-    if (error) throw error;
-    return data;
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error updating deal:', error);
+      throw error;
+    }
   };
 
   const deleteDeal = async (id: number) => {
-    const { error } = await supabaseClient
-      .from('deals')
-      .delete()
-      .eq('id', id);
+    try {
+      const client = validateClient();
+      const { error } = await client
+        .from('deals')
+        .delete()
+        .eq('id', id);
 
-    if (error) throw error;
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error deleting deal:', error);
+      throw error;
+    }
   };
 
   return {
