@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,7 +8,25 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { PlusCircle, ImagePlus, Save, Trash2, Edit, Eye } from 'lucide-react';
+import { useSupabaseApi } from "@/lib/supabase/api";
+import {
+  PlusCircle,
+  ImagePlus,
+  Save,
+  Trash2,
+  Edit,
+  Eye,
+  Layout,
+  FileText,
+  Palette,
+  Component
+} from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 // Mock data for content items
 const mockBanners = [
@@ -30,12 +49,16 @@ const mockFAQs = [
 ];
 
 const ContentManager = () => {
-  const [activeTab, setActiveTab] = useState("banners");
+  const [activeTab, setActiveTab] = useState("sections");
   const [selectedBanner, setSelectedBanner] = useState<any>(null);
   const [selectedPage, setSelectedPage] = useState<any>(null);
   const [selectedFAQ, setSelectedFAQ] = useState<any>(null);
+  const [selectedSection, setSelectedSection] = useState<any>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [contentSections, setContentSections] = useState([]);
+  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const api = useSupabaseApi();
 
   // Form states
   const [bannerForm, setBannerForm] = useState({
@@ -55,6 +78,41 @@ const ContentManager = () => {
     question: '',
     answer: '',
   });
+
+  const [sectionForm, setSectionForm] = useState({
+    name: '',
+    content: '',
+    path: '',
+  });
+
+  useEffect(() => {
+    loadContentSections();
+  }, []);
+
+  const loadContentSections = async () => {
+    setLoading(true);
+    try {
+      const sections = await api.getContentSections();
+      setContentSections(sections);
+    } catch (error) {
+      toast({
+        title: "Error loading content sections",
+        description: "Failed to load website sections. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getIconForContentType = (type) => {
+    switch (type) {
+      case 'page': return <FileText className="h-5 w-5" />;
+      case 'section': return <Layout className="h-5 w-5" />;
+      case 'component': return <Component className="h-5 w-5" />;
+      default: return <Palette className="h-5 w-5" />;
+    }
+  };
 
   const handleBannerSelect = (banner: any) => {
     setSelectedBanner(banner);
@@ -86,6 +144,16 @@ const ContentManager = () => {
     setIsEditing(true);
   };
 
+  const handleSectionSelect = (section: any) => {
+    setSelectedSection(section);
+    setSectionForm({
+      name: section.name,
+      path: section.path,
+      content: `Content for the ${section.name} section. This would be loaded from database in a real implementation.`,
+    });
+    setIsEditing(true);
+  };
+
   const handleNewItem = () => {
     setIsEditing(true);
     if (activeTab === 'banners') {
@@ -109,6 +177,13 @@ const ContentManager = () => {
         question: '',
         answer: '',
       });
+    } else if (activeTab === 'sections') {
+      setSelectedSection(null);
+      setSectionForm({
+        name: '',
+        content: '',
+        path: '/',
+      });
     }
   };
 
@@ -126,6 +201,7 @@ const ContentManager = () => {
     setSelectedBanner(null);
     setSelectedPage(null);
     setSelectedFAQ(null);
+    setSelectedSection(null);
   };
 
   return (
@@ -139,18 +215,127 @@ const ContentManager = () => {
         )}
       </div>
 
-      <Tabs defaultValue="banners" value={activeTab} onValueChange={(value) => {
+      <Tabs defaultValue="sections" value={activeTab} onValueChange={(value) => {
         setActiveTab(value);
         setIsEditing(false);
         setSelectedBanner(null);
         setSelectedPage(null);
         setSelectedFAQ(null);
+        setSelectedSection(null);
       }} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="sections">Website Sections</TabsTrigger>
           <TabsTrigger value="banners">Banners</TabsTrigger>
           <TabsTrigger value="pages">Pages</TabsTrigger>
           <TabsTrigger value="faqs">FAQs</TabsTrigger>
         </TabsList>
+
+        {/* Website Sections Tab */}
+        <TabsContent value="sections">
+          {!isEditing ? (
+            <div className="space-y-4">
+              {loading ? (
+                <Card>
+                  <CardContent className="flex justify-center p-6">
+                    <p>Loading sections...</p>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {contentSections.map((section) => (
+                    <Card key={section.id} className="overflow-hidden">
+                      <CardHeader className="pb-2">
+                        <div className="flex items-center gap-2">
+                          {getIconForContentType(section.type)}
+                          <CardTitle className="text-lg">{section.name}</CardTitle>
+                        </div>
+                        <CardDescription>
+                          {section.type === 'page' ? 'Full Page' : 
+                           section.type === 'section' ? 'Content Section' : 'UI Component'}
+                          {section.path !== '*' && ` - Path: ${section.path}`}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardFooter className="pt-2 pb-4">
+                        <div className="flex justify-between w-full">
+                          <div className="text-sm text-muted-foreground">
+                            Last updated: {section.lastUpdated}
+                          </div>
+                          <div className="flex gap-2">
+                            <Button variant="outline" size="sm" onClick={() => handleSectionSelect(section)}>
+                              <Edit className="h-4 w-4 mr-1" /> Edit
+                            </Button>
+                            <Button variant="outline" size="sm">
+                              <Eye className="h-4 w-4 mr-1" /> Preview
+                            </Button>
+                          </div>
+                        </div>
+                      </CardFooter>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : (
+            <Card>
+              <CardHeader>
+                <CardTitle>{selectedSection ? `Edit ${selectedSection.name}` : 'Add New Section'}</CardTitle>
+                <CardDescription>Manage website sections and components</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="section-name">Section Name</Label>
+                  <Input 
+                    id="section-name" 
+                    value={sectionForm.name} 
+                    onChange={(e) => setSectionForm({...sectionForm, name: e.target.value})}
+                    placeholder="Enter section name"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="section-path">Path</Label>
+                  <Input 
+                    id="section-path" 
+                    value={sectionForm.path} 
+                    onChange={(e) => setSectionForm({...sectionForm, path: e.target.value})}
+                    placeholder="Enter path (e.g., / or /about)"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="section-type">Section Type</Label>
+                  <Select defaultValue="section">
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="section">Content Section</SelectItem>
+                      <SelectItem value="page">Full Page</SelectItem>
+                      <SelectItem value="component">UI Component</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="section-content">Content</Label>
+                  <Textarea 
+                    id="section-content" 
+                    value={sectionForm.content} 
+                    onChange={(e) => setSectionForm({...sectionForm, content: e.target.value})}
+                    placeholder="Enter section content or HTML"
+                    className="min-h-[200px]"
+                  />
+                </div>
+              </CardContent>
+              <CardFooter className="flex justify-between">
+                <Button variant="outline" onClick={handleCancel}>Cancel</Button>
+                <Button onClick={handleSave}>
+                  <Save className="h-4 w-4 mr-1" /> Save Section
+                </Button>
+              </CardFooter>
+            </Card>
+          )}
+        </TabsContent>
 
         {/* Banners Tab */}
         <TabsContent value="banners">

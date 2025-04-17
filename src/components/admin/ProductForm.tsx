@@ -1,3 +1,4 @@
+
 import React from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,14 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -18,6 +27,8 @@ const productSchema = z.object({
   category: z.string().min(1, "Category is required"),
   price: z.coerce.number().min(0, "Price must be a positive number"),
   stock: z.coerce.number().int().min(0, "Stock must be a positive integer"),
+  description: z.string().optional(),
+  imageUrl: z.string().optional(),
 });
 
 type ProductFormValues = z.infer<typeof productSchema>;
@@ -29,10 +40,26 @@ interface ProductFormProps {
     category?: string;
     price?: number;
     stock?: number;
+    description?: string;
+    imageUrl?: string;
   };
   onSubmit: (data: any) => void;
   onCancel: () => void;
 }
+
+// Available product categories
+const categories = [
+  "Mobile Phones",
+  "Electronics",
+  "Laptops",
+  "Tablets",
+  "Smart Watches",
+  "Accessories",
+  "Gaming",
+  "TVs",
+  "Audio",
+  "Cameras",
+];
 
 const ProductForm = ({ initialData, onSubmit, onCancel }: ProductFormProps) => {
   const form = useForm<ProductFormValues>({
@@ -42,6 +69,8 @@ const ProductForm = ({ initialData, onSubmit, onCancel }: ProductFormProps) => {
       category: initialData.category || "",
       price: initialData.price || 0,
       stock: initialData.stock || 0,
+      description: initialData.description || "",
+      imageUrl: initialData.imageUrl || "",
     },
   });
 
@@ -76,9 +105,23 @@ const ProductForm = ({ initialData, onSubmit, onCancel }: ProductFormProps) => {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Category</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter category" {...field} />
-              </FormControl>
+              <Select 
+                onValueChange={field.onChange} 
+                defaultValue={field.value}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a category" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {categories.map((category) => (
+                    <SelectItem key={category} value={category}>
+                      {category}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}
@@ -125,6 +168,51 @@ const ProductForm = ({ initialData, onSubmit, onCancel }: ProductFormProps) => {
             )}
           />
         </div>
+
+        <FormField
+          control={form.control}
+          name="imageUrl"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Image URL</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter image URL" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {field.value && (
+          <div className="border rounded-md overflow-hidden h-40 mt-2">
+            <img 
+              src={field.value} 
+              alt="Product preview" 
+              className="w-full h-full object-contain"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = "https://placehold.co/600x400?text=No+Image";
+              }}
+            />
+          </div>
+        )}
+
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Description</FormLabel>
+              <FormControl>
+                <Textarea 
+                  placeholder="Enter product description" 
+                  className="min-h-[100px]" 
+                  {...field} 
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <div className="flex justify-end space-x-2 pt-4">
           <Button type="button" variant="outline" onClick={onCancel}>

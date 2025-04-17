@@ -1,12 +1,14 @@
+
 import React, { useState, useEffect } from "react";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Pencil, Trash2, Plus, Search } from "lucide-react";
+import { Pencil, Trash2, Plus, Search, Import } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ProductForm from "./ProductForm";
 import DealForm from "./DealForm";
+import WebScraper from "./WebScraper";
 import { useSupabaseApi } from "@/lib/supabase/api";
 import { useToast } from "@/hooks/use-toast";
 
@@ -15,6 +17,7 @@ const ProductsManager = () => {
   const [isAddingDeal, setIsAddingDeal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [editingDeal, setEditingDeal] = useState(null);
+  const [showWebScraper, setShowWebScraper] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("products");
   const [products, setProducts] = useState([]);
@@ -64,6 +67,24 @@ const ProductsManager = () => {
     } catch (error) {
       toast({
         title: "Error creating product",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleImportProducts = async (products) => {
+    try {
+      await api.createMultipleProducts(products);
+      await loadData();
+      setShowWebScraper(false);
+      toast({
+        title: "Success",
+        description: `${products.length} products were imported successfully`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error importing products",
         description: error.message,
         variant: "destructive",
       });
@@ -215,16 +236,31 @@ const ProductsManager = () => {
               <TabsTrigger value="products">Products</TabsTrigger>
               <TabsTrigger value="deals">Deals</TabsTrigger>
             </TabsList>
-            <Button 
-              onClick={() => activeTab === "products" ? setIsAddingProduct(true) : setIsAddingDeal(true)}
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Add {activeTab === "products" ? "Product" : "Deal"}
-            </Button>
+            <div className="flex gap-2">
+              {activeTab === "products" && !isAddingProduct && !editingProduct && !showWebScraper && (
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowWebScraper(true)}
+                >
+                  <Import className="mr-2 h-4 w-4" />
+                  Import from Extra.com
+                </Button>
+              )}
+              <Button 
+                onClick={() => activeTab === "products" ? setIsAddingProduct(true) : setIsAddingDeal(true)}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Add {activeTab === "products" ? "Product" : "Deal"}
+              </Button>
+            </div>
           </div>
 
           <TabsContent value="products">
-            {(isAddingProduct || editingProduct) ? (
+            {showWebScraper ? (
+              <WebScraper 
+                onImportProducts={handleImportProducts} 
+              />
+            ) : (isAddingProduct || editingProduct) ? (
               <Card>
                 <CardHeader>
                   <CardTitle>{editingProduct ? "Edit Product" : "Add New Product"}</CardTitle>
@@ -261,6 +297,7 @@ const ProductsManager = () => {
                         <TableHeader>
                           <TableRow>
                             <TableHead>ID</TableHead>
+                            <TableHead>Image</TableHead>
                             <TableHead>Name</TableHead>
                             <TableHead>Category</TableHead>
                             <TableHead>Price</TableHead>
@@ -272,6 +309,24 @@ const ProductsManager = () => {
                           {filteredProducts.map((product) => (
                             <TableRow key={product.id}>
                               <TableCell>{product.id}</TableCell>
+                              <TableCell>
+                                {product.imageUrl ? (
+                                  <div className="h-10 w-10 rounded-md overflow-hidden">
+                                    <img 
+                                      src={product.imageUrl} 
+                                      alt={product.name}
+                                      className="h-full w-full object-cover"
+                                      onError={(e) => {
+                                        (e.target as HTMLImageElement).src = "https://placehold.co/600x400?text=No+Image";
+                                      }}
+                                    />
+                                  </div>
+                                ) : (
+                                  <div className="h-10 w-10 bg-muted rounded-md flex items-center justify-center text-xs text-muted-foreground">
+                                    No image
+                                  </div>
+                                )}
+                              </TableCell>
                               <TableCell>{product.name}</TableCell>
                               <TableCell>{product.category}</TableCell>
                               <TableCell>${product.price}</TableCell>
