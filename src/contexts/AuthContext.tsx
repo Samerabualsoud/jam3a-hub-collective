@@ -36,6 +36,13 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
+// Hard-coded credentials for development when Supabase is not available
+const validCredentials = [
+  { email: 'admin@example.com', password: 'admin123', role: 'admin', name: 'Admin User' },
+  { email: 'user@example.com', password: 'user123', role: 'user', name: 'Regular User' },
+  { email: 'seller@example.com', password: 'seller123', role: 'seller', name: 'Seller Account' },
+];
+
 // Create the AuthProvider component
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const { session, supabaseClient } = useSessionContext();
@@ -65,19 +72,28 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const login = async (email: string, password: string) => {
     try {
       if (!supabaseClient) {
-        // For development without Supabase, simulate login with mock user
-        console.log("Development mode: simulating successful login");
+        // For development without Supabase, use actual credentials
+        console.log("Development mode: attempting login with provided credentials");
         
-        // Create a mock user for development purposes
-        const mockUser: User = {
-          id: 'mock-user-id',
-          name: email.split('@')[0] || 'User',
-          email: email,
-          role: 'admin' // Give admin role in development for testing
-        };
+        // Find matching credentials
+        const matchedUser = validCredentials.find(
+          (cred) => cred.email.toLowerCase() === email.toLowerCase() && cred.password === password
+        );
         
-        setUser(mockUser);
-        return { error: null };
+        if (matchedUser) {
+          // Create a user object from valid credentials
+          const userData: User = {
+            id: `dev-${Date.now()}`,
+            name: matchedUser.name,
+            email: matchedUser.email,
+            role: matchedUser.role,
+          };
+          
+          setUser(userData);
+          return { error: null };
+        } else {
+          return { error: { message: "Invalid email or password" } };
+        }
       }
       
       const { error } = await supabaseClient.auth.signInWithPassword({
@@ -109,7 +125,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     <AuthContext.Provider value={{ 
       user, 
       session, 
-      isAuthenticated: !!user, // Changed from !!session to !!user to work in dev mode
+      isAuthenticated: !!user, // Using user instead of session to work in dev mode
       isAdmin: user?.role === 'admin', 
       login, 
       logout 
