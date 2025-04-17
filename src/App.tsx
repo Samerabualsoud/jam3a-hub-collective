@@ -36,18 +36,56 @@ const App = () => {
   const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
   
   // For development, allow the app to run without Supabase
-  const supabaseClient = (supabaseUrl && supabaseAnonKey) 
-    ? createClient(supabaseUrl, supabaseAnonKey)
-    : null;
+  const hasSupabaseConfig = supabaseUrl && supabaseAnonKey;
+  const supabaseClient = hasSupabaseConfig ? createClient(supabaseUrl, supabaseAnonKey) : null;
 
   // Log the Supabase configuration status
-  if (!supabaseUrl || !supabaseAnonKey) {
+  if (!hasSupabaseConfig) {
     console.warn('Running without Supabase configuration. Some features will be limited.');
   }
 
+  // Don't render the SessionContextProvider if supabaseClient is null
   return (
     <QueryClientProvider client={queryClient}>
-      <SessionContextProvider supabaseClient={supabaseClient}>
+      {supabaseClient ? (
+        <SessionContextProvider supabaseClient={supabaseClient}>
+          <AuthProvider>
+            <TooltipProvider>
+              <LanguageProvider>
+                <Toaster />
+                <Sonner />
+                <BrowserRouter>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/start-jam3a" element={<StartJam3a />} />
+                    <Route path="/join-jam3a" element={<JoinJam3a />} />
+                    <Route path="/payment-callback" element={<PaymentCallback />} />
+                    <Route path="/payment-settings" element={<PaymentSettings />} />
+                    <Route path="/how-it-works" element={<HowItWorks />} />
+                    <Route path="/sellers" element={<Sellers />} />
+                    <Route path="/seller-login" element={<SellerLogin />} />
+                    <Route path="/seller-register" element={<SellerRegister />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/my-jam3a" element={<Index />} />
+                    <Route path="/product/:id" element={<Index />} />
+                    <Route path="/about" element={<AboutUs />} />
+                    <Route path="/faq" element={<FAQPage />} />
+                    <Route path="/shop-all-deals" element={<ShopAllDeals />} />
+                    <Route path="/privacy" element={<Index />} />
+                    <Route path="/terms" element={<Index />} />
+                    <Route path="/contact" element={<Index />} />
+                    <Route path="/admin/*" element={<Admin />} />
+                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </BrowserRouter>
+              </LanguageProvider>
+            </TooltipProvider>
+          </AuthProvider>
+        </SessionContextProvider>
+      ) : (
+        // Fallback when Supabase is not configured - skip the SessionContextProvider
         <AuthProvider>
           <TooltipProvider>
             <LanguageProvider>
@@ -82,7 +120,7 @@ const App = () => {
             </LanguageProvider>
           </TooltipProvider>
         </AuthProvider>
-      </SessionContextProvider>
+      )}
     </QueryClientProvider>
   );
 };

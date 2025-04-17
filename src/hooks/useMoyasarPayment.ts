@@ -94,7 +94,7 @@ export const useMoyasarPayment = () => {
       });
       
       return data;
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: 'Payment error',
         description: error.message,
@@ -127,7 +127,7 @@ export const useMoyasarPayment = () => {
       if (error) throw new Error(error.message);
       setPaymentData(data);
       return data;
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: 'Verification error',
         description: error.message,
