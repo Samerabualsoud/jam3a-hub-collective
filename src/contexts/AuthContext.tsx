@@ -76,8 +76,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   // Login function
   const login = async (email: string, password: string) => {
     try {
-      if (!supabaseClient) {
-        // For development without Supabase, use actual credentials
+      // Check if supabaseClient is available and properly initialized
+      if (!supabaseClient || !supabaseClient.auth) {
         console.log("Development mode: attempting login with provided credentials");
         
         // Find matching credentials
@@ -101,6 +101,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         }
       }
       
+      // Only try to use Supabase auth if it's properly available
       const { error } = await supabaseClient.auth.signInWithPassword({
         email,
         password,
@@ -116,7 +117,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   // Logout function
   const logout = async () => {
     try {
-      if (supabaseClient) {
+      if (supabaseClient && supabaseClient.auth) {
         await supabaseClient.auth.signOut();
       }
       setUser(null);
