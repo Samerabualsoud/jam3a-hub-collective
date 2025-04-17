@@ -19,6 +19,7 @@ import {
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useLanguage } from '@/components/Header';
+import { BlueBanner } from '@/components/BlueBanner';
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -49,11 +50,18 @@ const SellerLogin = () => {
     setTimeout(() => navigate("/seller-dashboard"), 1000);
   };
 
+  const bannerText = {
+    en: "Seller Login - Access Your Selling Dashboard",
+    ar: "تسجيل دخول البائع - الوصول إلى لوحة التحكم الخاصة بك"
+  };
+
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
-      <main className="flex-1 container mx-auto px-4 py-12">
-        <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
+      <main className="flex-1 container mx-auto px-4 py-12 relative">
+        <BlueBanner text={bannerText} />
+        
+        <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md mt-16">
           <h1 className="text-2xl font-bold text-center mb-6">
             {language === 'en' ? 'Seller Login' : 'تسجيل دخول البائع'}
           </h1>

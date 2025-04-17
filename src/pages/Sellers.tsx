@@ -1,8 +1,10 @@
+
 import React from 'react';
-import { BadgeInfo } from 'lucide-react';
+import { Users } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useLanguage } from '@/components/Header';
+import { BlueBanner } from '@/components/BlueBanner';
 
 const Sellers = () => {
   const { language } = useLanguage();
@@ -24,13 +26,10 @@ const Sellers = () => {
     <div className="flex min-h-screen flex-col">
       <Header />
       <main className="flex-1 relative">
-        {/* Blue Banner */}
-        <div className="absolute top-0 left-0 w-full bg-royal-blue text-white py-3 text-center flex items-center justify-center gap-2">
-          <BadgeInfo className="h-5 w-5" />
-          <span className="text-sm font-medium">
-            {content[language].bannerText}
-          </span>
-        </div>
+        <BlueBanner text={{
+          en: content.en.bannerText,
+          ar: content.ar.bannerText
+        }} />
 
         <div className="container mx-auto px-4 pt-20 pb-12">
           <div className="text-center max-w-2xl mx-auto">
