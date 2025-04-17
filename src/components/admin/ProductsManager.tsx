@@ -1,20 +1,14 @@
-
-import React, { useState } from "react";
-import { 
-  Table, 
-  TableHeader, 
-  TableRow, 
-  TableHead, 
-  TableBody, 
-  TableCell 
-} from "@/components/ui/table";
+import React, { useState, useEffect } from "react";
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Pencil, Trash2, Plus, Search, Tag, Percent } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Pencil, Trash2, Plus, Search } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 import ProductForm from "./ProductForm";
 import DealForm from "./DealForm";
+import { useSupabaseApi } from "@/lib/supabase/api";
+import { useToast } from "@/hooks/use-toast";
 
 const ProductsManager = () => {
   const [isAddingProduct, setIsAddingProduct] = useState(false);
@@ -23,59 +17,154 @@ const ProductsManager = () => {
   const [editingDeal, setEditingDeal] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("products");
+  const [products, setProducts] = useState([]);
+  const [deals, setDeals] = useState([]);
+  const { toast } = useToast();
   
-  // Mock product data
-  const [products, setProducts] = useState([
-    { id: 1, name: "iPhone 15 Pro", category: "Electronics", price: 999, stock: 50 },
-    { id: 2, name: "Samsung Galaxy S23", category: "Electronics", price: 899, stock: 30 },
-    { id: 3, name: "MacBook Pro", category: "Computers", price: 1999, stock: 20 },
-    { id: 4, name: "AirPods Pro", category: "Audio", price: 249, stock: 100 },
-    { id: 5, name: "iPad Pro", category: "Tablets", price: 799, stock: 35 },
-  ]);
+  const api = useSupabaseApi();
 
-  // Mock deals data
-  const [deals, setDeals] = useState([
-    { id: 1, name: "Summer Sale", discount: 20, productId: 1, startDate: "2025-06-01", endDate: "2025-06-30", active: true },
-    { id: 2, name: "Back to School", discount: 15, productId: 3, startDate: "2025-08-01", endDate: "2025-08-31", active: true },
-    { id: 3, name: "Holiday Special", discount: 25, productId: 2, startDate: "2025-12-01", endDate: "2025-12-25", active: false },
-  ]);
+  useEffect(() => {
+    loadData();
+  }, []);
 
-  const handleAddProduct = (product) => {
-    setProducts([...products, { ...product, id: products.length + 1 }]);
-    setIsAddingProduct(false);
+  const loadData = async () => {
+    try {
+      const [productsData, dealsData] = await Promise.all([
+        api.getProducts(),
+        api.getDeals(),
+      ]);
+      setProducts(productsData);
+      setDeals(dealsData);
+    } catch (error) {
+      toast({
+        title: "Error loading data",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleUpdateProduct = (updatedProduct) => {
-    setProducts(
-      products.map((p) => (p.id === updatedProduct.id ? updatedProduct : p))
-    );
-    setEditingProduct(null);
+  const handleAddProduct = async (product) => {
+    try {
+      await api.createProduct(product);
+      await loadData();
+      setIsAddingProduct(false);
+      toast({
+        title: "Success",
+        description: "Product created successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error creating product",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleDeleteProduct = (id) => {
-    setProducts(products.filter((p) => p.id !== id));
+  const handleUpdateProduct = async (updatedProduct) => {
+    try {
+      await api.updateProduct(updatedProduct.id, updatedProduct);
+      await loadData();
+      setEditingProduct(null);
+      toast({
+        title: "Success",
+        description: "Product updated successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error updating product",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleAddDeal = (deal) => {
-    setDeals([...deals, { ...deal, id: deals.length + 1 }]);
-    setIsAddingDeal(false);
+  const handleDeleteProduct = async (id) => {
+    try {
+      await api.deleteProduct(id);
+      await loadData();
+      toast({
+        title: "Success",
+        description: "Product deleted successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error deleting product",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleUpdateDeal = (updatedDeal) => {
-    setDeals(deals.map((d) => (d.id === updatedDeal.id ? updatedDeal : d)));
-    setEditingDeal(null);
+  const handleAddDeal = async (deal) => {
+    try {
+      await api.createDeal(deal);
+      await loadData();
+      setIsAddingDeal(false);
+      toast({
+        title: "Success",
+        description: "Deal created successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error creating deal",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleDeleteDeal = (id) => {
-    setDeals(deals.filter((d) => d.id !== id));
+  const handleUpdateDeal = async (updatedDeal) => {
+    try {
+      await api.updateDeal(updatedDeal.id, updatedDeal);
+      await loadData();
+      setEditingDeal(null);
+      toast({
+        title: "Success",
+        description: "Deal updated successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error updating deal",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
   };
 
-  const toggleDealStatus = (id) => {
-    setDeals(
-      deals.map((deal) =>
-        deal.id === id ? { ...deal, active: !deal.active } : deal
-      )
-    );
+  const handleDeleteDeal = async (id) => {
+    try {
+      await api.deleteDeal(id);
+      await loadData();
+      toast({
+        title: "Success",
+        description: "Deal deleted successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error deleting deal",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const toggleDealStatus = async (id, currentStatus) => {
+    try {
+      await api.updateDeal(id, { active: !currentStatus });
+      await loadData();
+      toast({
+        title: "Success",
+        description: "Deal status updated successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error updating deal status",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
   };
 
   const filteredProducts = products.filter((product) =>
@@ -241,7 +330,7 @@ const ProductsManager = () => {
                             <Button
                               variant={deal.active ? "default" : "secondary"}
                               size="sm"
-                              onClick={() => toggleDealStatus(deal.id)}
+                              onClick={() => toggleDealStatus(deal.id, deal.active)}
                             >
                               {deal.active ? "Active" : "Inactive"}
                             </Button>
