@@ -17,8 +17,8 @@ interface AuthContextType {
   session: Session | null;
   isAuthenticated: boolean;
   isAdmin: boolean;
-  login: (session: Session) => void;
-  logout: () => void;
+  login: (email: string, password: string) => Promise<{ error: any | null }>;
+  logout: () => Promise<void>;
 }
 
 // Create the context with a default value
@@ -27,8 +27,8 @@ const AuthContext = createContext<AuthContextType>({
   session: null,
   isAuthenticated: false,
   isAdmin: false,
-  login: () => {},
-  logout: () => {},
+  login: async () => ({ error: null }),
+  logout: async () => {},
 });
 
 // Define props for AuthProvider
@@ -38,7 +38,7 @@ interface AuthProviderProps {
 
 // Create the AuthProvider component
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const { session } = useSessionContext();
+  const { session, supabaseClient } = useSessionContext();
   const [user, setUser] = useState<User | null>(null);
 
   // Effect to update user when session changes
@@ -61,14 +61,37 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     updateUser();
   }, [session]);
 
-  // Login function (handled by Supabase)
-  const login = (session: Session) => {
-    // This is now mostly handled by Supabase
+  // Login function
+  const login = async (email: string, password: string) => {
+    try {
+      if (!supabaseClient) {
+        // For development without Supabase
+        console.log("Development mode: simulating successful login");
+        return { error: null };
+      }
+      
+      const { error } = await supabaseClient.auth.signInWithPassword({
+        email,
+        password,
+      });
+      
+      return { error };
+    } catch (error) {
+      console.error("Login error:", error);
+      return { error };
+    }
   };
 
   // Logout function
-  const logout = () => {
-    // This will be handled by Supabase
+  const logout = async () => {
+    try {
+      if (supabaseClient) {
+        await supabaseClient.auth.signOut();
+      }
+      setUser(null);
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   };
 
   // Provide the context value

@@ -25,7 +25,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Phone, User, Mail, Lock, ArrowRight } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useSessionContext } from "@supabase/auth-helpers-react";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -47,11 +46,11 @@ const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { login } = useAuth();
-  const { supabaseClient } = useSessionContext();
   const [activeTab, setActiveTab] = useState<"login" | "register">("login");
   const [showOTPVerification, setShowOTPVerification] = useState<boolean>(false);
   const [otpValue, setOTPValue] = useState<string>("");
   const [userPhone, setUserPhone] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const loginForm = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -80,42 +79,35 @@ const Login = () => {
 
   const onLoginSubmit = async (data: z.infer<typeof loginSchema>) => {
     console.log("Login data:", data);
+    setIsSubmitting(true);
     
-    if (supabaseClient) {
-      try {
-        const { error } = await supabaseClient.auth.signInWithPassword({
-          email: data.email,
-          password: data.password,
-        });
-        
-        if (error) {
-          toast({
-            title: "Login failed",
-            description: error.message,
-            variant: "destructive",
-          });
-          return;
-        }
-        
-        toast({
-          title: "Login successful",
-          description: "Welcome back to Jam3a!",
-        });
-        
-        setTimeout(() => navigate("/"), 1000);
-      } catch (err) {
+    try {
+      const { error } = await login(data.email, data.password);
+      
+      if (error) {
         toast({
           title: "Login failed",
-          description: "An unexpected error occurred",
+          description: error.message || "Invalid credentials. Please try again.",
           variant: "destructive",
         });
+        setIsSubmitting(false);
+        return;
       }
-    } else {
+      
       toast({
         title: "Login successful",
-        description: "Welcome back to Jam3a! (Development mode)",
+        description: "Welcome back to Jam3a!",
       });
+      
       setTimeout(() => navigate("/"), 1000);
+    } catch (err) {
+      console.error("Login error:", err);
+      toast({
+        title: "Login failed",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
+      setIsSubmitting(false);
     }
   };
 
@@ -267,8 +259,12 @@ const Login = () => {
                     )}
                   />
                   
-                  <Button type="submit" className="w-full bg-jam3a-purple hover:bg-jam3a-deep-purple">
-                    Sign In
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-jam3a-purple hover:bg-jam3a-deep-purple"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Signing in..." : "Sign In"}
                   </Button>
                 </form>
               </Form>
