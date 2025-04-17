@@ -14,7 +14,7 @@ const StartJam3a = () => {
       <Header />
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="bg-gradient-to-r from-purple-600 to-purple-800 py-16 px-4">
+        <section className="bg-gradient-to-r from-royal-blue to-royal-blue-dark py-16 px-4">
           <div className="container mx-auto text-center text-white">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
               {language === 'en' ? 'Start Your Own Jam3a' : 'ابدأ جمعتك الخاصة'}
@@ -43,7 +43,7 @@ const StartJam3a = () => {
                     alt="iPhone 16 Pro Max" 
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute top-2 right-2 bg-purple-600 text-white text-sm font-bold px-2 py-1 rounded">
+                  <div className="absolute top-2 right-2 bg-royal-blue text-white text-sm font-bold px-2 py-1 rounded">
                     16% OFF
                   </div>
                 </div>
@@ -51,14 +51,14 @@ const StartJam3a = () => {
                   <h3 className="text-lg font-semibold mb-2">iPhone 16 Pro Max 256GB</h3>
                   <div className="flex justify-between items-center mb-4">
                     <div>
-                      <span className="text-xl font-bold text-purple-600">4199 SAR</span>
+                      <span className="text-xl font-bold text-royal-blue">4199 SAR</span>
                       <span className="text-sm text-gray-500 line-through ml-2">4999 SAR</span>
                     </div>
                     <div className="text-sm text-gray-600">
                       {language === 'en' ? 'Min 5 people' : 'الحد الأدنى 5 أشخاص'}
                     </div>
                   </div>
-                  <Button className="w-full bg-purple-600 hover:bg-purple-800">
+                  <Button className="w-full bg-royal-blue hover:bg-royal-blue-dark">
                     <Link to="/join-jam3a" className="text-white">
                       {language === 'en' ? 'Start Jam3a' : 'ابدأ جمعة'}
                     </Link>
@@ -74,7 +74,7 @@ const StartJam3a = () => {
                     alt="Samsung Galaxy S25 Ultra" 
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute top-2 right-2 bg-purple-600 text-white text-sm font-bold px-2 py-1 rounded">
+                  <div className="absolute top-2 right-2 bg-royal-blue text-white text-sm font-bold px-2 py-1 rounded">
                     15% OFF
                   </div>
                 </div>
@@ -82,14 +82,14 @@ const StartJam3a = () => {
                   <h3 className="text-lg font-semibold mb-2">Samsung Galaxy S25 Ultra</h3>
                   <div className="flex justify-between items-center mb-4">
                     <div>
-                      <span className="text-xl font-bold text-purple-600">3899 SAR</span>
+                      <span className="text-xl font-bold text-royal-blue">3899 SAR</span>
                       <span className="text-sm text-gray-500 line-through ml-2">4599 SAR</span>
                     </div>
                     <div className="text-sm text-gray-600">
                       {language === 'en' ? 'Min 6 people' : 'الحد الأدنى 6 أشخاص'}
                     </div>
                   </div>
-                  <Button className="w-full bg-purple-600 hover:bg-purple-800">
+                  <Button className="w-full bg-royal-blue hover:bg-royal-blue-dark">
                     <Link to="/join-jam3a" className="text-white">
                       {language === 'en' ? 'Start Jam3a' : 'ابدأ جمعة'}
                     </Link>
@@ -105,7 +105,7 @@ const StartJam3a = () => {
                     alt="Galaxy Z Fold 6" 
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute top-2 right-2 bg-purple-600 text-white text-sm font-bold px-2 py-1 rounded">
+                  <div className="absolute top-2 right-2 bg-royal-blue text-white text-sm font-bold px-2 py-1 rounded">
                     17% OFF
                   </div>
                 </div>
@@ -113,14 +113,14 @@ const StartJam3a = () => {
                   <h3 className="text-lg font-semibold mb-2">Galaxy Z Fold 6</h3>
                   <div className="flex justify-between items-center mb-4">
                     <div>
-                      <span className="text-xl font-bold text-purple-600">5799 SAR</span>
+                      <span className="text-xl font-bold text-royal-blue">5799 SAR</span>
                       <span className="text-sm text-gray-500 line-through ml-2">6999 SAR</span>
                     </div>
                     <div className="text-sm text-gray-600">
                       {language === 'en' ? 'Min 7 people' : 'الحد الأدنى 7 أشخاص'}
                     </div>
                   </div>
-                  <Button className="w-full bg-purple-600 hover:bg-purple-800">
+                  <Button className="w-full bg-royal-blue hover:bg-royal-blue-dark">
                     <Link to="/join-jam3a" className="text-white">
                       {language === 'en' ? 'Start Jam3a' : 'ابدأ جمعة'}
                     </Link>
@@ -131,7 +131,7 @@ const StartJam3a = () => {
             
             <div className="text-center mt-8">
               <Link to="/shop-all-deals">
-                <Button variant="outline" className="border-purple-600 text-purple-600 hover:bg-purple-100">
+                <Button variant="outline" className="border-royal-blue text-royal-blue hover:bg-blue-100">
                   {language === 'en' ? 'View All Products' : 'عرض جميع المنتجات'}
                 </Button>
               </Link>
@@ -148,7 +148,7 @@ const StartJam3a = () => {
             
             <div className="grid md:grid-cols-4 gap-8">
               <div className="text-center">
-                <div className="w-16 h-16 bg-purple-600 text-white rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-royal-blue text-white rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-xl font-bold">1</span>
                 </div>
                 <h3 className="text-xl font-semibold mb-3">
@@ -162,7 +162,7 @@ const StartJam3a = () => {
               </div>
               
               <div className="text-center">
-                <div className="w-16 h-16 bg-purple-600 text-white rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-royal-blue text-white rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-xl font-bold">2</span>
                 </div>
                 <h3 className="text-xl font-semibold mb-3">
@@ -176,7 +176,7 @@ const StartJam3a = () => {
               </div>
               
               <div className="text-center">
-                <div className="w-16 h-16 bg-purple-600 text-white rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-royal-blue text-white rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-xl font-bold">3</span>
                 </div>
                 <h3 className="text-xl font-semibold mb-3">
@@ -190,7 +190,7 @@ const StartJam3a = () => {
               </div>
               
               <div className="text-center">
-                <div className="w-16 h-16 bg-purple-600 text-white rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-royal-blue text-white rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-xl font-bold">4</span>
                 </div>
                 <h3 className="text-xl font-semibold mb-3">

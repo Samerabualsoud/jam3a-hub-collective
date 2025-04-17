@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -63,12 +62,12 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// Royal green colors replacing purple colors
-				'royal-green': '#146B3A',
-				'royal-green-dark': '#0D4D29',
-				'royal-green-light': '#2D8653',
-				'royal-green-50': '#ECFBF3',
-				'royal-green-accent': '#16A34A',
+				// Royal blue colors replacing purple colors
+				'royal-blue': '#0EA5E9', // Ocean Blue
+				'royal-blue-dark': '#0284C7', 
+				'royal-blue-light': '#38BDF8',
+				'royal-blue-50': '#E0F2FE',
+				'royal-blue-accent': '#0369A1',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -20,7 +19,6 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useLanguage } from '@/components/Header';
 
-// Login form schema
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
   password: z.string().min(8, { message: "Password must be at least 8 characters" }),
@@ -31,7 +29,6 @@ const SellerLogin = () => {
   const { toast } = useToast();
   const { language } = useLanguage();
 
-  // Login form
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -43,13 +40,11 @@ const SellerLogin = () => {
   const onSubmit = (data: z.infer<typeof loginSchema>) => {
     console.log("Login data:", data);
     
-    // Simulate login success
     toast({
       title: language === 'en' ? "Login successful" : "تم تسجيل الدخول بنجاح",
       description: language === 'en' ? "Welcome to your Seller Dashboard!" : "مرحبًا بك في لوحة تحكم البائع!",
     });
     
-    // Redirect to seller dashboard after successful login
     setTimeout(() => navigate("/seller-dashboard"), 1000);
   };
 
@@ -108,19 +103,19 @@ const SellerLogin = () => {
               />
               
               <div className="flex justify-end">
-                <Button variant="link" className="text-royal-green p-0">
+                <Button variant="link" className="text-royal-blue p-0">
                   {language === 'en' ? 'Forgot password?' : 'نسيت كلمة المرور؟'}
                 </Button>
               </div>
               
-              <Button type="submit" className="w-full bg-royal-green hover:bg-royal-green-dark">
+              <Button type="submit" className="w-full bg-royal-blue hover:bg-royal-blue-dark">
                 {language === 'en' ? 'Sign In' : 'تسجيل الدخول'}
               </Button>
               
               <div className="text-center mt-4">
                 <p className="text-sm text-gray-600">
                   {language === 'en' ? "Don't have a seller account?" : "ليس لديك حساب بائع؟"}{' '}
-                  <Link to="/seller-register" className="text-royal-green font-medium">
+                  <Link to="/seller-register" className="text-royal-blue font-medium">
                     {language === 'en' ? 'Apply now' : 'تقدم بطلب الآن'}
                   </Link>
                 </p>
