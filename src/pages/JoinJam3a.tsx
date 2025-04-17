@@ -142,20 +142,164 @@ const JoinJam3a = () => {
     }
   };
   
+  // Add state for available products in the same category
+  const [relatedProducts, setRelatedProducts] = useState<{
+    id: number;
+    name: string;
+    price: number;
+    image: string;
+  }[]>([]);
+
   // Get appropriate product image based on category
   const getProductImage = () => {
     const category = productCategory.toLowerCase();
     if (category === 'mobile' || category === 'phone') {
-      return "/images/products/iphone_16_pro.jpeg";
+      return "https://images.unsplash.com/photo-1616348436168-de43ad0db179?auto=format&fit=crop&w=1600&q=80";
     } else if (category === 'tv' || category === 'television') {
-      return "/images/products/samsung_galaxy_s25.jpeg"; // This should be a TV image
+      return "https://images.unsplash.com/photo-1593305841991-05c297ba4575?auto=format&fit=crop&w=1600&q=80";
     } else if (category === 'laptop') {
       return "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=1600&q=80";
-    } else {
-      return "https://placehold.co/400x400/purple/white?text=Product+Image";
     }
+    return "https://placehold.co/400x400/purple/white?text=Product+Image";
   };
-  
+
+  // Get related products based on category
+  useEffect(() => {
+    // This would typically come from an API, but for now we'll hardcode some examples
+    const getRelatedProducts = () => {
+      const category = productCategory.toLowerCase();
+      let products = [];
+      
+      if (category === 'tv') {
+        products = [
+          { id: 1, name: 'Samsung 75" 4K QLED TV', price: 6799, image: "https://images.unsplash.com/photo-1593305841991-05c297ba4575?auto=format&fit=crop&w=1600&q=80" },
+          { id: 2, name: 'LG 65" OLED TV', price: 5899, image: "https://images.unsplash.com/photo-1577975882846-431adc8c2009?auto=format&fit=crop&w=1600&q=80" }
+        ];
+      } else if (category === 'laptop') {
+        products = [
+          { id: 1, name: 'MacBook Pro 16" M3 Max', price: 10299, image: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=1600&q=80" },
+          { id: 2, name: 'Dell XPS 15', price: 8999, image: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&w=1600&q=80" }
+        ];
+      } else if (category === 'mobile') {
+        products = [
+          { id: 1, name: 'iPhone 16 Pro Max 256GB', price: 4199, image: "https://images.unsplash.com/photo-1616348436168-de43ad0db179?auto=format&fit=crop&w=1600&q=80" },
+          { id: 2, name: 'Samsung Galaxy S25 Ultra', price: 4599, image: "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?auto=format&fit=crop&w=1600&q=80" }
+        ];
+      }
+      
+      setRelatedProducts(products);
+    };
+
+    getRelatedProducts();
+  }, [productCategory]);
+
+  // Modify the details tab content to include product selection
+  const renderDetailsContent = () => (
+    <div className="flex flex-col md:flex-row gap-6">
+      <div className="md:w-1/3">
+        <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+          <img 
+            src={getProductImage()} 
+            alt={productName}
+            className="w-full h-full object-cover"
+          />
+        </div>
+      </div>
+      
+      <div className="md:w-2/3">
+        <h2 className="text-2xl font-bold mb-4">{formattedTitle}</h2>
+        
+        {/* Product Selection */}
+        <div className="mb-6">
+          <h3 className="font-semibold mb-3">
+            {language === 'en' ? 'Available Products in this Category' : 'المنتجات المتوفرة في هذه الفئة'}
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {relatedProducts.map((product) => (
+              <div
+                key={product.id}
+                className={`border rounded-lg p-4 cursor-pointer transition-all ${
+                  product.name === productName ? 'border-royal-blue bg-royal-blue-50' : 'hover:border-royal-blue'
+                }`}
+                onClick={() => {
+                  const searchParams = new URLSearchParams(window.location.search);
+                  searchParams.set('product', `${productCategory} Jam3a: ${product.name}`);
+                  searchParams.set('price', `${product.price} SAR`);
+                  window.history.replaceState(null, '', `?${searchParams.toString()}`);
+                  window.location.reload();
+                }}
+              >
+                <div className="flex gap-4">
+                  <div className="w-20 h-20 flex-shrink-0">
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-full h-full object-cover rounded"
+                    />
+                  </div>
+                  <div>
+                    <h4 className="font-medium">{product.name}</h4>
+                    <p className="text-royal-blue font-semibold mt-1">
+                      {product.price} SAR
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mb-4">
+          <div className="flex items-center">
+            <span className="text-2xl font-bold text-royal-blue mr-2">
+              {productPrice.replace('SAR', '')} SAR
+            </span>
+            {productDiscount && (
+              <span className="text-sm bg-royal-blue-50 text-royal-blue px-2 py-1 rounded">
+                {productDiscount} OFF
+              </span>
+            )}
+          </div>
+          {productDiscount && (
+            <div className="text-sm text-gray-500 line-through">
+              {Math.round(parseInt(productPrice) / (1 - parseInt(productDiscount) / 100))} SAR
+            </div>
+          )}
+        </div>
+        
+        <div className="mb-6">
+          <h3 className="font-semibold mb-2">
+            {language === 'en' ? 'Deal Description' : 'وصف الصفقة'}
+          </h3>
+          <p className="text-gray-600">
+            {language === 'en' 
+              ? `Join this Jam3a to get ${formattedTitle} at a discounted price of ${productPrice}. By joining with others, you'll save ${productDiscount} off the regular price!`
+              : `انضم إلى هذه الجمعة للحصول على ${formattedTitle} بسعر مخفض قدره ${productPrice}. من خلال الانضمام مع الآخرين، ستوفر ${productDiscount} من السعر العادي!`
+            }
+          </p>
+        </div>
+        
+        <div className="mb-6">
+          <h3 className="font-semibold mb-2">
+            {language === 'en' ? 'Jam3a Details' : 'تفاصيل الجمعة'}
+          </h3>
+          <ul className="list-disc list-inside text-gray-600">
+            <li>{language === 'en' ? 'Current members: 8/10' : 'الأعضاء الحاليون: 8/10'}</li>
+            <li>{language === 'en' ? 'Estimated delivery: 2-3 weeks' : 'التسليم المتوقع: 2-3 أسابيع'}</li>
+            <li>{language === 'en' ? 'Payment options: Credit Card, Apple Pay, STC Pay' : 'خيارات الدفع: بطاقة ائتمان، آبل باي، STC Pay'}</li>
+          </ul>
+        </div>
+        
+        <Button 
+          onClick={handleNextStep}
+          className="w-full bg-royal-blue hover:bg-royal-blue-dark"
+        >
+          {language === 'en' ? 'Continue to Next Step' : 'المتابعة إلى الخطوة التالية'}
+        </Button>
+      </div>
+    </div>
+  );
+
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
@@ -180,72 +324,7 @@ const JoinJam3a = () => {
               </TabsList>
               
               <TabsContent value="details" className="p-6">
-                <div className="flex flex-col md:flex-row gap-6">
-                  <div className="md:w-1/3">
-                    <div className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
-                      <img 
-                        src={getProductImage()} 
-                        alt={productName}
-                        className="max-w-full max-h-full object-contain"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = 'https://placehold.co/400x400/purple/white?text=Product+Image';
-                        }}
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="md:w-2/3">
-                    <h2 className="text-2xl font-bold mb-4">{formattedTitle}</h2>
-                    
-                    <div className="mb-4">
-                      <div className="flex items-center">
-                        <span className="text-2xl font-bold text-royal-blue mr-2">
-                          {productPrice.replace('SAR', '')} SAR
-                        </span>
-                        {productDiscount && (
-                          <span className="text-sm bg-royal-blue-50 text-royal-blue px-2 py-1 rounded">
-                            {productDiscount} OFF
-                          </span>
-                        )}
-                      </div>
-                      {productDiscount && (
-                        <div className="text-sm text-gray-500 line-through">
-                          {Math.round(parseInt(productPrice) / (1 - parseInt(productDiscount) / 100))} SAR
-                        </div>
-                      )}
-                    </div>
-                    
-                    <div className="mb-6">
-                      <h3 className="font-semibold mb-2">
-                        {language === 'en' ? 'Deal Description' : 'وصف الصفقة'}
-                      </h3>
-                      <p className="text-gray-600">
-                        {language === 'en' 
-                          ? `Join this Jam3a to get ${formattedTitle} at a discounted price of ${productPrice}. By joining with others, you'll save ${productDiscount} off the regular price!`
-                          : `انضم إلى هذه الجمعة للحصول على ${formattedTitle} بسعر مخفض قدره ${productPrice}. من خلال الانضمام مع الآخرين، ستوفر ${productDiscount} من السعر العادي!`
-                        }
-                      </p>
-                    </div>
-                    
-                    <div className="mb-6">
-                      <h3 className="font-semibold mb-2">
-                        {language === 'en' ? 'Jam3a Details' : 'تفاصيل الجمعة'}
-                      </h3>
-                      <ul className="list-disc list-inside text-gray-600">
-                        <li>{language === 'en' ? 'Current members: 8/10' : 'الأعضاء الحاليون: 8/10'}</li>
-                        <li>{language === 'en' ? 'Estimated delivery: 2-3 weeks' : 'التسليم المتوقع: 2-3 أسابيع'}</li>
-                        <li>{language === 'en' ? 'Payment options: Credit Card, Apple Pay, STC Pay' : 'خيارات الدفع: بطاقة ائتمان، آبل باي، STC Pay'}</li>
-                      </ul>
-                    </div>
-                    
-                    <Button 
-                      onClick={handleNextStep}
-                      className="w-full bg-royal-blue hover:bg-royal-blue-dark"
-                    >
-                      {language === 'en' ? 'Continue to Next Step' : 'المتابعة إلى الخطوة التالية'}
-                    </Button>
-                  </div>
-                </div>
+                {renderDetailsContent()}
               </TabsContent>
               
               <TabsContent value="info" className="p-6">
