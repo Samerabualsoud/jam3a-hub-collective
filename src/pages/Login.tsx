@@ -25,7 +25,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Phone, User, Mail, Lock, ArrowRight } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useSessionContext } from "@/contexts/SessionContext";
+import { useSessionContext } from "@supabase/auth-helpers-react";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
