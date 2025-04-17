@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -260,7 +261,7 @@ const EmailManager = () => {
                   <div className="flex items-center justify-between">
                     <Label htmlFor="template-body">Email Body</Label>
                     <div className="text-sm text-muted-foreground">
-                      Available variables: {{name}}, {{product}}, {{price}}, {{progress}}, {{link}}
+                      Available variables: {'{{'} name {'}}'}, {'{{'} product {'}}'}, {'{{'} price {'}}'}, {'{{'} progress {'}}'}, {'{{'} link {'}}'}
                     </div>
                   </div>
                   <Textarea 
