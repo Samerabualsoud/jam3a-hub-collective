@@ -63,17 +63,16 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// Both blue and green colors for flexibility
 				'royal-blue': '#0EA5E9', // Ocean Blue
 				'royal-blue-dark': '#0284C7', 
 				'royal-blue-light': '#38BDF8',
 				'royal-blue-50': '#E0F2FE',
 				'royal-blue-accent': '#0369A1',
-				'jam3a-purple': '#9B87F5', // Changed from green to purple
-				'jam3a-deep-purple': '#8A70F2', // Changed from green to purple
-				'jam3a-light-purple': '#B6A8F8', // Changed from green to purple
-				'jam3a-purple-50': '#F3F0FF', // Changed from green to purple
-				'jam3a-purple-accent': '#7C63EA', // Changed from green to purple
+				'jam3a-purple': '#0EA5E9', // Changed to blue (was purple)
+				'jam3a-deep-purple': '#0284C7', // Changed to blue (was purple)
+				'jam3a-light-purple': '#38BDF8', // Changed to blue (was purple)
+				'jam3a-purple-50': '#E0F2FE', // Changed to blue (was purple)
+				'jam3a-purple-accent': '#0369A1', // Changed to blue (was purple)
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -128,10 +127,10 @@ export default {
 				'bounce-light': 'bounce-light 2s infinite ease-in-out'
 			},
 			boxShadow: {
-				'jam3a': '0 10px 25px -5px rgba(155, 135, 245, 0.3)', // Changed from green to purple
-				'jam3a-lg': '0 20px 35px -10px rgba(155, 135, 245, 0.4)', // Changed from green to purple
-				'royal-blue': '0 10px 25px -5px rgba(14, 165, 233, 0.3)', // Added blue shadow
-				'royal-blue-lg': '0 20px 35px -10px rgba(14, 165, 233, 0.4)' // Added blue shadow
+				'jam3a': '0 10px 25px -5px rgba(14, 165, 233, 0.3)', // Changed to blue
+				'jam3a-lg': '0 20px 35px -10px rgba(14, 165, 233, 0.4)', // Changed to blue
+				'royal-blue': '0 10px 25px -5px rgba(14, 165, 233, 0.3)',
+				'royal-blue-lg': '0 20px 35px -10px rgba(14, 165, 233, 0.4)'
 			}
 		}
 	},
