@@ -22,6 +22,8 @@ import Sellers from "./pages/Sellers";
 import SellerLogin from "./pages/SellerLogin";
 import SellerRegister from "./pages/SellerRegister";
 import JoinJam3a from "./pages/JoinJam3a";
+import PaymentCallback from "./pages/PaymentCallback";
+import PaymentSettings from "./pages/PaymentSettings";
 
 const App = () => {
   // Create a client
@@ -39,6 +41,8 @@ const App = () => {
               <Route path="/" element={<Index />} />
               <Route path="/start-jam3a" element={<StartJam3a />} />
               <Route path="/join-jam3a" element={<JoinJam3a />} />
+              <Route path="/payment-callback" element={<PaymentCallback />} />
+              <Route path="/payment-settings" element={<PaymentSettings />} />
               <Route path="/how-it-works" element={<HowItWorks />} />
               <Route path="/sellers" element={<Sellers />} />
               <Route path="/seller-login" element={<SellerLogin />} />

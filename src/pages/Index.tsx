@@ -10,8 +10,12 @@ import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import StartJam3a from '@/components/StartJam3a';
 import Testimonials from '@/components/Testimonials';
+import { useAuth } from '@/contexts/AuthContext';
+import { Link } from 'react-router-dom';
 
 const Index = () => {
+  const { user } = useAuth();
+  
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
@@ -24,6 +28,23 @@ const Index = () => {
         <StartJam3a />
         <WhyChooseUs />
         <JoinWaitlist />
+        
+        {user?.isAdmin && (
+          <div className="container mx-auto py-6">
+            <div className="bg-purple-100 p-4 rounded-lg">
+              <h3 className="font-medium text-purple-800">Admin Tools</h3>
+              <div className="mt-2 flex gap-2">
+                <Link to="/admin" className="text-sm text-purple-700 hover:underline">
+                  Admin Dashboard
+                </Link>
+                <span className="text-purple-500">•</span>
+                <Link to="/payment-settings" className="text-sm text-purple-700 hover:underline">
+                  Payment Settings
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
       <Footer />
     </div>

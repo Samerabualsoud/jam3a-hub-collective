@@ -8,6 +8,8 @@ import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/components/Header';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { useMoyasarPayment } from '@/hooks/useMoyasarPayment';
+import { Loader2 } from 'lucide-react';
 
 const JoinJam3a = () => {
   const navigate = useNavigate();
@@ -15,6 +17,7 @@ const JoinJam3a = () => {
   const { language } = useLanguage();
   const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState('details');
+  const { processPayment, isLoading } = useMoyasarPayment();
   
   // Get product details from URL params
   const productName = searchParams.get('product') || 'Jam3a Deal';
@@ -27,7 +30,11 @@ const JoinJam3a = () => {
     email: '',
     phone: '',
     address: '',
-    paymentMethod: 'credit-card'
+    paymentMethod: 'credit-card',
+    cardNumber: '',
+    cardExpiry: '',
+    cardCvc: '',
+    cardName: ''
   });
   
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,21 +46,62 @@ const JoinJam3a = () => {
     setFormData(prev => ({ ...prev, paymentMethod: method }));
   };
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Show success toast
-    toast({
-      title: language === 'en' ? 'Success!' : 'تم بنجاح!',
-      description: language === 'en' 
-        ? `You have successfully joined the ${productName} Jam3a!` 
-        : `لقد انضممت بنجاح إلى جمعة ${productName}!`,
-    });
-    
-    // Redirect to home page after successful join
-    setTimeout(() => {
-      navigate('/');
-    }, 2000);
+    try {
+      // Extract the numeric amount from the price string
+      const amount = parseFloat(productPrice.replace(/[^0-9.]/g, ''));
+      
+      // Prepare payment source based on selected method
+      let source: any = { type: 'creditcard' };
+      
+      if (formData.paymentMethod === 'credit-card' || formData.paymentMethod === 'mada') {
+        // Process credit card / mada payment
+        const [month, year] = formData.cardExpiry.split('/');
+        source = {
+          type: formData.paymentMethod === 'credit-card' ? 'creditcard' : 'mada',
+          name: formData.cardName,
+          number: formData.cardNumber.replace(/\s/g, ''),
+          cvc: formData.cardCvc,
+          month: month?.trim(),
+          year: `20${year?.trim()}`
+        };
+      } else if (formData.paymentMethod === 'apple-pay') {
+        source = { type: 'applepay' };
+      } else if (formData.paymentMethod === 'stc-pay') {
+        source = { type: 'stcpay' };
+      }
+      
+      // Process payment
+      await processPayment({
+        amount,
+        currency: 'SAR',
+        description: `Payment for ${productName}`,
+        source,
+        customer: {
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone
+        }
+      });
+      
+      // If we reach here, payment was successful
+      toast({
+        title: language === 'en' ? 'Success!' : 'تم بنجاح!',
+        description: language === 'en' 
+          ? `You have successfully joined the ${productName} Jam3a!` 
+          : `لقد انضممت بنجاح إلى جمعة ${productName}!`,
+      });
+      
+      // Redirect to home page after successful join
+      setTimeout(() => {
+        navigate('/');
+      }, 2000);
+    } catch (error) {
+      console.error('Payment error:', error);
+      // Error handling is handled by the useMoyasarPayment hook
+    }
   };
   
   return (
@@ -251,7 +299,24 @@ const JoinJam3a = () => {
                             )}
                           </div>
                         </div>
-                        <div className="text-sm text-gray-500">Visa, Mastercard, MADA</div>
+                        <div className="text-sm text-gray-500">Visa, Mastercard</div>
+                      </div>
+                      
+                      <div 
+                        className={`border rounded-lg p-4 cursor-pointer ${formData.paymentMethod === 'mada' ? 'border-purple-600 bg-purple-50' : ''}`}
+                        onClick={() => handlePaymentMethodChange('mada')}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="font-medium">MADA</div>
+                          <div className="w-5 h-5 rounded-full border border-purple-600 flex items-center justify-center">
+                            {formData.paymentMethod === 'mada' && (
+                              <div className="w-3 h-3 rounded-full bg-purple-600"></div>
+                            )}
+                          </div>
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {language === 'en' ? 'Saudi Debit Cards' : 'بطاقات مدى'}
+                        </div>
                       </div>
                       
                       <div 
@@ -290,14 +355,31 @@ const JoinJam3a = () => {
                     </div>
                   </div>
                   
-                  {formData.paymentMethod === 'credit-card' && (
+                  {(formData.paymentMethod === 'credit-card' || formData.paymentMethod === 'mada') && (
                     <div className="space-y-4">
                       <div className="space-y-2">
-                        <Label htmlFor="card-number">
+                        <Label htmlFor="cardName">
+                          {language === 'en' ? 'Name on Card' : 'الاسم على البطاقة'}
+                        </Label>
+                        <Input 
+                          id="cardName" 
+                          name="cardName"
+                          value={formData.cardName}
+                          onChange={handleInputChange}
+                          placeholder={language === 'en' ? 'Enter name on card' : 'أدخل الاسم على البطاقة'}
+                          required
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="cardNumber">
                           {language === 'en' ? 'Card Number' : 'رقم البطاقة'}
                         </Label>
                         <Input 
-                          id="card-number" 
+                          id="cardNumber" 
+                          name="cardNumber"
+                          value={formData.cardNumber}
+                          onChange={handleInputChange}
                           placeholder="1234 5678 9012 3456"
                           required
                         />
@@ -305,20 +387,26 @@ const JoinJam3a = () => {
                       
                       <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label htmlFor="expiry">
+                          <Label htmlFor="cardExpiry">
                             {language === 'en' ? 'Expiry Date' : 'تاريخ الانتهاء'}
                           </Label>
                           <Input 
-                            id="expiry" 
+                            id="cardExpiry" 
+                            name="cardExpiry"
+                            value={formData.cardExpiry}
+                            onChange={handleInputChange}
                             placeholder="MM/YY"
                             required
                           />
                         </div>
                         
                         <div className="space-y-2">
-                          <Label htmlFor="cvv">CVV</Label>
+                          <Label htmlFor="cardCvc">CVC</Label>
                           <Input 
-                            id="cvv" 
+                            id="cardCvc" 
+                            name="cardCvc"
+                            value={formData.cardCvc}
+                            onChange={handleInputChange}
                             placeholder="123"
                             required
                           />
@@ -347,6 +435,7 @@ const JoinJam3a = () => {
                       type="button"
                       variant="outline"
                       onClick={() => setActiveTab('info')}
+                      disabled={isLoading}
                     >
                       {language === 'en' ? 'Back' : 'رجوع'}
                     </Button>
@@ -354,8 +443,16 @@ const JoinJam3a = () => {
                     <Button 
                       type="submit"
                       className="bg-purple-600 hover:bg-purple-700"
+                      disabled={isLoading}
                     >
-                      {language === 'en' ? 'Complete Purchase' : 'إتمام الشراء'}
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          {language === 'en' ? 'Processing...' : 'جاري المعالجة...'}
+                        </>
+                      ) : (
+                        language === 'en' ? 'Complete Purchase' : 'إتمام الشراء'
+                      )}
                     </Button>
                   </div>
                 </form>
