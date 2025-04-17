@@ -63,12 +63,12 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// Add Jam3a brand colors
-				'jam3a-purple': '#8B5CF6',
-				'jam3a-deep-purple': '#7C3AED',
-				'jam3a-light-purple': '#A78BFA',
-				'jam3a-purple-50': '#F5F3FF',
-				'jam3a-accent': '#EC4899',
+				// Royal green colors replacing purple colors
+				'royal-green': '#146B3A',
+				'royal-green-dark': '#0D4D29',
+				'royal-green-light': '#2D8653',
+				'royal-green-50': '#ECFBF3',
+				'royal-green-accent': '#16A34A',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -99,17 +99,32 @@ export default {
 				'float': {
 					'0%, 100%': { transform: 'translateY(0)' },
 					'50%': { transform: 'translateY(-10px)' }
+				},
+				'slide-in': {
+					'0%': { transform: 'translateX(-100%)' },
+					'100%': { transform: 'translateX(0)' }
+				},
+				'fade-in': {
+					'0%': { opacity: '0' },
+					'100%': { opacity: '1' }
+				},
+				'bounce-light': {
+					'0%, 100%': { transform: 'translateY(0)' },
+					'50%': { transform: 'translateY(-5px)' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'pulse-soft': 'pulse-soft 3s infinite ease-in-out',
-				'float': 'float 5s infinite ease-in-out'
+				'float': 'float 5s infinite ease-in-out',
+				'slide-in': 'slide-in 0.5s ease-out',
+				'fade-in': 'fade-in 0.5s ease-out',
+				'bounce-light': 'bounce-light 2s infinite ease-in-out'
 			},
 			boxShadow: {
-				'jam3a': '0 10px 25px -5px rgba(139, 92, 246, 0.3)',
-				'jam3a-lg': '0 20px 35px -10px rgba(139, 92, 246, 0.4)'
+				'jam3a': '0 10px 25px -5px rgba(20, 107, 58, 0.3)',
+				'jam3a-lg': '0 20px 35px -10px rgba(20, 107, 58, 0.4)'
 			}
 		}
 	},

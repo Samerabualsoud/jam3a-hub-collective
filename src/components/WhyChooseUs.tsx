@@ -2,13 +2,14 @@
 import React from 'react';
 import { BadgePercent, ShieldCheck, Clock, CreditCard } from 'lucide-react';
 import { useLanguage } from './Header';
+import { motion } from 'framer-motion';
 
 const WhyChooseUs = () => {
   const { language } = useLanguage();
 
   const features = [
     {
-      icon: <BadgePercent className="h-10 w-10 text-jam3a-purple" />,
+      icon: <BadgePercent className="h-10 w-10 text-royal-green" />,
       title: {
         en: "Better Prices",
         ar: "أسعار أفضل"
@@ -19,7 +20,7 @@ const WhyChooseUs = () => {
       }
     },
     {
-      icon: <ShieldCheck className="h-10 w-10 text-jam3a-purple" />,
+      icon: <ShieldCheck className="h-10 w-10 text-royal-green" />,
       title: {
         en: "100% Secure",
         ar: "آمن 100%"
@@ -30,7 +31,7 @@ const WhyChooseUs = () => {
       }
     },
     {
-      icon: <Clock className="h-10 w-10 text-jam3a-purple" />,
+      icon: <Clock className="h-10 w-10 text-royal-green" />,
       title: {
         en: "Fast Delivery",
         ar: "توصيل سريع"
@@ -41,7 +42,7 @@ const WhyChooseUs = () => {
       }
     },
     {
-      icon: <CreditCard className="h-10 w-10 text-jam3a-purple" />,
+      icon: <CreditCard className="h-10 w-10 text-royal-green" />,
       title: {
         en: "Multiple Payment Options",
         ar: "خيارات دفع متعددة"
@@ -54,13 +55,17 @@ const WhyChooseUs = () => {
   ];
 
   return (
-    <section className="bg-white py-8 md:py-12">
-      <div className="container mx-auto px-4 md:px-6" dir={language === 'ar' ? 'rtl' : 'ltr'}>
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
+    <section className="bg-royal-green-50 py-12 md:py-16 relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-royal-green/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-royal-green/5 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl"></div>
+      
+      <div className="container mx-auto px-4 md:px-6 relative z-10" dir={language === 'ar' ? 'rtl' : 'ltr'}>
+        <div className="mx-auto max-w-2xl text-center mb-10">
+          <h2 className="text-3xl font-bold tracking-tight md:text-4xl mb-3 text-gradient-green">
             {language === 'en' ? 'Why Choose Jam3a' : 'لماذا تختار جمعة'}
           </h2>
-          <p className="mt-3 text-muted-foreground">
+          <p className="text-lg text-muted-foreground">
             {language === 'en'
               ? "We're revolutionizing shopping in Saudi Arabia through the power of group buying"
               : "نحن نُحدث ثورة في التسوق في المملكة العربية السعودية من خلال قوة الشراء الجماعي"}
@@ -68,11 +73,14 @@ const WhyChooseUs = () => {
         </div>
         <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {features.map((feature, index) => (
-            <div key={index} className="rounded-xl border bg-white p-5 shadow-sm transition-all hover:shadow-md">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-jam3a-purple/10">
+            <div 
+              key={index} 
+              className="rounded-xl border border-royal-green/10 bg-white p-6 shadow-sm card-hover"
+            >
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-royal-green/10 animate-bounce-light">
                 {feature.icon}
               </div>
-              <h3 className="mt-3 text-xl font-semibold">{feature.title[language]}</h3>
+              <h3 className="mt-4 text-xl font-semibold text-royal-green">{feature.title[language]}</h3>
               <p className="mt-2 text-muted-foreground">{feature.description[language]}</p>
             </div>
           ))}

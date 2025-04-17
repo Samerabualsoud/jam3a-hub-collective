@@ -5,84 +5,133 @@ import { Users, ArrowRight, PlusCircle, TrendingUp, BadgePercent, Clock, ShieldC
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from './Header';
 
 const StartJam3a: React.FC = () => {
   const [selectedStepIndex, setSelectedStepIndex] = useState(0);
   const { toast } = useToast();
+  const { language } = useLanguage();
 
   const content = {
-    title: "Start Your Own Jam3a",
-    subtitle: "Group buying made simple and rewarding",
-    description: "Creating a Jam3a is quick and easy. Select a product you love, set your group size, and watch the prices drop as more friends join!",
-    steps: [
-      {
-        title: "Pick Your Product",
-        description: "Choose from our curated selection of premium tech gadgets and more.",
-        icon: PlusCircle
-      },
-      {
-        title: "Set Your Group Size",
-        description: "Decide how many people you want in your group. The bigger the group, the bigger the savings!",
-        icon: Users
-      },
-      {
-        title: "Invite Friends",
-        description: "Share your unique Jam3a link with friends, family, or colleagues via WhatsApp, social media, or email.",
-        icon: TrendingUp
-      }
-    ],
-    benefits: [
-      {
-        text: "Save up to 30% on retail prices",
-        icon: BadgePercent
-      },
-      {
-        text: "No payment until the group is complete",
-        icon: Clock
-      },
-      {
-        text: "Full refund if the group doesn't fill",
-        icon: ShieldCheck
-      },
-      {
-        text: "Secure transactions and guaranteed delivery",
-        icon: ShieldCheck
-      }
-    ],
-    cta: "Start Your Jam3a Now",
-    orJoin: "or",
-    joinExisting: "Join an Existing Jam3a"
+    en: {
+      title: "Start Your Own Jam3a",
+      subtitle: "Group buying made simple and rewarding",
+      description: "Creating a Jam3a is quick and easy. Select a product you love, set your group size, and watch the prices drop as more friends join!",
+      steps: [
+        {
+          title: "Pick Your Product",
+          description: "Choose from our curated selection of premium tech gadgets and more.",
+          icon: PlusCircle
+        },
+        {
+          title: "Set Your Group Size",
+          description: "Decide how many people you want in your group. The bigger the group, the bigger the savings!",
+          icon: Users
+        },
+        {
+          title: "Invite Friends",
+          description: "Share your unique Jam3a link with friends, family, or colleagues via WhatsApp, social media, or email.",
+          icon: TrendingUp
+        }
+      ],
+      benefits: [
+        {
+          text: "Save up to 30% on retail prices",
+          icon: BadgePercent
+        },
+        {
+          text: "No payment until the group is complete",
+          icon: Clock
+        },
+        {
+          text: "Full refund if the group doesn't fill",
+          icon: ShieldCheck
+        },
+        {
+          text: "Secure transactions and guaranteed delivery",
+          icon: ShieldCheck
+        }
+      ],
+      cta: "Start Your Jam3a Now",
+      orJoin: "or",
+      joinExisting: "Join an Existing Jam3a",
+      whyStart: "Why Start a Jam3a?"
+    },
+    ar: {
+      title: "ابدأ جمعتك الخاصة",
+      subtitle: "الشراء الجماعي بسيط ومجزٍ",
+      description: "إنشاء جمعة سريع وسهل. اختر المنتج الذي تحبه، حدد حجم المجموعة، وشاهد الأسعار تنخفض كلما انضم المزيد من الأصدقاء!",
+      steps: [
+        {
+          title: "اختر منتجك",
+          description: "اختر من مجموعتنا المنتقاة من أجهزة التكنولوجيا الفاخرة والمزيد.",
+          icon: PlusCircle
+        },
+        {
+          title: "حدد حجم مجموعتك",
+          description: "قرر عدد الأشخاص الذين تريدهم في مجموعتك. كلما كبرت المجموعة، زادت التوفيرات!",
+          icon: Users
+        },
+        {
+          title: "ادعُ أصدقاءك",
+          description: "شارك رابط جمعتك الفريد مع الأصدقاء والعائلة أو الزملاء عبر واتساب أو وسائل التواصل الاجتماعي أو البريد الإلكتروني.",
+          icon: TrendingUp
+        }
+      ],
+      benefits: [
+        {
+          text: "وفر حتى 30% من أسعار التجزئة",
+          icon: BadgePercent
+        },
+        {
+          text: "لا دفع حتى تكتمل المجموعة",
+          icon: Clock
+        },
+        {
+          text: "استرداد كامل إذا لم تمتلئ المجموعة",
+          icon: ShieldCheck
+        },
+        {
+          text: "معاملات آمنة وتسليم مضمون",
+          icon: ShieldCheck
+        }
+      ],
+      cta: "ابدأ جمعتك الآن",
+      orJoin: "أو",
+      joinExisting: "انضم إلى جمعة موجودة",
+      whyStart: "لماذا تبدأ جمعة؟"
+    }
   };
 
   return (
-    <section className="py-10 md:py-14 bg-gradient-to-br from-white to-jam3a-purple-50 overflow-hidden">
-      <div className="container mx-auto px-4 md:px-6 relative">
+    <section className="py-12 md:py-16 bg-gradient-to-br from-white to-royal-green-50 overflow-hidden">
+      <div className="container mx-auto px-4 md:px-6 relative" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         {/* Background decoration elements */}
-        <div className="absolute -top-20 -right-20 w-64 h-64 bg-jam3a-purple/5 rounded-full filter blur-3xl"></div>
-        <div className="absolute -bottom-32 -left-20 w-80 h-80 bg-jam3a-accent/5 rounded-full filter blur-3xl"></div>
+        <div className="absolute -top-20 -right-20 w-64 h-64 bg-royal-green/5 rounded-full filter blur-3xl"></div>
+        <div className="absolute -bottom-32 -left-20 w-80 h-80 bg-royal-green-accent/5 rounded-full filter blur-3xl"></div>
         
-        <div className="flex flex-col items-center text-center mb-8 relative z-10">
+        <div className="flex flex-col items-center text-center mb-12 relative z-10">
           <div className="max-w-3xl">
-            <h2 className="text-3xl font-bold tracking-tight md:text-4xl mb-2 bg-clip-text text-transparent bg-gradient-to-r from-jam3a-deep-purple to-jam3a-accent">
-              {content.title}
+            <h2 className="text-3xl font-bold tracking-tight md:text-4xl mb-3 text-gradient-green">
+              {content[language].title}
             </h2>
-            <p className="text-lg text-jam3a-purple font-medium mb-3">
-              {content.subtitle}
+            <p className="text-lg text-royal-green font-medium mb-3">
+              {content[language].subtitle}
             </p>
             <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-              {content.description}
+              {content[language].description}
             </p>
           </div>
         </div>
 
-        <div className="max-w-5xl mx-auto mb-8">
+        <div className="max-w-5xl mx-auto mb-12">
           {/* Step selector for mobile */}
           <div className="md:hidden mb-4">
             <div className="w-full border rounded-lg shadow-sm p-1 flex">
-              {content.steps.map((_, index) => (
+              {content[language].steps.map((_, index) => (
                 <button 
                   key={index} 
-                  className={`flex-1 py-2 rounded-md ${selectedStepIndex === index ? 'bg-jam3a-purple text-white' : 'bg-transparent text-foreground'}`}
+                  className={`flex-1 py-2 rounded-md ${selectedStepIndex === index ? 'bg-royal-green text-white' : 'bg-transparent text-foreground'}`}
                   onClick={() => setSelectedStepIndex(index)}
                 >
                   {index + 1}
@@ -90,35 +139,35 @@ const StartJam3a: React.FC = () => {
               ))}
             </div>
             
-            <Card className="mt-4 border-2 border-jam3a-purple/10 hover:border-jam3a-purple/30 transition-colors shadow-jam3a">
+            <Card className="mt-4 border-2 border-royal-green/10 hover:border-royal-green/30 transition-colors shadow-jam3a">
               <CardContent className="p-5">
                 <div className="flex items-center mb-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-jam3a-purple/10 text-jam3a-purple">
-                    {React.createElement(content.steps[selectedStepIndex].icon, { size: 20 })}
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-royal-green/10 text-royal-green">
+                    {React.createElement(content[language].steps[selectedStepIndex].icon, { size: 20 })}
                   </div>
-                  <h3 className="font-semibold text-lg ml-3">{content.steps[selectedStepIndex].title}</h3>
+                  <h3 className="font-semibold text-lg ml-3">{content[language].steps[selectedStepIndex].title}</h3>
                 </div>
-                <p className="text-muted-foreground">{content.steps[selectedStepIndex].description}</p>
+                <p className="text-muted-foreground">{content[language].steps[selectedStepIndex].description}</p>
               </CardContent>
             </Card>
           </div>
           
           {/* Desktop steps */}
-          <div className="hidden md:grid md:grid-cols-3 gap-5">
-            {content.steps.map((step, index) => (
+          <div className="hidden md:grid md:grid-cols-3 gap-6">
+            {content[language].steps.map((step, index) => (
               <Card 
                 key={index} 
-                className="border-2 border-jam3a-purple/10 hover:border-jam3a-purple/30 transition-all duration-300 hover:shadow-jam3a transform hover:-translate-y-1"
+                className="border-2 border-royal-green/10 hover:border-royal-green/30 card-hover"
               >
-                <CardContent className="p-5">
-                  <div className="flex items-center mb-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-jam3a-purple/10 text-jam3a-purple">
-                      {React.createElement(step.icon, { size: 20 })}
-                      <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-jam3a-purple text-white text-xs font-bold">
+                <CardContent className="p-6">
+                  <div className="flex items-center mb-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-royal-green/10 text-royal-green relative">
+                      {React.createElement(step.icon, { size: 24 })}
+                      <span className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-royal-green text-white text-sm font-bold">
                         {index + 1}
                       </span>
                     </div>
-                    <h3 className="font-semibold text-lg ml-3">{step.title}</h3>
+                    <h3 className="font-semibold text-xl ml-4 text-royal-green">{step.title}</h3>
                   </div>
                   <p className="text-muted-foreground">{step.description}</p>
                 </CardContent>
@@ -127,18 +176,18 @@ const StartJam3a: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-jam3a-purple to-jam3a-accent rounded-2xl p-6 text-white mb-8 shadow-jam3a-lg transform hover:-translate-y-1 transition-transform duration-300">
-          <div className="text-center mb-4">
-            <h3 className="text-xl font-semibold mb-4">
-              Why Start a Jam3a?
+        <div className="bg-gradient-to-r from-royal-green to-royal-green-light rounded-2xl p-8 text-white mb-12 shadow-jam3a-lg transform hover:-translate-y-1 transition-transform duration-300">
+          <div className="text-center mb-6">
+            <h3 className="text-2xl font-semibold mb-6">
+              {content[language].whyStart}
             </h3>
             <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4">
-              {content.benefits.map((benefit, index) => (
+              {content[language].benefits.map((benefit, index) => (
                 <div 
                   key={index} 
-                  className="bg-white/10 backdrop-blur-sm rounded-lg p-3 flex flex-col items-center text-center hover:bg-white/20 transition-colors duration-300"
+                  className="bg-white/10 backdrop-blur-sm rounded-lg p-4 flex flex-col items-center text-center hover:bg-white/20 transition-colors duration-300"
                 >
-                  {React.createElement(benefit.icon, { className: "h-5 w-5 mb-2" })}
+                  {React.createElement(benefit.icon, { className: "h-6 w-6 mb-3" })}
                   {benefit.text}
                 </div>
               ))}
@@ -146,22 +195,22 @@ const StartJam3a: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex flex-col items-center space-y-3">
+        <div className="flex flex-col items-center space-y-4">
           <Button 
             size="lg" 
-            className="bg-jam3a-purple hover:bg-jam3a-deep-purple text-white px-6 py-5 text-lg shadow-jam3a hover:shadow-jam3a-lg transition-all duration-300 hover:-translate-y-1"
+            className="bg-royal-green hover:bg-royal-green-dark text-white px-8 py-6 text-lg shadow-jam3a hover:shadow-jam3a-lg transition-all duration-300 hover:-translate-y-1"
           >
             <Link to="/start-jam3a" className="flex items-center gap-2">
-              {content.cta}
+              {content[language].cta}
               <ArrowRight className="h-5 w-5" />
             </Link>
           </Button>
-          <div className="flex items-center gap-2 mt-1">
-            <span className="text-muted-foreground">{content.orJoin}</span>
-            <Button variant="link" className="text-jam3a-purple hover:text-jam3a-deep-purple">
+          <div className="flex items-center gap-2 mt-2">
+            <span className="text-muted-foreground">{content[language].orJoin}</span>
+            <Button variant="link" className="text-royal-green hover:text-royal-green-dark">
               <Link to="/shop" className="flex items-center gap-1">
                 <Users className="h-4 w-4" />
-                {content.joinExisting}
+                {content[language].joinExisting}
               </Link>
             </Button>
           </div>
