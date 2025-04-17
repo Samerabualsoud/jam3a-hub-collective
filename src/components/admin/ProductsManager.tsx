@@ -75,6 +75,26 @@ const ProductsManager = () => {
 
   const handleImportProducts = async (products) => {
     try {
+      // Check if we're in demo mode without Supabase
+      const hasSupabaseConfig = import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY;
+      
+      if (!hasSupabaseConfig) {
+        // In demo mode, just add products to local state without using Supabase
+        const newProducts = products.map((product, index) => ({
+          ...product,
+          id: Date.now() + index, // Generate temporary IDs
+        }));
+        
+        setProducts(prevProducts => [...newProducts, ...prevProducts]);
+        setShowWebScraper(false);
+        toast({
+          title: "Demo Mode",
+          description: `${products.length} products were imported to local state (Supabase not configured)`,
+        });
+        return;
+      }
+      
+      // If Supabase is configured, use the API
       await api.createMultipleProducts(products);
       await loadData();
       setShowWebScraper(false);
@@ -83,9 +103,10 @@ const ProductsManager = () => {
         description: `${products.length} products were imported successfully`,
       });
     } catch (error) {
+      console.error('Import error:', error);
       toast({
         title: "Error importing products",
-        description: error.message,
+        description: error.message || "Supabase client is not initialized properly",
         variant: "destructive",
       });
     }
@@ -300,7 +321,7 @@ const ProductsManager = () => {
                             <TableHead>Image</TableHead>
                             <TableHead>Name</TableHead>
                             <TableHead>Category</TableHead>
-                            <TableHead>Price</TableHead>
+                            <TableHead>Price (SAR)</TableHead>
                             <TableHead>Stock</TableHead>
                             <TableHead className="text-right">Actions</TableHead>
                           </TableRow>
@@ -329,7 +350,7 @@ const ProductsManager = () => {
                               </TableCell>
                               <TableCell>{product.name}</TableCell>
                               <TableCell>{product.category}</TableCell>
-                              <TableCell>${product.price}</TableCell>
+                              <TableCell>{product.price} SAR</TableCell>
                               <TableCell>{product.stock}</TableCell>
                               <TableCell className="text-right">
                                 <Button

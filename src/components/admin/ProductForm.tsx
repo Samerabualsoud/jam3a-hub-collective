@@ -133,7 +133,7 @@ const ProductForm = ({ initialData, onSubmit, onCancel }: ProductFormProps) => {
             name="price"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Price ($)</FormLabel>
+                <FormLabel>Price (SAR)</FormLabel>
                 <FormControl>
                   <Input 
                     type="number" 
