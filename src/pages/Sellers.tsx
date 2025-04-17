@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -29,7 +30,7 @@ const Sellers = () => {
       <Header />
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="bg-gradient-to-r from-purple-700 to-purple-900 text-white py-20">
+        <section className="bg-gradient-to-r from-royal-green to-royal-green-light text-white py-20">
           <div className="container mx-auto px-4 text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
               {language === 'en' ? 'Sell With Jam3a' : 'بيع مع جمعة'}
@@ -43,7 +44,7 @@ const Sellers = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
                 size="lg" 
-                className="bg-white text-purple-700 hover:bg-gray-100"
+                className="bg-white text-royal-green hover:bg-gray-100"
                 onClick={handleApplyClick}
               >
                 {language === 'en' ? 'Apply to Become a Seller' : 'تقدم لتصبح بائعًا'}
@@ -51,7 +52,7 @@ const Sellers = () => {
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="border-white text-white hover:bg-purple-800"
+                className="border-white text-white hover:bg-royal-green-dark"
                 onClick={handleLoginClick}
               >
                 {language === 'en' ? 'Seller Login' : 'تسجيل دخول البائع'}
@@ -150,8 +151,8 @@ const Sellers = () => {
                 
                 <div className="space-y-6">
                   <div className="flex items-start gap-4">
-                    <div className="bg-purple-100 p-3 rounded-full">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-purple-600">
+                    <div className="bg-royal-green-50 p-3 rounded-full">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-royal-green">
                         <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                       </svg>
                     </div>
@@ -169,8 +170,8 @@ const Sellers = () => {
                   </div>
                   
                   <div className="flex items-start gap-4">
-                    <div className="bg-purple-100 p-3 rounded-full">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-purple-600">
+                    <div className="bg-royal-green-50 p-3 rounded-full">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-royal-green">
                         <circle cx="12" cy="12" r="10" />
                         <path d="M8 14s1.5 2 4 2 4-2 4-2" />
                         <line x1="9" y1="9" x2="9.01" y2="9" />
@@ -191,8 +192,8 @@ const Sellers = () => {
                   </div>
                   
                   <div className="flex items-start gap-4">
-                    <div className="bg-purple-100 p-3 rounded-full">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-purple-600">
+                    <div className="bg-royal-green-50 p-3 rounded-full">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-royal-green">
                         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                       </svg>
                     </div>
@@ -210,8 +211,8 @@ const Sellers = () => {
                   </div>
                   
                   <div className="flex items-start gap-4">
-                    <div className="bg-purple-100 p-3 rounded-full">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-purple-600">
+                    <div className="bg-royal-green-50 p-3 rounded-full">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-royal-green">
                         <path d="M3 3v18h18" />
                         <path d="m19 9-5 5-4-4-3 3" />
                       </svg>
@@ -237,10 +238,10 @@ const Sellers = () => {
                 </h2>
                 
                 <div className="relative">
-                  <div className="absolute left-4 top-0 h-full w-0.5 bg-purple-200"></div>
+                  <div className="absolute left-4 top-0 h-full w-0.5 bg-royal-green-50"></div>
                   
                   <div className="relative pl-12 pb-8">
-                    <div className="absolute left-0 top-1 h-8 w-8 rounded-full bg-purple-600 flex items-center justify-center text-white font-bold">1</div>
+                    <div className="absolute left-0 top-1 h-8 w-8 rounded-full bg-royal-green flex items-center justify-center text-white font-bold">1</div>
                     <h3 className="text-xl font-semibold mb-2">
                       {language === 'en' ? 'Apply to Become a Seller' : 'تقدم لتصبح بائعًا'}
                     </h3>
@@ -253,7 +254,7 @@ const Sellers = () => {
                   </div>
                   
                   <div className="relative pl-12 pb-8">
-                    <div className="absolute left-0 top-1 h-8 w-8 rounded-full bg-purple-600 flex items-center justify-center text-white font-bold">2</div>
+                    <div className="absolute left-0 top-1 h-8 w-8 rounded-full bg-royal-green flex items-center justify-center text-white font-bold">2</div>
                     <h3 className="text-xl font-semibold mb-2">
                       {language === 'en' ? 'Set Up Your Seller Profile' : 'إعداد ملف البائع الخاص بك'}
                     </h3>
@@ -266,7 +267,7 @@ const Sellers = () => {
                   </div>
                   
                   <div className="relative pl-12 pb-8">
-                    <div className="absolute left-0 top-1 h-8 w-8 rounded-full bg-purple-600 flex items-center justify-center text-white font-bold">3</div>
+                    <div className="absolute left-0 top-1 h-8 w-8 rounded-full bg-royal-green flex items-center justify-center text-white font-bold">3</div>
                     <h3 className="text-xl font-semibold mb-2">
                       {language === 'en' ? 'Launch Your Jam3a Deals' : 'إطلاق صفقات جمعة الخاصة بك'}
                     </h3>
@@ -279,7 +280,7 @@ const Sellers = () => {
                   </div>
                   
                   <div className="relative pl-12 pb-8">
-                    <div className="absolute left-0 top-1 h-8 w-8 rounded-full bg-purple-600 flex items-center justify-center text-white font-bold">4</div>
+                    <div className="absolute left-0 top-1 h-8 w-8 rounded-full bg-royal-green flex items-center justify-center text-white font-bold">4</div>
                     <h3 className="text-xl font-semibold mb-2">
                       {language === 'en' ? 'Fulfill Orders' : 'تنفيذ الطلبات'}
                     </h3>
@@ -292,7 +293,7 @@ const Sellers = () => {
                   </div>
                   
                   <div className="relative pl-12">
-                    <div className="absolute left-0 top-1 h-8 w-8 rounded-full bg-purple-600 flex items-center justify-center text-white font-bold">5</div>
+                    <div className="absolute left-0 top-1 h-8 w-8 rounded-full bg-royal-green flex items-center justify-center text-white font-bold">5</div>
                     <h3 className="text-xl font-semibold mb-2">
                       {language === 'en' ? 'Get Paid' : 'احصل على المدفوعات'}
                     </h3>
@@ -323,7 +324,7 @@ const Sellers = () => {
             </p>
             <Button 
               size="lg" 
-              className="bg-purple-600 hover:bg-purple-700"
+              className="bg-royal-green hover:bg-royal-green-dark"
               onClick={handleApplyClick}
             >
               {language === 'en' ? 'Apply Now' : 'تقدم الآن'}

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -107,19 +108,19 @@ const SellerLogin = () => {
               />
               
               <div className="flex justify-end">
-                <Button variant="link" className="text-jam3a-purple p-0">
+                <Button variant="link" className="text-royal-green p-0">
                   {language === 'en' ? 'Forgot password?' : 'نسيت كلمة المرور؟'}
                 </Button>
               </div>
               
-              <Button type="submit" className="w-full bg-jam3a-purple hover:bg-jam3a-deep-purple">
+              <Button type="submit" className="w-full bg-royal-green hover:bg-royal-green-dark">
                 {language === 'en' ? 'Sign In' : 'تسجيل الدخول'}
               </Button>
               
               <div className="text-center mt-4">
                 <p className="text-sm text-gray-600">
                   {language === 'en' ? "Don't have a seller account?" : "ليس لديك حساب بائع؟"}{' '}
-                  <Link to="/seller-register" className="text-jam3a-purple font-medium">
+                  <Link to="/seller-register" className="text-royal-green font-medium">
                     {language === 'en' ? 'Apply now' : 'تقدم بطلب الآن'}
                   </Link>
                 </p>
