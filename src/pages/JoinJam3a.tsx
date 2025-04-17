@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,7 +23,23 @@ const JoinJam3a = () => {
   const productName = searchParams.get('product') || 'Jam3a Deal';
   const productPrice = searchParams.get('price') || '4999 SAR';
   const productDiscount = searchParams.get('discount') || '16%';
+  const productCategory = searchParams.get('category') || 'Mobile';
   
+  // Format product name with category
+  const formattedTitle = language === 'en' 
+    ? `${productCategory} Jam3a: ${productName.replace(`${productCategory} Jam3a: `, '')}`
+    : `جمعة ${productCategory}: ${productName.replace(`جمعة ${productCategory}: `, '')}`;
+  
+  // For debugging purposes
+  useEffect(() => {
+    console.log("URL Parameters:", {
+      product: productName,
+      price: productPrice,
+      discount: productDiscount,
+      category: productCategory
+    });
+  }, [productName, productPrice, productDiscount, productCategory]);
+
   // Form state
   const [formData, setFormData] = useState({
     name: '',
@@ -100,7 +115,7 @@ const JoinJam3a = () => {
       await processPayment({
         amount,
         currency: 'SAR',
-        description: `Payment for ${productName}`,
+        description: `Payment for ${formattedTitle}`,
         source,
         customer: {
           name: formData.name,
@@ -113,8 +128,8 @@ const JoinJam3a = () => {
       toast({
         title: language === 'en' ? 'Success!' : 'تم بنجاح!',
         description: language === 'en' 
-          ? `You have successfully joined the ${productName} Jam3a!` 
-          : `لقد انضممت بنجاح إلى جمعة ${productName}!`,
+          ? `You have successfully joined the ${formattedTitle} Jam3a!` 
+          : `لقد انضممت بنجاح إلى جمعة ${formattedTitle}!`,
       });
       
       // Redirect to home page after successful join
@@ -124,6 +139,20 @@ const JoinJam3a = () => {
     } catch (error) {
       console.error('Payment error:', error);
       // Error handling is handled by the useMoyasarPayment hook
+    }
+  };
+  
+  // Get appropriate product image based on category
+  const getProductImage = () => {
+    const category = productCategory.toLowerCase();
+    if (category === 'mobile' || category === 'phone') {
+      return "/images/products/iphone_16_pro.jpeg";
+    } else if (category === 'tv' || category === 'television') {
+      return "/images/products/samsung_galaxy_s25.jpeg"; // This should be a TV image
+    } else if (category === 'laptop') {
+      return "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=1600&q=80";
+    } else {
+      return "https://placehold.co/400x400/purple/white?text=Product+Image";
     }
   };
   
@@ -155,7 +184,7 @@ const JoinJam3a = () => {
                   <div className="md:w-1/3">
                     <div className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
                       <img 
-                        src="/images/products/iphone_16_pro.jpg" 
+                        src={getProductImage()} 
                         alt={productName}
                         className="max-w-full max-h-full object-contain"
                         onError={(e) => {
@@ -166,7 +195,7 @@ const JoinJam3a = () => {
                   </div>
                   
                   <div className="md:w-2/3">
-                    <h2 className="text-2xl font-bold mb-4">{productName}</h2>
+                    <h2 className="text-2xl font-bold mb-4">{formattedTitle}</h2>
                     
                     <div className="mb-4">
                       <div className="flex items-center">
@@ -192,8 +221,8 @@ const JoinJam3a = () => {
                       </h3>
                       <p className="text-gray-600">
                         {language === 'en' 
-                          ? `Join this Jam3a to get ${productName} at a discounted price of ${productPrice}. By joining with others, you'll save ${productDiscount} off the regular price!`
-                          : `انضم إلى هذه الجمعة للحصول على ${productName} بسعر مخفض قدره ${productPrice}. من خلال الانضمام مع الآخرين، ستوفر ${productDiscount} من السعر العادي!`
+                          ? `Join this Jam3a to get ${formattedTitle} at a discounted price of ${productPrice}. By joining with others, you'll save ${productDiscount} off the regular price!`
+                          : `انضم إلى هذه الجمعة للحصول على ${formattedTitle} بسعر مخفض قدره ${productPrice}. من خلال الانضمام مع الآخرين، ستوفر ${productDiscount} من السعر العادي!`
                         }
                       </p>
                     </div>

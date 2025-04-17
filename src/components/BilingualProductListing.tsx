@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
@@ -96,7 +97,7 @@ const BilingualProductListing: React.FC = () => {
     },
     {
       id: 2,
-      image: "https://images.unsplash.com/photo-1593305841991-05c297ba4575?auto=format&fit=crop&w=1600&q=80",
+      image: "https://images.unsplash.com/photo-1577975882846-431adc8c2009?auto=format&fit=crop&w=1600&q=80", // Updated TV image URL
       title: {
         en: "Samsung 75\" 4K QLED TV",
         ar: "تلفاز سامسونج 75 بوصة QLED 4K"
@@ -159,7 +160,7 @@ const BilingualProductListing: React.FC = () => {
     },
     {
       id: 4,
-      image: "https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?auto=format&fit=crop&w=1600&q=80",
+      image: "https://images.unsplash.com/photo-1601944179066-29786cb9d32a?auto=format&fit=crop&w=1600&q=80", // Updated TV image
       title: {
         en: "LG 65\" OLED TV",
         ar: "تلفاز إل جي 65 بوصة OLED"
@@ -304,7 +305,7 @@ const BilingualProductListing: React.FC = () => {
                     <CardFooter className="p-4 pt-0" dir={language === 'ar' ? 'rtl' : 'ltr'}>
                       <div className="w-full space-y-2">
                         <Button className="w-full bg-jam3a-purple hover:bg-jam3a-deep-purple">
-                          <Link to={`/join-jam3a?product=${encodeURIComponent(formattedTitle.en)}&price=${product.groupPrices[product.groupPrices.length - 1].price} SAR&discount=${Math.round((product.originalPrice - product.groupPrices[product.groupPrices.length - 1].price) / product.originalPrice * 100)}%&category=${encodeURIComponent(product.category.en)}`}>
+                          <Link to={`/join-jam3a?product=${encodeURIComponent(product.title[language])}&price=${product.groupPrices[product.groupPrices.length - 1].price} SAR&discount=${Math.round((product.originalPrice - product.groupPrices[product.groupPrices.length - 1].price) / product.originalPrice * 100)}%&category=${encodeURIComponent(product.category[language])}`}>
                             {language === 'en' ? 'Join Jam3a' : 'انضم للجمعة'}
                           </Link>
                         </Button>

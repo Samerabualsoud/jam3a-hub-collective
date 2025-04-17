@@ -41,6 +41,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 }) => {
   const { language } = useLanguage();
 
+  // Create formatted title that includes category
   const formattedTitle = {
     en: `${category.en} Jam3a: ${title.en}`,
     ar: `جمعة ${category.ar}: ${title.ar}`
@@ -91,7 +92,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </div>
         <div className="mt-4">
           <Button className="w-full bg-jam3a-purple hover:bg-jam3a-deep-purple">
-            <Link to={`/join-jam3a?product=${encodeURIComponent(formattedTitle.en)}&price=${discountedPrice} SAR&discount=${Math.round((originalPrice - discountedPrice) / originalPrice * 100)}%&category=${encodeURIComponent(category.en)}`}>
+            <Link to={`/join-jam3a?product=${encodeURIComponent(title[language])}&price=${discountedPrice} SAR&discount=${Math.round((originalPrice - discountedPrice) / originalPrice * 100)}%&category=${encodeURIComponent(category[language])}`}>
               {language === 'en' ? 'Join Jam3a' : 'انضم للجمعة'}
             </Link>
           </Button>
@@ -170,7 +171,7 @@ const FeaturedDeals = () => {
     },
     {
       id: 4,
-      image: "https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?auto=format&fit=crop&w=1600&q=80",
+      image: "https://images.unsplash.com/photo-1577975882846-431adc8c2009?auto=format&fit=crop&w=1600&q=80", // Updated to a proper TV image
       title: {
         en: "LG 65\" OLED TV",
         ar: "تلفاز إل جي 65 بوصة OLED"
