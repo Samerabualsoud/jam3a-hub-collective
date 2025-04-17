@@ -72,11 +72,11 @@ const JoinWaitlist = () => {
   };
 
   return (
-    <section className="bg-white py-16 px-4 md:px-8 relative">
+    <section className="bg-gradient-to-br from-royal-blue-50 to-white py-16 px-4 md:px-8 relative">
       <div className="container mx-auto max-w-4xl">
-        <div className="bg-royal-blue/10 border border-royal-blue/20 rounded-xl p-6 md:p-10 relative overflow-hidden">
+        <div className="bg-white rounded-xl p-6 md:p-10 relative overflow-hidden shadow-xl border border-royal-blue/20">
           {/* Banner */}
-          <div className="absolute top-0 left-0 w-full bg-royal-blue text-white py-2 text-center flex items-center justify-center gap-2">
+          <div className="absolute top-0 left-0 w-full bg-royal-blue text-white py-3 text-center flex items-center justify-center gap-2">
             <BadgeInfo className="h-5 w-5" />
             <span className="text-sm font-medium">
               {content[language].bannerText}
@@ -84,8 +84,8 @@ const JoinWaitlist = () => {
           </div>
 
           {/* Content */}
-          <div className="mt-8 text-center">
-            <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-royal-blue/10 animate-float">
+          <div className="mt-12 text-center">
+            <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-royal-blue/10 animate-float shadow-md">
               <Users className="h-10 w-10 text-royal-blue" />
             </div>
             
@@ -103,17 +103,27 @@ const JoinWaitlist = () => {
                   <Input
                     type="email"
                     placeholder={content[language].placeholder}
-                    className="flex-grow h-12"
+                    className="flex-grow h-12 border-2 border-royal-blue/30 focus:border-royal-blue"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
                   <Button
                     type="submit"
                     size="lg"
-                    className="w-full sm:w-auto bg-royal-blue hover:bg-royal-blue-dark"
+                    className="w-full sm:w-auto bg-royal-blue hover:bg-royal-blue-dark text-white shadow-md"
                     disabled={isSubmitting}
                   >
-                    {isSubmitting ? content[language].processing : content[language].joinWaitlist}
+                    {isSubmitting ? (
+                      <span className="flex items-center gap-2">
+                        <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
+                        {content[language].processing}
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-2">
+                        <Send className="h-4 w-4" />
+                        {content[language].joinWaitlist}
+                      </span>
+                    )}
                   </Button>
                 </div>
                 
@@ -122,6 +132,7 @@ const JoinWaitlist = () => {
                     id="subscribe" 
                     checked={isSubscribed}
                     onCheckedChange={(checked) => setIsSubscribed(checked as boolean)}
+                    className="border-royal-blue data-[state=checked]:bg-royal-blue"
                   />
                   <Label htmlFor="subscribe" className="cursor-pointer">
                     {content[language].subscribe}
@@ -141,4 +152,3 @@ const JoinWaitlist = () => {
 };
 
 export default JoinWaitlist;
-

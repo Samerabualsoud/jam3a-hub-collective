@@ -99,11 +99,11 @@
     @apply transition-transform duration-300 hover:scale-105;
   }
   
-  .text-gradient-green {
+  .text-gradient-blue {
     @apply bg-gradient-to-br from-royal-blue to-royal-blue-light bg-clip-text text-transparent;
   }
   
-  .bg-gradient-green {
+  .bg-gradient-blue {
     @apply bg-gradient-to-br from-royal-blue to-royal-blue-light;
   }
   
@@ -111,11 +111,19 @@
     @apply transition-all duration-300 hover:shadow-royal-blue transform hover:-translate-y-1;
   }
   
-  .text-gradient-blue {
-    @apply bg-gradient-to-br from-royal-blue to-royal-blue-light bg-clip-text text-transparent;
+  .bg-gradient-royal {
+    @apply bg-gradient-to-br from-royal-blue to-royal-blue-light;
   }
   
-  .bg-gradient-blue {
-    @apply bg-gradient-to-br from-royal-blue to-royal-blue-light;
+  .section-highlight {
+    @apply bg-royal-blue-50 rounded-lg p-6 border border-royal-blue/20;
+  }
+  
+  .banner-highlight {
+    @apply bg-royal-blue text-white py-3 px-4 rounded-t-lg;
+  }
+  
+  .admin-icon {
+    @apply fixed bottom-4 right-4 z-50 bg-royal-blue text-white p-3 rounded-full shadow-xl hover:bg-royal-blue-dark transition-colors border-2 border-white;
   }
 }

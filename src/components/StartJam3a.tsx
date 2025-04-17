@@ -104,18 +104,18 @@ const StartJam3a: React.FC = () => {
   };
 
   return (
-    <section className="py-12 md:py-16 bg-gradient-to-br from-white to-royal-green-50 overflow-hidden">
+    <section className="py-12 md:py-16 bg-gradient-to-br from-white to-royal-blue-50 overflow-hidden">
       <div className="container mx-auto px-4 md:px-6 relative" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         {/* Background decoration elements */}
-        <div className="absolute -top-20 -right-20 w-64 h-64 bg-royal-green/5 rounded-full filter blur-3xl"></div>
-        <div className="absolute -bottom-32 -left-20 w-80 h-80 bg-royal-green-accent/5 rounded-full filter blur-3xl"></div>
+        <div className="absolute -top-20 -right-20 w-64 h-64 bg-royal-blue/5 rounded-full filter blur-3xl"></div>
+        <div className="absolute -bottom-32 -left-20 w-80 h-80 bg-royal-blue-accent/5 rounded-full filter blur-3xl"></div>
         
         <div className="flex flex-col items-center text-center mb-12 relative z-10">
           <div className="max-w-3xl">
-            <h2 className="text-3xl font-bold tracking-tight md:text-4xl mb-3 text-gradient-green">
+            <h2 className="text-3xl font-bold tracking-tight md:text-4xl mb-3 text-gradient-blue">
               {content[language].title}
             </h2>
-            <p className="text-lg text-royal-green font-medium mb-3">
+            <p className="text-lg text-royal-blue font-medium mb-3">
               {content[language].subtitle}
             </p>
             <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
@@ -131,7 +131,7 @@ const StartJam3a: React.FC = () => {
               {content[language].steps.map((_, index) => (
                 <button 
                   key={index} 
-                  className={`flex-1 py-2 rounded-md ${selectedStepIndex === index ? 'bg-royal-green text-white' : 'bg-transparent text-foreground'}`}
+                  className={`flex-1 py-2 rounded-md ${selectedStepIndex === index ? 'bg-royal-blue text-white' : 'bg-transparent text-foreground'}`}
                   onClick={() => setSelectedStepIndex(index)}
                 >
                   {index + 1}
@@ -139,10 +139,10 @@ const StartJam3a: React.FC = () => {
               ))}
             </div>
             
-            <Card className="mt-4 border-2 border-royal-green/10 hover:border-royal-green/30 transition-colors shadow-jam3a">
+            <Card className="mt-4 border-2 border-royal-blue/10 hover:border-royal-blue/30 transition-colors shadow-royal-blue">
               <CardContent className="p-5">
                 <div className="flex items-center mb-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-royal-green/10 text-royal-green">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-royal-blue/10 text-royal-blue">
                     {React.createElement(content[language].steps[selectedStepIndex].icon, { size: 20 })}
                   </div>
                   <h3 className="font-semibold text-lg ml-3">{content[language].steps[selectedStepIndex].title}</h3>
@@ -157,17 +157,17 @@ const StartJam3a: React.FC = () => {
             {content[language].steps.map((step, index) => (
               <Card 
                 key={index} 
-                className="border-2 border-royal-green/10 hover:border-royal-green/30 card-hover"
+                className="border-2 border-royal-blue/10 hover:border-royal-blue/30 card-hover"
               >
                 <CardContent className="p-6">
                   <div className="flex items-center mb-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-royal-green/10 text-royal-green relative">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-royal-blue/10 text-royal-blue relative">
                       {React.createElement(step.icon, { size: 24 })}
-                      <span className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-royal-green text-white text-sm font-bold">
+                      <span className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-royal-blue text-white text-sm font-bold">
                         {index + 1}
                       </span>
                     </div>
-                    <h3 className="font-semibold text-xl ml-4 text-royal-green">{step.title}</h3>
+                    <h3 className="font-semibold text-xl ml-4 text-royal-blue">{step.title}</h3>
                   </div>
                   <p className="text-muted-foreground">{step.description}</p>
                 </CardContent>
@@ -176,7 +176,7 @@ const StartJam3a: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-royal-green to-royal-green-light rounded-2xl p-8 text-white mb-12 shadow-jam3a-lg transform hover:-translate-y-1 transition-transform duration-300">
+        <div className="bg-gradient-to-r from-royal-blue to-royal-blue-light rounded-2xl p-8 text-white mb-12 shadow-royal-blue-lg transform hover:-translate-y-1 transition-transform duration-300">
           <div className="text-center mb-6">
             <h3 className="text-2xl font-semibold mb-6">
               {content[language].whyStart}
@@ -198,7 +198,7 @@ const StartJam3a: React.FC = () => {
         <div className="flex flex-col items-center space-y-4">
           <Button 
             size="lg" 
-            className="bg-royal-green hover:bg-royal-green-dark text-white px-8 py-6 text-lg shadow-jam3a hover:shadow-jam3a-lg transition-all duration-300 hover:-translate-y-1"
+            className="bg-royal-blue hover:bg-royal-blue-dark text-white px-8 py-6 text-lg shadow-royal-blue hover:shadow-royal-blue-lg transition-all duration-300 hover:-translate-y-1"
           >
             <Link to="/start-jam3a" className="flex items-center gap-2">
               {content[language].cta}
@@ -207,7 +207,7 @@ const StartJam3a: React.FC = () => {
           </Button>
           <div className="flex items-center gap-2 mt-2">
             <span className="text-muted-foreground">{content[language].orJoin}</span>
-            <Button variant="link" className="text-royal-green hover:text-royal-green-dark">
+            <Button variant="link" className="text-royal-blue hover:text-royal-blue-dark">
               <Link to="/shop" className="flex items-center gap-1">
                 <Users className="h-4 w-4" />
                 {content[language].joinExisting}
