@@ -12,6 +12,10 @@ interface ProductCardProps {
     en: string;
     ar: string;
   };
+  category: {
+    en: string;
+    ar: string;
+  };
   originalPrice: number;
   discountedPrice: number;
   timeLeft: {
@@ -27,6 +31,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   id,
   image,
   title,
+  category,
   originalPrice,
   discountedPrice,
   timeLeft,
@@ -49,6 +54,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </div>
       </div>
       <div className="p-4" dir={language === 'ar' ? 'rtl' : 'ltr'}>
+        <div className="mb-2">
+          <span className="text-sm text-muted-foreground">
+            {category[language]} {language === 'en' ? 'Jam3a' : 'جمعة'}
+          </span>
+        </div>
         <h3 className="line-clamp-1 text-lg font-medium">{title[language]}</h3>
         <div className="mt-2 flex items-end gap-2">
           <span className="text-2xl font-bold text-jam3a-purple">{discountedPrice} {language === 'en' ? 'SAR' : 'ريال'}</span>
@@ -76,7 +86,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </div>
         <div className="mt-4">
           <Button className="w-full bg-jam3a-purple hover:bg-jam3a-deep-purple">
-            <Link to={`/join-jam3a?product=${encodeURIComponent(title.en)}&price=${discountedPrice} SAR&discount=${Math.round((originalPrice - discountedPrice) / originalPrice * 100)}%`}>
+            <Link to={`/join-jam3a?product=${encodeURIComponent(title.en)}&price=${discountedPrice} SAR&discount=${Math.round((originalPrice - discountedPrice) / originalPrice * 100)}%&category=${encodeURIComponent(category.en)}`}>
               {language === 'en' ? 'Join Jam3a' : 'انضم للجمعة'}
             </Link>
           </Button>
@@ -97,6 +107,10 @@ const FeaturedDeals = () => {
         en: "iPhone 16 Pro Max 256GB",
         ar: "آيفون 16 برو ماكس 256 جيجابايت"
       },
+      category: {
+        en: "Mobile",
+        ar: "جوال"
+      },
       originalPrice: 4999,
       discountedPrice: 4199,
       timeLeft: {
@@ -113,6 +127,10 @@ const FeaturedDeals = () => {
       title: {
         en: "Samsung Galaxy S25 Ultra",
         ar: "سامسونج جالاكسي S25 الترا"
+      },
+      category: {
+        en: "Mobile",
+        ar: "جوال"
       },
       originalPrice: 4599,
       discountedPrice: 3899,
@@ -131,6 +149,10 @@ const FeaturedDeals = () => {
         en: "Galaxy Z Fold 6",
         ar: "جالاكسي زد فولد 6"
       },
+      category: {
+        en: "Mobile",
+        ar: "جوال"
+      },
       originalPrice: 6999,
       discountedPrice: 5799,
       timeLeft: {
@@ -147,6 +169,10 @@ const FeaturedDeals = () => {
       title: {
         en: "Galaxy Z Flip 6",
         ar: "جالاكسي زد فليب 6"
+      },
+      category: {
+        en: "Mobile",
+        ar: "جوال"
       },
       originalPrice: 3999,
       discountedPrice: 3299,

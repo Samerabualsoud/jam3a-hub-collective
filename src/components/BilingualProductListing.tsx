@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
@@ -26,6 +25,10 @@ interface Product {
   id: number;
   image: string;
   title: {
+    en: string;
+    ar: string;
+  };
+  category: {
     en: string;
     ar: string;
   };
@@ -63,6 +66,10 @@ const BilingualProductListing: React.FC = () => {
         en: "iPhone 16 Pro Max 256GB",
         ar: "آيفون 16 برو ماكس 256 جيجابايت"
       },
+      category: {
+        en: "Mobile",
+        ar: "جوال"
+      },
       description: {
         en: "Experience the latest innovation with revolutionary camera and A18 Pro chip",
         ar: "استمتع بأحدث الابتكارات مع كاميرا ثورية وشريحة A18 برو"
@@ -93,6 +100,10 @@ const BilingualProductListing: React.FC = () => {
         en: "Samsung Galaxy S25 Ultra",
         ar: "سامسونج جالاكسي S25 الترا"
       },
+      category: {
+        en: "Mobile",
+        ar: "جوال"
+      },
       description: {
         en: "Unleash creativity with AI-powered tools and 200MP camera system",
         ar: "أطلق العنان للإبداع مع أدوات مدعومة بالذكاء الاصطناعي ونظام كاميرا بدقة 200 ميجابكسل"
@@ -117,6 +128,10 @@ const BilingualProductListing: React.FC = () => {
       title: {
         en: "Galaxy Z Fold 6",
         ar: "جالاكسي زد فولد 6"
+      },
+      category: {
+        en: "Mobile",
+        ar: "جوال"
       },
       description: {
         en: "Multitask like never before with a stunning foldable display",
@@ -147,6 +162,10 @@ const BilingualProductListing: React.FC = () => {
       title: {
         en: "Galaxy Z Flip 6",
         ar: "جالاكسي زد فليب 6"
+      },
+      category: {
+        en: "Mobile",
+        ar: "جوال"
       },
       description: {
         en: "Compact, stylish foldable with powerful camera and long-lasting battery",
@@ -273,7 +292,7 @@ const BilingualProductListing: React.FC = () => {
                   <CardFooter className="p-4 pt-0" dir={language === 'ar' ? 'rtl' : 'ltr'}>
                     <div className="w-full space-y-2">
                       <Button className="w-full bg-jam3a-purple hover:bg-jam3a-deep-purple">
-                        <Link to={`/join-jam3a?product=${encodeURIComponent(product.title.en)}&price=${product.groupPrices[product.groupPrices.length - 1].price} SAR&discount=${Math.round((product.originalPrice - product.groupPrices[product.groupPrices.length - 1].price) / product.originalPrice * 100)}%`}>
+                        <Link to={`/join-jam3a?product=${encodeURIComponent(product.title.en)}&price=${product.groupPrices[product.groupPrices.length - 1].price} SAR&discount=${Math.round((product.originalPrice - product.groupPrices[product.groupPrices.length - 1].price) / product.originalPrice * 100)}%&category=${encodeURIComponent(product.category.en)}`}>
                           {language === 'en' ? 'Join Jam3a' : 'انضم للجمعة'}
                         </Link>
                       </Button>
