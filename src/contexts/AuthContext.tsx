@@ -1,29 +1,34 @@
+
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useSessionContext } from '@supabase/auth-helpers-react';
+import { Session } from '@supabase/supabase-js';
 
 // Define the User type
 interface User {
   id: string;
   name: string;
   email: string;
-  isAdmin?: boolean;
+  role?: 'admin' | 'user' | 'seller';
 }
 
 // Define the AuthContext type
 interface AuthContextType {
   user: User | null;
+  session: Session | null;
   isAuthenticated: boolean;
-  login: (user: User) => void;
-  logout: () => void;
   isAdmin: boolean;
+  login: (session: Session) => void;
+  logout: () => void;
 }
 
 // Create the context with a default value
 const AuthContext = createContext<AuthContextType>({
   user: null,
+  session: null,
   isAuthenticated: false,
+  isAdmin: false,
   login: () => {},
   logout: () => {},
-  isAdmin: false,
 });
 
 // Define props for AuthProvider
@@ -33,37 +38,49 @@ interface AuthProviderProps {
 
 // Create the AuthProvider component
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  // Initialize state from localStorage if available
-  const [user, setUser] = useState<User | null>(() => {
-    const savedUser = localStorage.getItem('jam3a_user');
-    return savedUser ? JSON.parse(savedUser) : null;
-  });
-  
-  const isAuthenticated = !!user;
-  const isAdmin = user?.isAdmin || false;
+  const { session } = useSessionContext();
+  const [user, setUser] = useState<User | null>(null);
 
-  // Update localStorage when user changes
+  // Effect to update user when session changes
   useEffect(() => {
-    if (user) {
-      localStorage.setItem('jam3a_user', JSON.stringify(user));
-    } else {
-      localStorage.removeItem('jam3a_user');
-    }
-  }, [user]);
+    const updateUser = async () => {
+      if (session?.user) {
+        // Fetch additional user metadata from Supabase
+        const userData: User = {
+          id: session.user.id,
+          name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
+          email: session.user.email || '',
+          role: session.user.user_metadata?.role || 'user'
+        };
+        setUser(userData);
+      } else {
+        setUser(null);
+      }
+    };
 
-  // Login function
-  const login = (userData: User) => {
-    setUser(userData);
+    updateUser();
+  }, [session]);
+
+  // Login function (handled by Supabase)
+  const login = (session: Session) => {
+    // This is now mostly handled by Supabase
   };
 
   // Logout function
   const logout = () => {
-    setUser(null);
+    // This will be handled by Supabase
   };
 
   // Provide the context value
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, login, logout, isAdmin }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      session, 
+      isAuthenticated: !!session, 
+      isAdmin: user?.role === 'admin', 
+      login, 
+      logout 
+    }}>
       {children}
     </AuthContext.Provider>
   );
