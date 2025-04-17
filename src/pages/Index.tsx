@@ -10,7 +10,7 @@ import JoinWaitlist from '@/components/JoinWaitlist';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import StartJam3a from '@/components/StartJam3a';
-import Testimonials from '@/components/Testimonials';
+// Remove Testimonials import as it's no longer used
 import { useAuth } from '@/contexts/AuthContext';
 import AdminButton from '@/components/AdminButton';
 
@@ -26,7 +26,7 @@ const Index = () => {
         <HowItWorks />
         <FeaturedDeals />
         <BilingualProductListing />
-        <Testimonials />
+        {/* Removed Testimonials component */}
         <StartJam3a />
         <WhyChooseUs />
         <JoinWaitlist />
