@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Users, ShoppingBag, Globe, Menu, X, User, LogOut } from 'lucide-react';
@@ -160,7 +161,7 @@ const Header = () => {
             </DropdownMenuContent>
           </DropdownMenu>
           
-          <Button className="bg-jam3a-purple hover:bg-jam3a-deep-purple transition-colors">
+          <Button className="bg-royal-blue hover:bg-royal-blue-dark text-white transition-colors shadow-md border border-white">
             <Link to="/start-jam3a" className="text-white">
               {language === 'en' ? 'Join/Start a Jam3a' : 'انضم/ابدأ جمعة'}
             </Link>
@@ -239,7 +240,7 @@ const Header = () => {
               {language === 'en' ? 'Admin Panel' : 'لوحة الإدارة'}
             </Link>
             <Button 
-              className="bg-jam3a-purple hover:bg-jam3a-deep-purple mt-4"
+              className="bg-royal-blue hover:bg-royal-blue-dark text-white mt-4"
               onClick={() => setIsMenuOpen(false)}
             >
               <Link to="/start-jam3a" className="text-white">

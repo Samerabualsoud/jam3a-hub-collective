@@ -24,7 +24,7 @@ const Index = () => {
         {isAdmin && (
           <Link 
             to="/admin" 
-            className="fixed top-24 right-4 z-50 bg-jam3a-purple text-white p-2 rounded-full shadow-lg hover:bg-jam3a-deep-purple transition-colors"
+            className="fixed top-24 right-4 z-50 bg-royal-blue text-white p-3 rounded-full shadow-lg hover:bg-royal-blue-dark transition-colors border-2 border-white"
             title="Admin Panel"
           >
             <SettingsIcon className="h-6 w-6" />
