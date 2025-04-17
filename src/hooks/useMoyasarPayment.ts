@@ -1,13 +1,7 @@
 
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { createClient } from '@supabase/supabase-js';
-
-// Initialize Supabase client with anon key
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL || '',
-  import.meta.env.VITE_SUPABASE_ANON_KEY || ''
-);
+import { useSupabaseClient } from '@supabase/auth-helpers-react';
 
 interface PaymentSource {
   type: 'creditcard' | 'applepay' | 'stcpay' | 'mada';
@@ -65,6 +59,7 @@ export const useMoyasarPayment = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [paymentData, setPaymentData] = useState<PaymentResponse | null>(null);
   const { toast } = useToast();
+  const supabase = useSupabaseClient();
 
   const processPayment = async (paymentDetails: PaymentDetails) => {
     setIsLoading(true);
