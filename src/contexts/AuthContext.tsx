@@ -37,7 +37,12 @@ interface AuthProviderProps {
 }
 
 // Hard-coded credentials for development when Supabase is not available
-const validCredentials = [
+const validCredentials: Array<{
+  email: string;
+  password: string;
+  role: 'admin' | 'user' | 'seller';
+  name: string;
+}> = [
   { email: 'admin@example.com', password: 'admin123', role: 'admin', name: 'Admin User' },
   { email: 'user@example.com', password: 'user123', role: 'user', name: 'Regular User' },
   { email: 'seller@example.com', password: 'seller123', role: 'seller', name: 'Seller Account' },
@@ -57,7 +62,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           id: session.user.id,
           name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
           email: session.user.email || '',
-          role: session.user.user_metadata?.role || 'user'
+          role: (session.user.user_metadata?.role as 'admin' | 'user' | 'seller') || 'user'
         };
         setUser(userData);
       } else {
