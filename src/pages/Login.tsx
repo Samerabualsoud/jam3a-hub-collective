@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -26,14 +25,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Phone, User, Mail, Lock, ArrowRight } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSessionContext } from "@/contexts/SessionContext";
 
-// Login form schema
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
   password: z.string().min(8, { message: "Password must be at least 8 characters" }),
 });
 
-// Registration form schema
 const registerSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters" }),
   email: z.string().email({ message: "Invalid email address" }),
@@ -41,7 +39,6 @@ const registerSchema = z.object({
   password: z.string().min(8, { message: "Password must be at least 8 characters" }),
 });
 
-// OTP form schema
 const otpSchema = z.object({
   otp: z.string().length(6, { message: "OTP must be 6 digits" }),
 });
@@ -50,12 +47,12 @@ const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { login } = useAuth();
+  const { supabaseClient } = useSessionContext();
   const [activeTab, setActiveTab] = useState<"login" | "register">("login");
   const [showOTPVerification, setShowOTPVerification] = useState<boolean>(false);
   const [otpValue, setOTPValue] = useState<string>("");
   const [userPhone, setUserPhone] = useState<string>("");
 
-  // Login form
   const loginForm = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -64,7 +61,6 @@ const Login = () => {
     },
   });
 
-  // Register form
   const registerForm = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -75,7 +71,6 @@ const Login = () => {
     },
   });
 
-  // OTP form
   const otpForm = useForm<z.infer<typeof otpSchema>>({
     resolver: zodResolver(otpSchema),
     defaultValues: {
@@ -83,55 +78,70 @@ const Login = () => {
     },
   });
 
-  const onLoginSubmit = (data: z.infer<typeof loginSchema>) => {
+  const onLoginSubmit = async (data: z.infer<typeof loginSchema>) => {
     console.log("Login data:", data);
     
-    // Use the authentication context to login
-    login({
-      id: "user-" + Date.now(),
-      name: "User",
-      email: data.email,
-      isAdmin: data.email.includes("admin")
-    });
-    
-    // Simulate login success
-    toast({
-      title: "Login successful",
-      description: "Welcome back to Jam3a!",
-    });
-    
-    // Redirect to home after successful login
-    setTimeout(() => navigate("/"), 1000);
+    if (supabaseClient) {
+      try {
+        const { error } = await supabaseClient.auth.signInWithPassword({
+          email: data.email,
+          password: data.password,
+        });
+        
+        if (error) {
+          toast({
+            title: "Login failed",
+            description: error.message,
+            variant: "destructive",
+          });
+          return;
+        }
+        
+        toast({
+          title: "Login successful",
+          description: "Welcome back to Jam3a!",
+        });
+        
+        setTimeout(() => navigate("/"), 1000);
+      } catch (err) {
+        toast({
+          title: "Login failed",
+          description: "An unexpected error occurred",
+          variant: "destructive",
+        });
+      }
+    } else {
+      toast({
+        title: "Login successful",
+        description: "Welcome back to Jam3a! (Development mode)",
+      });
+      setTimeout(() => navigate("/"), 1000);
+    }
   };
 
   const onRegisterSubmit = (data: z.infer<typeof registerSchema>) => {
     console.log("Register data:", data);
     setUserPhone(data.phone);
     
-    // Simulate sending OTP
     toast({
       title: "OTP sent",
       description: `Verification code sent to ${data.phone}`,
     });
     
-    // Show OTP verification screen
     setShowOTPVerification(true);
   };
 
   const onOTPSubmit = (data: z.infer<typeof otpSchema>) => {
     console.log("OTP verification:", data);
     
-    // Simulate OTP verification success
     toast({
       title: "Registration successful",
       description: "Your account has been created successfully!",
     });
     
-    // Redirect to home after successful registration
     setTimeout(() => navigate("/"), 1500);
   };
 
-  // For OTP input
   const handleOTPChange = (value: string) => {
     setOTPValue(value);
     if (value.length === 6) {

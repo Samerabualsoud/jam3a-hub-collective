@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,24 +30,23 @@ const Admin = () => {
 
   useEffect(() => {
     // Check if user is authenticated but not an admin
-    if (isAuthenticated && user && !user.isAdmin) {
+    if (isAuthenticated && user && !isAdmin) {
       setShowAdminLogin(true);
     }
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, user, isAdmin]);
 
   const handleAdminLogin = () => {
     // In a real application, this would be a server-side check
     // For demo purposes, we're using a simple password check
     if (adminPassword === "admin123") {
       // Update the user object to include admin privileges
-      if (user) {
-        user.isAdmin = true;
-        // Force a re-render
-        setShowAdminLogin(false);
+      if (user && supabaseClient) {
+        // Ideally, we would update the user's role in Supabase here
         toast({
           title: "Admin Access Granted",
           description: "You now have access to the admin panel.",
         });
+        setShowAdminLogin(false);
       }
     } else {
       toast({

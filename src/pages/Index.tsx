@@ -14,7 +14,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Link } from 'react-router-dom';
 
 const Index = () => {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   
   return (
     <div className="flex min-h-screen flex-col">
@@ -29,7 +29,7 @@ const Index = () => {
         <WhyChooseUs />
         <JoinWaitlist />
         
-        {user?.isAdmin && (
+        {isAdmin && (
           <div className="container mx-auto py-6">
             <div className="bg-blue-100 p-4 rounded-lg">
               <h3 className="font-medium text-blue-800">Admin Tools</h3>

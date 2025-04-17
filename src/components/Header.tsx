@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Users, ShoppingBag, Globe, Menu, X, User, LogOut } from 'lucide-react';
@@ -41,7 +40,7 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { language, setLanguage } = useLanguage();
   const { toast } = useToast();
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout, isAdmin } = useAuth();
 
   const toggleLanguage = (value: string) => {
     if (value) {
@@ -130,7 +129,7 @@ const Header = () => {
                       {language === 'en' ? 'My Jam3a Deals' : 'صفقات جمعتي'}
                     </Link>
                   </DropdownMenuItem>
-                  {user?.isAdmin && (
+                  {isAdmin && (
                     <DropdownMenuItem className="hover:bg-jam3a-purple-50">
                       <Link to="/admin" className="w-full flex items-center">
                         {language === 'en' ? 'Admin Panel' : 'لوحة الإدارة'}
