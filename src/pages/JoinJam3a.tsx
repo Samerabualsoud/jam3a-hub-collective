@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -44,6 +45,28 @@ const JoinJam3a = () => {
   
   const handlePaymentMethodChange = (method: string) => {
     setFormData(prev => ({ ...prev, paymentMethod: method }));
+  };
+  
+  // Prevent tab change when clicking on tab triggers directly
+  const handleTabChange = (value: string) => {
+    // Don't allow direct tab navigation through clicks
+    return;
+  };
+  
+  const handleNextStep = () => {
+    if (activeTab === 'details') {
+      setActiveTab('info');
+    } else if (activeTab === 'info') {
+      setActiveTab('payment');
+    }
+  };
+  
+  const handlePrevStep = () => {
+    if (activeTab === 'info') {
+      setActiveTab('details');
+    } else if (activeTab === 'payment') {
+      setActiveTab('info');
+    }
   };
   
   const handleSubmit = async (e: React.FormEvent) => {
@@ -114,8 +137,8 @@ const JoinJam3a = () => {
           </h1>
           
           <div className="bg-white rounded-lg shadow-md overflow-hidden">
-            <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
+            <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+              <TabsList className="grid w-full grid-cols-3 pointer-events-none">
                 <TabsTrigger value="details">
                   {language === 'en' ? 'Deal Details' : 'تفاصيل الصفقة'}
                 </TabsTrigger>
@@ -147,11 +170,11 @@ const JoinJam3a = () => {
                     
                     <div className="mb-4">
                       <div className="flex items-center">
-                        <span className="text-2xl font-bold text-purple-600 mr-2">
+                        <span className="text-2xl font-bold text-royal-blue mr-2">
                           {productPrice.replace('SAR', '')} SAR
                         </span>
                         {productDiscount && (
-                          <span className="text-sm bg-purple-100 text-purple-800 px-2 py-1 rounded">
+                          <span className="text-sm bg-royal-blue-50 text-royal-blue px-2 py-1 rounded">
                             {productDiscount} OFF
                           </span>
                         )}
@@ -187,8 +210,8 @@ const JoinJam3a = () => {
                     </div>
                     
                     <Button 
-                      onClick={() => setActiveTab('info')}
-                      className="w-full bg-purple-600 hover:bg-purple-700"
+                      onClick={handleNextStep}
+                      className="w-full bg-royal-blue hover:bg-royal-blue-dark"
                     >
                       {language === 'en' ? 'Continue to Next Step' : 'المتابعة إلى الخطوة التالية'}
                     </Button>
@@ -261,15 +284,15 @@ const JoinJam3a = () => {
                     <Button 
                       type="button"
                       variant="outline"
-                      onClick={() => setActiveTab('details')}
+                      onClick={handlePrevStep}
                     >
                       {language === 'en' ? 'Back' : 'رجوع'}
                     </Button>
                     
                     <Button 
                       type="button"
-                      onClick={() => setActiveTab('payment')}
-                      className="bg-purple-600 hover:bg-purple-700"
+                      onClick={handleNextStep}
+                      className="bg-royal-blue hover:bg-royal-blue-dark"
                     >
                       {language === 'en' ? 'Continue to Payment' : 'المتابعة إلى الدفع'}
                     </Button>
@@ -286,16 +309,16 @@ const JoinJam3a = () => {
                     
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div 
-                        className={`border rounded-lg p-4 cursor-pointer ${formData.paymentMethod === 'credit-card' ? 'border-purple-600 bg-purple-50' : ''}`}
+                        className={`border rounded-lg p-4 cursor-pointer ${formData.paymentMethod === 'credit-card' ? 'border-royal-blue bg-royal-blue-50' : ''}`}
                         onClick={() => handlePaymentMethodChange('credit-card')}
                       >
                         <div className="flex items-center justify-between mb-2">
                           <div className="font-medium">
                             {language === 'en' ? 'Credit Card' : 'بطاقة ائتمان'}
                           </div>
-                          <div className="w-5 h-5 rounded-full border border-purple-600 flex items-center justify-center">
+                          <div className="w-5 h-5 rounded-full border border-royal-blue flex items-center justify-center">
                             {formData.paymentMethod === 'credit-card' && (
-                              <div className="w-3 h-3 rounded-full bg-purple-600"></div>
+                              <div className="w-3 h-3 rounded-full bg-royal-blue"></div>
                             )}
                           </div>
                         </div>
@@ -303,14 +326,14 @@ const JoinJam3a = () => {
                       </div>
                       
                       <div 
-                        className={`border rounded-lg p-4 cursor-pointer ${formData.paymentMethod === 'mada' ? 'border-purple-600 bg-purple-50' : ''}`}
+                        className={`border rounded-lg p-4 cursor-pointer ${formData.paymentMethod === 'mada' ? 'border-royal-blue bg-royal-blue-50' : ''}`}
                         onClick={() => handlePaymentMethodChange('mada')}
                       >
                         <div className="flex items-center justify-between mb-2">
                           <div className="font-medium">MADA</div>
-                          <div className="w-5 h-5 rounded-full border border-purple-600 flex items-center justify-center">
+                          <div className="w-5 h-5 rounded-full border border-royal-blue flex items-center justify-center">
                             {formData.paymentMethod === 'mada' && (
-                              <div className="w-3 h-3 rounded-full bg-purple-600"></div>
+                              <div className="w-3 h-3 rounded-full bg-royal-blue"></div>
                             )}
                           </div>
                         </div>
@@ -320,14 +343,14 @@ const JoinJam3a = () => {
                       </div>
                       
                       <div 
-                        className={`border rounded-lg p-4 cursor-pointer ${formData.paymentMethod === 'apple-pay' ? 'border-purple-600 bg-purple-50' : ''}`}
+                        className={`border rounded-lg p-4 cursor-pointer ${formData.paymentMethod === 'apple-pay' ? 'border-royal-blue bg-royal-blue-50' : ''}`}
                         onClick={() => handlePaymentMethodChange('apple-pay')}
                       >
                         <div className="flex items-center justify-between mb-2">
                           <div className="font-medium">Apple Pay</div>
-                          <div className="w-5 h-5 rounded-full border border-purple-600 flex items-center justify-center">
+                          <div className="w-5 h-5 rounded-full border border-royal-blue flex items-center justify-center">
                             {formData.paymentMethod === 'apple-pay' && (
-                              <div className="w-3 h-3 rounded-full bg-purple-600"></div>
+                              <div className="w-3 h-3 rounded-full bg-royal-blue"></div>
                             )}
                           </div>
                         </div>
@@ -337,14 +360,14 @@ const JoinJam3a = () => {
                       </div>
                       
                       <div 
-                        className={`border rounded-lg p-4 cursor-pointer ${formData.paymentMethod === 'stc-pay' ? 'border-purple-600 bg-purple-50' : ''}`}
+                        className={`border rounded-lg p-4 cursor-pointer ${formData.paymentMethod === 'stc-pay' ? 'border-royal-blue bg-royal-blue-50' : ''}`}
                         onClick={() => handlePaymentMethodChange('stc-pay')}
                       >
                         <div className="flex items-center justify-between mb-2">
                           <div className="font-medium">STC Pay</div>
-                          <div className="w-5 h-5 rounded-full border border-purple-600 flex items-center justify-center">
+                          <div className="w-5 h-5 rounded-full border border-royal-blue flex items-center justify-center">
                             {formData.paymentMethod === 'stc-pay' && (
-                              <div className="w-3 h-3 rounded-full bg-purple-600"></div>
+                              <div className="w-3 h-3 rounded-full bg-royal-blue"></div>
                             )}
                           </div>
                         </div>
@@ -434,7 +457,7 @@ const JoinJam3a = () => {
                     <Button 
                       type="button"
                       variant="outline"
-                      onClick={() => setActiveTab('info')}
+                      onClick={handlePrevStep}
                       disabled={isLoading}
                     >
                       {language === 'en' ? 'Back' : 'رجوع'}
@@ -442,7 +465,7 @@ const JoinJam3a = () => {
                     
                     <Button 
                       type="submit"
-                      className="bg-purple-600 hover:bg-purple-700"
+                      className="bg-royal-blue hover:bg-royal-blue-dark"
                       disabled={isLoading}
                     >
                       {isLoading ? (
