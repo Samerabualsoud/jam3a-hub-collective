@@ -196,15 +196,17 @@ const StartJam3a: React.FC = () => {
         </div>
 
         <div className="flex flex-col items-center space-y-4">
-          <Button 
-            size="lg" 
-            className="bg-royal-blue hover:bg-royal-blue-dark text-white px-8 py-6 text-lg shadow-royal-blue hover:shadow-royal-blue-lg transition-all duration-300 hover:-translate-y-1"
-          >
-            <Link to="/start-jam3a" className="flex items-center gap-2">
-              {content[language].cta}
-              <ArrowRight className="h-5 w-5" />
-            </Link>
-          </Button>
+          <Link to="/start-jam3a" className="w-full max-w-xs">
+            <Button 
+              size="lg" 
+              className="w-full bg-royal-blue hover:bg-royal-blue-dark text-white px-8 py-6 text-lg shadow-royal-blue hover:shadow-royal-blue-lg transition-all duration-300 hover:-translate-y-1"
+            >
+              <span className="flex items-center gap-2">
+                {content[language].cta}
+                <ArrowRight className="h-5 w-5" />
+              </span>
+            </Button>
+          </Link>
           <div className="flex items-center gap-2 mt-2">
             <span className="text-muted-foreground">{content[language].orJoin}</span>
             <Button variant="link" className="text-royal-blue hover:text-royal-blue-dark">
