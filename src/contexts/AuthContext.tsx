@@ -65,8 +65,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const login = async (email: string, password: string) => {
     try {
       if (!supabaseClient) {
-        // For development without Supabase
+        // For development without Supabase, simulate login with mock user
         console.log("Development mode: simulating successful login");
+        
+        // Create a mock user for development purposes
+        const mockUser: User = {
+          id: 'mock-user-id',
+          name: email.split('@')[0] || 'User',
+          email: email,
+          role: 'admin' // Give admin role in development for testing
+        };
+        
+        setUser(mockUser);
         return { error: null };
       }
       
@@ -99,7 +109,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     <AuthContext.Provider value={{ 
       user, 
       session, 
-      isAuthenticated: !!session, 
+      isAuthenticated: !!user, // Changed from !!session to !!user to work in dev mode
       isAdmin: user?.role === 'admin', 
       login, 
       logout 
