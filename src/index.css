@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -98,12 +99,13 @@
     @apply transition-transform duration-300 hover:scale-105;
   }
   
+  /* Supporting both green and blue gradients for compatibility */
   .text-gradient-green {
-    @apply bg-gradient-to-br from-royal-green to-royal-green-light bg-clip-text text-transparent;
+    @apply bg-gradient-to-br from-royal-blue to-royal-blue-light bg-clip-text text-transparent;
   }
   
   .bg-gradient-green {
-    @apply bg-gradient-to-br from-royal-green to-royal-green-light;
+    @apply bg-gradient-to-br from-royal-blue to-royal-blue-light;
   }
   
   .card-hover {
