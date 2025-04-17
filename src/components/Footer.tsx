@@ -1,14 +1,16 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Facebook, Twitter, Instagram, Users } from 'lucide-react';
 import { useLanguage } from './Header';
+import { useAuth } from '@/contexts/AuthContext';
+import AdminButton from './AdminButton';
 
 const Footer = () => {
   const { language } = useLanguage();
+  const { isAdmin } = useAuth();
 
   return (
-    <footer className="bg-gray-900 text-white" dir={language === 'ar' ? 'rtl' : 'ltr'}>
+    <footer className="bg-gray-900 text-white relative" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       <div className="container mx-auto px-4 py-8 md:px-6">
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           <div>
@@ -139,6 +141,7 @@ const Footer = () => {
           </div>
         </div>
       </div>
+      {isAdmin && <AdminButton />}
     </footer>
   );
 };
