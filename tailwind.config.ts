@@ -69,11 +69,11 @@ export default {
 				'royal-blue-light': '#38BDF8',
 				'royal-blue-50': '#E0F2FE',
 				'royal-blue-accent': '#0369A1',
-				'royal-green': '#146B3A', // Keep green colors for backward compatibility
-				'royal-green-dark': '#0E5028',
-				'royal-green-light': '#16A34A',
-				'royal-green-50': '#ECFDF5',
-				'royal-green-accent': '#059669',
+				'jam3a-purple': '#9B87F5', // Changed from green to purple
+				'jam3a-deep-purple': '#8A70F2', // Changed from green to purple
+				'jam3a-light-purple': '#B6A8F8', // Changed from green to purple
+				'jam3a-purple-50': '#F3F0FF', // Changed from green to purple
+				'jam3a-purple-accent': '#7C63EA', // Changed from green to purple
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -128,8 +128,10 @@ export default {
 				'bounce-light': 'bounce-light 2s infinite ease-in-out'
 			},
 			boxShadow: {
-				'jam3a': '0 10px 25px -5px rgba(20, 107, 58, 0.3)',
-				'jam3a-lg': '0 20px 35px -10px rgba(20, 107, 58, 0.4)'
+				'jam3a': '0 10px 25px -5px rgba(155, 135, 245, 0.3)', // Changed from green to purple
+				'jam3a-lg': '0 20px 35px -10px rgba(155, 135, 245, 0.4)', // Changed from green to purple
+				'royal-blue': '0 10px 25px -5px rgba(14, 165, 233, 0.3)', // Added blue shadow
+				'royal-blue-lg': '0 20px 35px -10px rgba(14, 165, 233, 0.4)' // Added blue shadow
 			}
 		}
 	},

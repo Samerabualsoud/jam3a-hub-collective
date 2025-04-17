@@ -24,10 +24,12 @@ const Index = () => {
         {isAdmin && (
           <Link 
             to="/admin" 
-            className="fixed top-24 right-4 z-50 bg-royal-blue text-white p-3 rounded-full shadow-lg hover:bg-royal-blue-dark transition-colors border-2 border-white"
+            className="fixed top-24 right-4 z-50 bg-royal-blue text-white p-4 rounded-full shadow-xl hover:bg-royal-blue-dark transition-colors border-3 border-white"
             title="Admin Panel"
+            aria-label="Admin Panel"
+            style={{boxShadow: '0 0 15px rgba(14, 165, 233, 0.7)'}}
           >
-            <SettingsIcon className="h-6 w-6" />
+            <SettingsIcon className="h-8 w-8" />
           </Link>
         )}
         <Hero />
