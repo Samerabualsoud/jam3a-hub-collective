@@ -179,22 +179,21 @@ const ProductForm = ({ initialData, onSubmit, onCancel }: ProductFormProps) => {
                 <Input placeholder="Enter image URL" {...field} />
               </FormControl>
               <FormMessage />
+              {field.value && (
+                <div className="border rounded-md overflow-hidden h-40 mt-2">
+                  <img 
+                    src={field.value} 
+                    alt="Product preview" 
+                    className="w-full h-full object-contain"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = "https://placehold.co/600x400?text=No+Image";
+                    }}
+                  />
+                </div>
+              )}
             </FormItem>
           )}
         />
-
-        {field.value && (
-          <div className="border rounded-md overflow-hidden h-40 mt-2">
-            <img 
-              src={field.value} 
-              alt="Product preview" 
-              className="w-full h-full object-contain"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = "https://placehold.co/600x400?text=No+Image";
-              }}
-            />
-          </div>
-        )}
 
         <FormField
           control={form.control}
