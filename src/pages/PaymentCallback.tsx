@@ -8,16 +8,14 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useLanguage } from '@/components/Header';
 import { useMoyasarPayment } from '@/hooks/useMoyasarPayment';
-import { useSupabaseClient } from '@supabase/auth-helpers-react';
 
 const PaymentCallback = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { language } = useLanguage();
-  const { verifyPayment, isLoading } = useMoyasarPayment();
+  const { verifyPayment, isLoading, isSupabaseAvailable } = useMoyasarPayment();
   const [paymentStatus, setPaymentStatus] = useState<'success' | 'failure' | 'pending' | 'error' | null>(null);
   const [paymentDetails, setPaymentDetails] = useState<any>(null);
-  const supabase = useSupabaseClient();
 
   const paymentId = searchParams.get('id');
 
@@ -28,7 +26,7 @@ const PaymentCallback = () => {
         return;
       }
 
-      if (!supabase) {
+      if (!isSupabaseAvailable) {
         console.error('Supabase client not available');
         setPaymentStatus('error');
         return;
@@ -52,12 +50,12 @@ const PaymentCallback = () => {
       }
     };
 
-    if (supabase) {
+    if (isSupabaseAvailable) {
       checkPayment();
     } else {
       setPaymentStatus('error');
     }
-  }, [paymentId, verifyPayment, supabase]);
+  }, [paymentId, verifyPayment, isSupabaseAvailable]);
 
   return (
     <div className="flex min-h-screen flex-col">

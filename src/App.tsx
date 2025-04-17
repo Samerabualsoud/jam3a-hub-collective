@@ -44,83 +44,54 @@ const App = () => {
     console.warn('Running without Supabase configuration. Some features will be limited.');
   }
 
-  // Don't render the SessionContextProvider if supabaseClient is null
+  // The common routes configuration
+  const routesConfig = (
+    <Routes>
+      <Route path="/" element={<Index />} />
+      <Route path="/start-jam3a" element={<StartJam3a />} />
+      <Route path="/join-jam3a" element={<JoinJam3a />} />
+      <Route path="/payment-callback" element={<PaymentCallback />} />
+      <Route path="/payment-settings" element={<PaymentSettings />} />
+      <Route path="/how-it-works" element={<HowItWorks />} />
+      <Route path="/sellers" element={<Sellers />} />
+      <Route path="/seller-login" element={<SellerLogin />} />
+      <Route path="/seller-register" element={<SellerRegister />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/my-jam3a" element={<Index />} />
+      <Route path="/product/:id" element={<Index />} />
+      <Route path="/about" element={<AboutUs />} />
+      <Route path="/faq" element={<FAQPage />} />
+      <Route path="/shop-all-deals" element={<ShopAllDeals />} />
+      <Route path="/privacy" element={<Index />} />
+      <Route path="/terms" element={<Index />} />
+      <Route path="/contact" element={<Index />} />
+      <Route path="/admin/*" element={<Admin />} />
+      {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+
   return (
     <QueryClientProvider client={queryClient}>
-      {supabaseClient ? (
-        <SessionContextProvider supabaseClient={supabaseClient}>
-          <AuthProvider>
-            <TooltipProvider>
-              <LanguageProvider>
-                <Toaster />
-                <Sonner />
-                <BrowserRouter>
-                  <Routes>
-                    <Route path="/" element={<Index />} />
-                    <Route path="/start-jam3a" element={<StartJam3a />} />
-                    <Route path="/join-jam3a" element={<JoinJam3a />} />
-                    <Route path="/payment-callback" element={<PaymentCallback />} />
-                    <Route path="/payment-settings" element={<PaymentSettings />} />
-                    <Route path="/how-it-works" element={<HowItWorks />} />
-                    <Route path="/sellers" element={<Sellers />} />
-                    <Route path="/seller-login" element={<SellerLogin />} />
-                    <Route path="/seller-register" element={<SellerRegister />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route path="/my-jam3a" element={<Index />} />
-                    <Route path="/product/:id" element={<Index />} />
-                    <Route path="/about" element={<AboutUs />} />
-                    <Route path="/faq" element={<FAQPage />} />
-                    <Route path="/shop-all-deals" element={<ShopAllDeals />} />
-                    <Route path="/privacy" element={<Index />} />
-                    <Route path="/terms" element={<Index />} />
-                    <Route path="/contact" element={<Index />} />
-                    <Route path="/admin/*" element={<Admin />} />
-                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </BrowserRouter>
-              </LanguageProvider>
-            </TooltipProvider>
-          </AuthProvider>
-        </SessionContextProvider>
-      ) : (
-        // Fallback when Supabase is not configured - skip the SessionContextProvider
-        <AuthProvider>
-          <TooltipProvider>
-            <LanguageProvider>
-              <Toaster />
-              <Sonner />
-              <BrowserRouter>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/start-jam3a" element={<StartJam3a />} />
-                  <Route path="/join-jam3a" element={<JoinJam3a />} />
-                  <Route path="/payment-callback" element={<PaymentCallback />} />
-                  <Route path="/payment-settings" element={<PaymentSettings />} />
-                  <Route path="/how-it-works" element={<HowItWorks />} />
-                  <Route path="/sellers" element={<Sellers />} />
-                  <Route path="/seller-login" element={<SellerLogin />} />
-                  <Route path="/seller-register" element={<SellerRegister />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
-                  <Route path="/my-jam3a" element={<Index />} />
-                  <Route path="/product/:id" element={<Index />} />
-                  <Route path="/about" element={<AboutUs />} />
-                  <Route path="/faq" element={<FAQPage />} />
-                  <Route path="/shop-all-deals" element={<ShopAllDeals />} />
-                  <Route path="/privacy" element={<Index />} />
-                  <Route path="/terms" element={<Index />} />
-                  <Route path="/contact" element={<Index />} />
-                  <Route path="/admin/*" element={<Admin />} />
-                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </BrowserRouter>
-            </LanguageProvider>
-          </TooltipProvider>
-        </AuthProvider>
-      )}
+      <AuthProvider>
+        <TooltipProvider>
+          <LanguageProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              {supabaseClient ? (
+                <SessionContextProvider supabaseClient={supabaseClient}>
+                  {routesConfig}
+                </SessionContextProvider>
+              ) : (
+                // Fallback when Supabase is not configured - skip the SessionContextProvider
+                routesConfig
+              )}
+            </BrowserRouter>
+          </LanguageProvider>
+        </TooltipProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 };

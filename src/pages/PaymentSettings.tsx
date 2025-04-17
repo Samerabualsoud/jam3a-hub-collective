@@ -12,7 +12,6 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 
 const PaymentSettings = () => {
-  // Note: supabase may be null if we're running without Supabase configuration
   const supabase = useSupabaseClient();
   const navigate = useNavigate();
   const { isAdmin } = useAuth();

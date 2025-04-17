@@ -59,6 +59,7 @@ export const useMoyasarPayment = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [paymentData, setPaymentData] = useState<PaymentResponse | null>(null);
   const { toast } = useToast();
+  // Note: supabaseClient might be null if Supabase is not configured
   const supabase = useSupabaseClient();
   
   const isSupabaseAvailable = !!supabase;
