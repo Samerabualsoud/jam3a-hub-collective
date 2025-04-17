@@ -41,6 +41,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
 }) => {
   const { language } = useLanguage();
 
+  const formattedTitle = {
+    en: `${category.en} Jam3a: ${title.en}`,
+    ar: `جمعة ${category.ar}: ${title.ar}`
+  };
+
   return (
     <div className="group overflow-hidden rounded-xl border bg-white shadow-sm transition-all hover:shadow-md">
       <div className="relative overflow-hidden">
@@ -59,7 +64,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             {category[language]} {language === 'en' ? 'Jam3a' : 'جمعة'}
           </span>
         </div>
-        <h3 className="line-clamp-1 text-lg font-medium">{title[language]}</h3>
+        <h3 className="line-clamp-1 text-lg font-medium">{formattedTitle[language]}</h3>
         <div className="mt-2 flex items-end gap-2">
           <span className="text-2xl font-bold text-jam3a-purple">{discountedPrice} {language === 'en' ? 'SAR' : 'ريال'}</span>
           <span className="text-sm text-muted-foreground line-through">{originalPrice} {language === 'en' ? 'SAR' : 'ريال'}</span>
@@ -86,7 +91,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </div>
         <div className="mt-4">
           <Button className="w-full bg-jam3a-purple hover:bg-jam3a-deep-purple">
-            <Link to={`/join-jam3a?product=${encodeURIComponent(title.en)}&price=${discountedPrice} SAR&discount=${Math.round((originalPrice - discountedPrice) / originalPrice * 100)}%&category=${encodeURIComponent(category.en)}`}>
+            <Link to={`/join-jam3a?product=${encodeURIComponent(formattedTitle.en)}&price=${discountedPrice} SAR&discount=${Math.round((originalPrice - discountedPrice) / originalPrice * 100)}%&category=${encodeURIComponent(category.en)}`}>
               {language === 'en' ? 'Join Jam3a' : 'انضم للجمعة'}
             </Link>
           </Button>

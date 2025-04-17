@@ -20,6 +20,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { useLanguage } from './Header';
 
 interface Product {
   id: number;
@@ -56,7 +57,7 @@ interface Product {
 }
 
 const BilingualProductListing: React.FC = () => {
-  const [language, setLanguage] = useState<'en' | 'ar'>('en');
+  const { language } = useLanguage();
 
   const productData: Product[] = [
     {
@@ -214,101 +215,113 @@ const BilingualProductListing: React.FC = () => {
           className="w-full max-w-5xl mx-auto"
         >
           <CarouselContent>
-            {productData.map((product) => (
-              <CarouselItem key={product.id} className="md:basis-1/2 lg:basis-1/3">
-                <Card className="overflow-hidden border border-gray-200 h-full transition-all duration-300 hover:shadow-lg">
-                  <div className="relative overflow-hidden">
-                    <img
-                      src={product.image}
-                      alt={product.title[language]}
-                      className="h-48 w-full object-cover transition-transform duration-300 hover:scale-105"
-                    />
-                    <div className="absolute top-2 right-2 flex flex-col gap-2">
-                      <Badge 
-                        variant="default" 
-                        className="bg-black/70 backdrop-blur-sm px-2 py-1 text-xs"
-                      >
-                        {Math.round((product.originalPrice - product.groupPrices[product.groupPrices.length - 1].price) / product.originalPrice * 100)}% {language === 'en' ? 'OFF' : 'خصم'}
-                      </Badge>
-                      
-                      {product.tag && (
+            {productData.map((product) => {
+              const formattedTitle = {
+                en: `${product.category.en} Jam3a: ${product.title.en}`,
+                ar: `جمعة ${product.category.ar}: ${product.title.ar}`
+              };
+              
+              return (
+                <CarouselItem key={product.id} className="md:basis-1/2 lg:basis-1/3">
+                  <Card className="overflow-hidden border border-gray-200 h-full transition-all duration-300 hover:shadow-lg">
+                    <div className="relative overflow-hidden">
+                      <img
+                        src={product.image}
+                        alt={product.title[language]}
+                        className="h-48 w-full object-cover transition-transform duration-300 hover:scale-105"
+                      />
+                      <div className="absolute top-2 right-2 flex flex-col gap-2">
                         <Badge 
-                          variant={product.tag.color as any} 
-                          className="px-2 py-1 text-xs animate-pulse"
+                          variant="default" 
+                          className="bg-black/70 backdrop-blur-sm px-2 py-1 text-xs"
                         >
-                          {product.tag[language]}
+                          {Math.round((product.originalPrice - product.groupPrices[product.groupPrices.length - 1].price) / product.originalPrice * 100)}% {language === 'en' ? 'OFF' : 'خصم'}
                         </Badge>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <CardContent className="p-4">
-                    <div dir={language === 'ar' ? 'rtl' : 'ltr'} className="space-y-3">
-                      <h3 className="font-semibold text-lg line-clamp-1">{product.title[language]}</h3>
-                      <p className="text-sm text-muted-foreground line-clamp-2">{product.description[language]}</p>
-                      
-                      <div className="mt-2 flex items-end gap-2">
-                        <span className="text-xl font-bold text-jam3a-purple">
-                          {product.groupPrices[product.groupPrices.length - 1].price} {language === 'en' ? 'SAR' : 'ريال'}
-                        </span>
-                        <span className="text-sm text-muted-foreground line-through">
-                          {product.originalPrice} {language === 'en' ? 'SAR' : 'ريال'}
-                        </span>
+                        
+                        {product.tag && (
+                          <Badge 
+                            variant={product.tag.color as any} 
+                            className="px-2 py-1 text-xs animate-pulse"
+                          >
+                            {product.tag[language]}
+                          </Badge>
+                        )}
                       </div>
+                    </div>
+                    
+                    <CardContent className="p-4">
+                      <div dir={language === 'ar' ? 'rtl' : 'ltr'} className="space-y-3">
+                        <div className="mb-1">
+                          <span className="text-xs text-muted-foreground">
+                            {product.category[language]} {language === 'en' ? 'Jam3a' : 'جمعة'}
+                          </span>
+                        </div>
+                        <h3 className="font-semibold text-lg line-clamp-1">{formattedTitle[language]}</h3>
+                        <p className="text-sm text-muted-foreground line-clamp-2">{product.description[language]}</p>
+                        
+                        <div className="mt-2 flex items-end gap-2">
+                          <span className="text-xl font-bold text-jam3a-purple">
+                            {product.groupPrices[product.groupPrices.length - 1].price} {language === 'en' ? 'SAR' : 'ريال'}
+                          </span>
+                          <span className="text-sm text-muted-foreground line-through">
+                            {product.originalPrice} {language === 'en' ? 'SAR' : 'ريال'}
+                          </span>
+                        </div>
 
-                      <div className="mt-3 space-y-3 bg-gray-50 p-3 rounded-lg border">
-                        <h4 className="text-sm font-medium flex items-center">
-                          <BadgePercent className="h-4 w-4 mr-1" />
-                          {language === 'en' ? 'Group Pricing' : 'أسعار المجموعة'}
-                        </h4>
-                        <div className="space-y-1 text-sm">
-                          {product.groupPrices.map((pricing, idx) => (
-                            <div key={idx} className="flex justify-between">
-                              <span>{pricing.minCount}+ {language === 'en' ? 'people' : 'أشخاص'}</span>
-                              <span className="font-medium">{pricing.price} {language === 'en' ? 'SAR' : 'ريال'}</span>
+                        <div className="mt-3 space-y-3 bg-gray-50 p-3 rounded-lg border">
+                          <h4 className="text-sm font-medium flex items-center">
+                            <BadgePercent className="h-4 w-4 mr-1" />
+                            {language === 'en' ? 'Group Pricing' : 'أسعار المجموعة'}
+                          </h4>
+                          <div className="space-y-1 text-sm">
+                            {product.groupPrices.map((pricing, idx) => (
+                              <div key={idx} className="flex justify-between">
+                                <span>{pricing.minCount}+ {language === 'en' ? 'people' : 'أشخاص'}</span>
+                                <span className="font-medium">{pricing.price} {language === 'en' ? 'SAR' : 'ريال'}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="mt-4 space-y-2">
+                          <div className="flex items-center justify-between text-xs">
+                            <div className="flex items-center gap-1 text-muted-foreground">
+                              <Users className="h-3.5 w-3.5" />
+                              <span>
+                                {product.joinedCount} / {product.totalCount} {language === 'en' ? 'joined' : 'انضموا'}
+                              </span>
                             </div>
-                          ))}
+                            <div className="flex items-center gap-1 text-muted-foreground">
+                              <Timer className="h-3.5 w-3.5" />
+                              <span>{product.timeLeft[language]}</span>
+                            </div>
+                          </div>
+                          <Progress value={product.progress} className="h-1.5 bg-gray-100" />
                         </div>
                       </div>
-
-                      <div className="mt-4 space-y-2">
-                        <div className="flex items-center justify-between text-xs">
-                          <div className="flex items-center gap-1 text-muted-foreground">
-                            <Users className="h-3.5 w-3.5" />
-                            <span>
-                              {product.joinedCount} / {product.totalCount} {language === 'en' ? 'joined' : 'انضموا'}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-1 text-muted-foreground">
-                            <Timer className="h-3.5 w-3.5" />
-                            <span>{product.timeLeft[language]}</span>
-                          </div>
+                    </CardContent>
+                    
+                    <CardFooter className="p-4 pt-0" dir={language === 'ar' ? 'rtl' : 'ltr'}>
+                      <div className="w-full space-y-2">
+                        <Button className="w-full bg-jam3a-purple hover:bg-jam3a-deep-purple">
+                          <Link to={`/join-jam3a?product=${encodeURIComponent(formattedTitle.en)}&price=${product.groupPrices[product.groupPrices.length - 1].price} SAR&discount=${Math.round((product.originalPrice - product.groupPrices[product.groupPrices.length - 1].price) / product.originalPrice * 100)}%&category=${encodeURIComponent(product.category.en)}`}>
+                            {language === 'en' ? 'Join Jam3a' : 'انضم للجمعة'}
+                          </Link>
+                        </Button>
+                        <div className="flex justify-center items-center gap-x-4 text-xs text-muted-foreground">
+                          <span className="flex items-center">
+                            <Clock className="h-3 w-3 mr-1" /> {language === 'en' ? 'Limited Time' : 'وقت محدود'}
+                          </span>
+                          <span className="flex items-center">
+                            <Shield className="h-3 w-3 mr-1" /> {language === 'en' ? 'Money-back Guarantee' : 'ضمان استعادة الأموال'}
+                          </span>
                         </div>
-                        <Progress value={product.progress} className="h-1.5 bg-gray-100" />
                       </div>
-                    </div>
-                  </CardContent>
-                  
-                  <CardFooter className="p-4 pt-0" dir={language === 'ar' ? 'rtl' : 'ltr'}>
-                    <div className="w-full space-y-2">
-                      <Button className="w-full bg-jam3a-purple hover:bg-jam3a-deep-purple">
-                        <Link to={`/join-jam3a?product=${encodeURIComponent(product.title.en)}&price=${product.groupPrices[product.groupPrices.length - 1].price} SAR&discount=${Math.round((product.originalPrice - product.groupPrices[product.groupPrices.length - 1].price) / product.originalPrice * 100)}%&category=${encodeURIComponent(product.category.en)}`}>
-                          {language === 'en' ? 'Join Jam3a' : 'انضم للجمعة'}
-                        </Link>
-                      </Button>
-                      <div className="flex justify-center items-center gap-x-4 text-xs text-muted-foreground">
-                        <span className="flex items-center">
-                          <Clock className="h-3 w-3 mr-1" /> {language === 'en' ? 'Limited Time' : 'وقت محدود'}
-                        </span>
-                        <span className="flex items-center">
-                          <Shield className="h-3 w-3 mr-1" /> {language === 'en' ? 'Money-back Guarantee' : 'ضمان استعادة الأموال'}
-                        </span>
-                      </div>
-                    </div>
-                  </CardFooter>
-                </Card>
-              </CarouselItem>
-            ))}
+                    </CardFooter>
+                  </Card>
+                </CarouselItem>
+              );
+            })}
           </CarouselContent>
           <div className="flex justify-center mt-6 gap-2">
             <CarouselPrevious className="relative static -translate-y-0 left-0" />
