@@ -63,6 +63,7 @@ const App = () => {
       <Route path="/about" element={<AboutUs />} />
       <Route path="/faq" element={<FAQPage />} />
       <Route path="/shop-all-deals" element={<ShopAllDeals />} />
+      <Route path="/shop-deals" element={<ShopAllDeals />} /> {/* Added this route alias */}
       <Route path="/privacy" element={<Index />} />
       <Route path="/terms" element={<Index />} />
       <Route path="/contact" element={<Index />} />

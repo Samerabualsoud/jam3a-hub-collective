@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -10,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
 import { Clock, Users, Tag, Filter } from 'lucide-react';
-import { useNavigate, Link } from 'react-router-dom';  // Added Link import here
+import { useNavigate, Link } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 
 const ShopAllDeals = () => {
@@ -224,7 +223,6 @@ const ShopAllDeals = () => {
 
   const currentContent = content[language];
 
-  // Function to handle joining a Jam3a
   const handleJoinJam3a = (deal) => {
     navigate(`/join-jam3a?product=${encodeURIComponent(deal.title)}&price=${deal.currentPrice}`);
     toast({
@@ -239,7 +237,7 @@ const ShopAllDeals = () => {
     <div className={`flex min-h-screen flex-col ${isRtl ? 'rtl' : 'ltr'}`}>
       <Header />
       <main className="flex-1">
-        <section className="bg-gradient-to-b from-purple-50 to-white py-12">
+        <section className="bg-gradient-to-b from-royal-green-50 to-white py-12">
           <div className="container mx-auto px-4">
             <div className="text-center mb-8">
               <h1 className="text-4xl font-bold tracking-tight mb-2">{currentContent.title}</h1>
@@ -252,7 +250,6 @@ const ShopAllDeals = () => {
         <section className="py-8">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-              {/* Filters Sidebar */}
               <div className="lg:col-span-1">
                 <Card>
                   <CardContent className="p-6">
@@ -341,7 +338,6 @@ const ShopAllDeals = () => {
                 </Card>
               </div>
               
-              {/* Deals Grid */}
               <div className="lg:col-span-3">
                 <Tabs defaultValue="all" className="mb-8">
                   <TabsList className="grid w-full grid-cols-4">
@@ -361,7 +357,7 @@ const ShopAllDeals = () => {
                               alt={deal.title} 
                               className="w-full h-48 object-cover"
                             />
-                            <Badge className="absolute top-2 right-2 bg-jam3a-purple">{deal.discount} OFF</Badge>
+                            <Badge className="absolute top-2 right-2 bg-royal-green text-white">{deal.discount} OFF</Badge>
                           </div>
                           <CardContent className="p-4">
                             <h3 className="font-semibold text-lg mb-2">{deal.title}</h3>
@@ -386,13 +382,13 @@ const ShopAllDeals = () => {
                               
                               <div className="w-full bg-gray-200 rounded-full h-2.5">
                                 <div 
-                                  className="bg-jam3a-purple h-2.5 rounded-full" 
+                                  className="bg-royal-green h-2.5 rounded-full" 
                                   style={{ width: `${(deal.joined / deal.total) * 100}%` }}
                                 ></div>
                               </div>
                               
                               <Button 
-                                className="w-full bg-jam3a-purple hover:bg-jam3a-deep-purple"
+                                className="w-full bg-royal-green hover:bg-royal-green-dark"
                                 onClick={() => handleJoinJam3a(deal)}
                               >
                                 {deal.buttonText}
@@ -407,7 +403,7 @@ const ShopAllDeals = () => {
                   <TabsContent value="ending" className="mt-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {currentContent.deals
-                        .filter((deal, index) => index % 3 === 0) // Just for demo, filter some deals
+                        .filter((deal, index) => index % 3 === 0)
                         .map((deal, index) => (
                           <Card key={index} className="overflow-hidden">
                             <div className="relative">
@@ -416,7 +412,7 @@ const ShopAllDeals = () => {
                                 alt={deal.title} 
                                 className="w-full h-48 object-cover"
                               />
-                              <Badge className="absolute top-2 right-2 bg-jam3a-purple">{deal.discount} OFF</Badge>
+                              <Badge className="absolute top-2 right-2 bg-royal-green text-white">{deal.discount} OFF</Badge>
                             </div>
                             <CardContent className="p-4">
                               <h3 className="font-semibold text-lg mb-2">{deal.title}</h3>
@@ -441,13 +437,13 @@ const ShopAllDeals = () => {
                                 
                                 <div className="w-full bg-gray-200 rounded-full h-2.5">
                                   <div 
-                                    className="bg-jam3a-purple h-2.5 rounded-full" 
+                                    className="bg-royal-green h-2.5 rounded-full" 
                                     style={{ width: `${(deal.joined / deal.total) * 100}%` }}
                                   ></div>
                                 </div>
                                 
                                 <Button 
-                                  className="w-full bg-jam3a-purple hover:bg-jam3a-deep-purple"
+                                  className="w-full bg-royal-green hover:bg-royal-green-dark"
                                   onClick={() => handleJoinJam3a(deal)}
                                 >
                                   {deal.buttonText}
@@ -462,7 +458,7 @@ const ShopAllDeals = () => {
                   <TabsContent value="popular" className="mt-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {currentContent.deals
-                        .filter((deal, index) => index % 2 === 0) // Just for demo, filter some deals
+                        .filter((deal, index) => index % 2 === 0)
                         .map((deal, index) => (
                           <Card key={index} className="overflow-hidden">
                             <div className="relative">
@@ -471,7 +467,7 @@ const ShopAllDeals = () => {
                                 alt={deal.title} 
                                 className="w-full h-48 object-cover"
                               />
-                              <Badge className="absolute top-2 right-2 bg-jam3a-purple">{deal.discount} OFF</Badge>
+                              <Badge className="absolute top-2 right-2 bg-royal-green text-white">{deal.discount} OFF</Badge>
                             </div>
                             <CardContent className="p-4">
                               <h3 className="font-semibold text-lg mb-2">{deal.title}</h3>
@@ -496,13 +492,13 @@ const ShopAllDeals = () => {
                                 
                                 <div className="w-full bg-gray-200 rounded-full h-2.5">
                                   <div 
-                                    className="bg-jam3a-purple h-2.5 rounded-full" 
+                                    className="bg-royal-green h-2.5 rounded-full" 
                                     style={{ width: `${(deal.joined / deal.total) * 100}%` }}
                                   ></div>
                                 </div>
                                 
                                 <Button 
-                                  className="w-full bg-jam3a-purple hover:bg-jam3a-deep-purple"
+                                  className="w-full bg-royal-green hover:bg-royal-green-dark"
                                   onClick={() => handleJoinJam3a(deal)}
                                 >
                                   {deal.buttonText}
@@ -517,7 +513,7 @@ const ShopAllDeals = () => {
                   <TabsContent value="new" className="mt-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {currentContent.deals
-                        .filter((deal, index) => index >= 4) // Just for demo, filter some deals
+                        .filter((deal, index) => index >= 4)
                         .map((deal, index) => (
                           <Card key={index} className="overflow-hidden">
                             <div className="relative">
@@ -526,7 +522,7 @@ const ShopAllDeals = () => {
                                 alt={deal.title} 
                                 className="w-full h-48 object-cover"
                               />
-                              <Badge className="absolute top-2 right-2 bg-jam3a-purple">{deal.discount} OFF</Badge>
+                              <Badge className="absolute top-2 right-2 bg-royal-green text-white">{deal.discount} OFF</Badge>
                             </div>
                             <CardContent className="p-4">
                               <h3 className="font-semibold text-lg mb-2">{deal.title}</h3>
@@ -551,13 +547,13 @@ const ShopAllDeals = () => {
                                 
                                 <div className="w-full bg-gray-200 rounded-full h-2.5">
                                   <div 
-                                    className="bg-jam3a-purple h-2.5 rounded-full" 
+                                    className="bg-royal-green h-2.5 rounded-full" 
                                     style={{ width: `${(deal.joined / deal.total) * 100}%` }}
                                   ></div>
                                 </div>
                                 
                                 <Button 
-                                  className="w-full bg-jam3a-purple hover:bg-jam3a-deep-purple"
+                                  className="w-full bg-royal-green hover:bg-royal-green-dark"
                                   onClick={() => handleJoinJam3a(deal)}
                                 >
                                   {deal.buttonText}
@@ -571,7 +567,7 @@ const ShopAllDeals = () => {
                 </Tabs>
                 
                 <div className="flex justify-center mt-8">
-                  <Button className="bg-jam3a-purple hover:bg-jam3a-deep-purple">
+                  <Button className="bg-royal-green hover:bg-royal-green-dark">
                     <Link to="/start-jam3a" className="text-white">
                       {currentContent.startJam3a}
                     </Link>
