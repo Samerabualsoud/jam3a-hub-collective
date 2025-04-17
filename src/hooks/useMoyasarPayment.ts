@@ -62,6 +62,15 @@ export const useMoyasarPayment = () => {
   const supabase = useSupabaseClient();
 
   const processPayment = async (paymentDetails: PaymentDetails) => {
+    if (!supabase) {
+      toast({
+        title: 'Supabase connection error',
+        description: 'Unable to process payment: Supabase client is not available',
+        variant: 'destructive',
+      });
+      throw new Error('Supabase client is not available');
+    }
+    
     setIsLoading(true);
     try {
       // Get the URL of the current page
@@ -96,6 +105,15 @@ export const useMoyasarPayment = () => {
   };
 
   const verifyPayment = async (paymentId: string) => {
+    if (!supabase) {
+      toast({
+        title: 'Supabase connection error',
+        description: 'Unable to verify payment: Supabase client is not available',
+        variant: 'destructive',
+      });
+      throw new Error('Supabase client is not available');
+    }
+    
     setIsLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('verify-payment', {

@@ -6,10 +6,13 @@ import Footer from '@/components/Footer';
 import { useSupabaseClient } from '@supabase/auth-helpers-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Settings } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 const PaymentSettings = () => {
   const supabase = useSupabaseClient();
+  const navigate = useNavigate();
   
   return (
     <div className="flex min-h-screen flex-col">
@@ -18,11 +21,14 @@ const PaymentSettings = () => {
         {supabase ? (
           <PaymentIntegration />
         ) : (
-          <Card>
+          <Card className="max-w-lg mx-auto">
             <CardHeader>
-              <CardTitle>Supabase Connection Required</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <Settings className="h-5 w-5" />
+                Supabase Connection Required
+              </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
               <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>
@@ -30,6 +36,15 @@ const PaymentSettings = () => {
                   Please make sure your application is properly connected to Supabase.
                 </AlertDescription>
               </Alert>
+              <p className="text-sm text-muted-foreground">
+                This application requires Supabase environment variables to be set correctly. 
+                Please check your configuration or contact your administrator.
+              </p>
+              <div className="flex justify-end">
+                <Button onClick={() => navigate('/')} variant="outline">
+                  Return to Home
+                </Button>
+              </div>
             </CardContent>
           </Card>
         )}

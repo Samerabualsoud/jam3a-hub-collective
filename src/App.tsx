@@ -4,7 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import React from 'react';
+import React, { useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { SessionContextProvider } from '@supabase/auth-helpers-react';
 import Index from "./pages/Index";
@@ -32,11 +32,36 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
 const App = () => {
-  // Create a client - moved inside the component function
+  // Create a client
   const queryClient = new QueryClient();
   
-  // Create Supabase client - moved inside the component function
-  const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+  // Check if Supabase credentials exist before creating client
+  const hasSupabaseCredentials = supabaseUrl && supabaseAnonKey;
+  
+  // Only create the Supabase client if credentials are available
+  const supabaseClient = hasSupabaseCredentials ? createClient(supabaseUrl, supabaseAnonKey) : null;
+  
+  // Display error message if Supabase environment variables are not set
+  if (!hasSupabaseCredentials) {
+    console.error('Supabase URL and/or Anonymous Key are missing. Please check your environment variables.');
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full">
+          <h1 className="text-2xl font-bold text-red-600 mb-4">Configuration Error</h1>
+          <p className="text-gray-700 mb-4">
+            Supabase connection details are missing. Please make sure the following environment variables are set:
+          </p>
+          <ul className="list-disc pl-5 mb-4">
+            <li className="mb-2">VITE_SUPABASE_URL</li>
+            <li className="mb-2">VITE_SUPABASE_ANON_KEY</li>
+          </ul>
+          <p className="text-sm text-gray-500">
+            Contact your administrator for assistance or check the application documentation.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <QueryClientProvider client={queryClient}>

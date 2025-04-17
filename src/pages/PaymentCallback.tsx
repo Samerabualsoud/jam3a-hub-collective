@@ -3,19 +3,21 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, CheckCircle, XCircle } from 'lucide-react';
+import { Loader2, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useLanguage } from '@/components/Header';
 import { useMoyasarPayment } from '@/hooks/useMoyasarPayment';
+import { useSupabaseClient } from '@supabase/auth-helpers-react';
 
 const PaymentCallback = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { language } = useLanguage();
   const { verifyPayment, isLoading } = useMoyasarPayment();
-  const [paymentStatus, setPaymentStatus] = useState<'success' | 'failure' | 'pending' | null>(null);
+  const [paymentStatus, setPaymentStatus] = useState<'success' | 'failure' | 'pending' | 'error' | null>(null);
   const [paymentDetails, setPaymentDetails] = useState<any>(null);
+  const supabase = useSupabaseClient();
 
   const paymentId = searchParams.get('id');
 
@@ -23,6 +25,12 @@ const PaymentCallback = () => {
     const checkPayment = async () => {
       if (!paymentId) {
         setPaymentStatus('failure');
+        return;
+      }
+
+      if (!supabase) {
+        console.error('Supabase client not available');
+        setPaymentStatus('error');
         return;
       }
 
@@ -44,8 +52,12 @@ const PaymentCallback = () => {
       }
     };
 
-    checkPayment();
-  }, [paymentId, verifyPayment]);
+    if (supabase) {
+      checkPayment();
+    } else {
+      setPaymentStatus('error');
+    }
+  }, [paymentId, verifyPayment, supabase]);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -78,6 +90,18 @@ const PaymentCallback = () => {
                     <p className="text-gray-700">{language === 'en' ? 'Amount:' : 'المبلغ:'} {(paymentDetails.amount / 100).toFixed(2)} {paymentDetails.currency}</p>
                   </div>
                 )}
+              </div>
+            ) : paymentStatus === 'error' ? (
+              <div className="flex flex-col items-center space-y-4">
+                <AlertTriangle className="h-16 w-16 text-amber-500" />
+                <h2 className="text-xl font-bold text-amber-500">
+                  {language === 'en' ? 'Configuration Error' : 'خطأ في التكوين'}
+                </h2>
+                <p className="text-center text-gray-700">
+                  {language === 'en' 
+                    ? 'Supabase connection is not available. Please check your configuration.' 
+                    : 'اتصال Supabase غير متاح. يرجى التحقق من التكوين الخاص بك.'}
+                </p>
               </div>
             ) : paymentStatus === 'failure' ? (
               <div className="flex flex-col items-center space-y-4">
