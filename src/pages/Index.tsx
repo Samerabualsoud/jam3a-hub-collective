@@ -31,14 +31,14 @@ const Index = () => {
         
         {user?.isAdmin && (
           <div className="container mx-auto py-6">
-            <div className="bg-purple-100 p-4 rounded-lg">
-              <h3 className="font-medium text-purple-800">Admin Tools</h3>
+            <div className="bg-blue-100 p-4 rounded-lg">
+              <h3 className="font-medium text-blue-800">Admin Tools</h3>
               <div className="mt-2 flex gap-2">
-                <Link to="/admin" className="text-sm text-purple-700 hover:underline">
+                <Link to="/admin" className="text-sm text-blue-700 hover:underline">
                   Admin Dashboard
                 </Link>
-                <span className="text-purple-500">•</span>
-                <Link to="/payment-settings" className="text-sm text-purple-700 hover:underline">
+                <span className="text-blue-500">•</span>
+                <Link to="/payment-settings" className="text-sm text-blue-700 hover:underline">
                   Payment Settings
                 </Link>
               </div>

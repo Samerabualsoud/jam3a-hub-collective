@@ -99,7 +99,7 @@
     @apply transition-transform duration-300 hover:scale-105;
   }
   
-  /* Supporting both green and blue gradients for compatibility */
+  /* Updating from green to blue */
   .text-gradient-green {
     @apply bg-gradient-to-br from-royal-blue to-royal-blue-light bg-clip-text text-transparent;
   }
