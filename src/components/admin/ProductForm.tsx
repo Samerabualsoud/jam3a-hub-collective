@@ -21,14 +21,15 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { SarIcon } from "@/components/icons/SarIcon";
 
 const productSchema = z.object({
   name: z.string().min(1, "Product name is required"),
   category: z.string().min(1, "Category is required"),
   price: z.coerce.number().min(0, "Price must be a positive number"),
   stock: z.coerce.number().int().min(0, "Stock must be a positive integer"),
-  description: z.string().optional(),
-  imageUrl: z.string().optional(),
+  description: z.string().default(""), // Set default to ensure it's never undefined
+  imageUrl: z.string().default(""),    // Set default to ensure it's never undefined
 });
 
 type ProductFormValues = z.infer<typeof productSchema>;
@@ -133,15 +134,23 @@ const ProductForm = ({ initialData, onSubmit, onCancel }: ProductFormProps) => {
             name="price"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Price (SAR)</FormLabel>
+                <FormLabel className="flex items-center gap-1">
+                  Price <SarIcon size={16} className="inline-block" />
+                </FormLabel>
                 <FormControl>
-                  <Input 
-                    type="number" 
-                    placeholder="0.00" 
-                    min="0" 
-                    step="0.01" 
-                    {...field} 
-                  />
+                  <div className="relative">
+                    <Input 
+                      type="number" 
+                      placeholder="0.00" 
+                      min="0" 
+                      step="0.01" 
+                      {...field} 
+                      className="pl-8"
+                    />
+                    <div className="absolute left-2 top-1/2 -translate-y-1/2">
+                      <SarIcon size={16} />
+                    </div>
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>

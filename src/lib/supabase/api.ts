@@ -7,8 +7,8 @@ interface Product {
   category: string;
   price: number;
   stock: number;
-  description?: string;
-  imageUrl?: string;
+  description: string; // Changed from optional to required to match mock data
+  imageUrl: string;    // Changed from optional to required to match mock data
   created_at?: string;
 }
 
@@ -215,6 +215,9 @@ export const useSupabaseApi = () => {
         const newProduct = {
           ...product,
           id: Date.now(),
+          // Ensure description and imageUrl are never undefined to match the Product type
+          description: product.description || "",
+          imageUrl: product.imageUrl || "",
           created_at: new Date().toISOString()
         };
         mockProducts.unshift(newProduct);
@@ -243,6 +246,9 @@ export const useSupabaseApi = () => {
         const newProducts = products.map((product, index) => ({
           ...product,
           id: Date.now() + index,
+          // Ensure description and imageUrl are never undefined
+          description: product.description || "",
+          imageUrl: product.imageUrl || "",
           created_at: new Date().toISOString()
         }));
         
