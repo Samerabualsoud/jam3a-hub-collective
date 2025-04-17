@@ -4,7 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useState } from "react";
+import React from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { SessionContextProvider } from '@supabase/auth-helpers-react';
 import Index from "./pages/Index";
@@ -32,13 +32,11 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
 const App = () => {
-  // Create a client
-  const [queryClient] = useState(() => new QueryClient());
+  // Create a client - moved inside the component function
+  const queryClient = new QueryClient();
   
-  // Create Supabase client
-  const [supabaseClient] = useState(() => 
-    createClient(supabaseUrl, supabaseAnonKey)
-  );
+  // Create Supabase client - moved inside the component function
+  const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
 
   return (
     <QueryClientProvider client={queryClient}>
