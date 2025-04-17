@@ -76,7 +76,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </div>
         <div className="mt-4">
           <Button className="w-full bg-jam3a-purple hover:bg-jam3a-deep-purple">
-            <Link to={`/product/${id}`}>
+            <Link to={`/join-jam3a?product=${encodeURIComponent(title.en)}&price=${discountedPrice} SAR&discount=${Math.round((originalPrice - discountedPrice) / originalPrice * 100)}%`}>
               {language === 'en' ? 'Join Jam3a' : 'انضم للجمعة'}
             </Link>
           </Button>

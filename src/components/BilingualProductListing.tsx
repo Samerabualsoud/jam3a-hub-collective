@@ -273,7 +273,7 @@ const BilingualProductListing: React.FC = () => {
                   <CardFooter className="p-4 pt-0" dir={language === 'ar' ? 'rtl' : 'ltr'}>
                     <div className="w-full space-y-2">
                       <Button className="w-full bg-jam3a-purple hover:bg-jam3a-deep-purple">
-                        <Link to={`/product/${product.id}`}>
+                        <Link to={`/join-jam3a?product=${encodeURIComponent(product.title.en)}&price=${product.groupPrices[product.groupPrices.length - 1].price} SAR&discount=${Math.round((product.originalPrice - product.groupPrices[product.groupPrices.length - 1].price) / product.originalPrice * 100)}%`}>
                           {language === 'en' ? 'Join Jam3a' : 'انضم للجمعة'}
                         </Link>
                       </Button>
@@ -299,7 +299,7 @@ const BilingualProductListing: React.FC = () => {
 
         <div className="flex justify-center mt-8">
           <Button variant="outline" size="lg">
-            <Link to="/start-jam3a" className="flex items-center gap-2">
+            <Link to="/shop" className="flex items-center gap-2">
               {language === 'en' ? (
                 <>View All Deals <ChevronRight className="h-4 w-4" /></>
               ) : (

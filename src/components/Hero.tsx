@@ -45,6 +45,13 @@ const Hero = () => {
     }
   };
 
+  // Define sample product details for the hero section
+  const productDetails = {
+    product: "iPhone 16 Pro",
+    price: "3499",
+    discount: "15%"
+  };
+
   return (
     <div className="relative overflow-hidden bg-gradient-to-br from-white to-royal-blue-50 pt-6 pb-10 md:pt-8 md:pb-16">
       <div className="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQ0MCIgaGVpZ2h0PSI5MDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBkPSJNMCAwaDEwODBWOTAwSDB6Ii8+PHBhdGggZD0iTTAgMGwxMDgwIDkwMEgweiIgZmlsbD0idXJsKCNhKSIgZmlsbC1vcGFjaXR5PSIuMSIvPjwvZz48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImEiIHgxPSIxMDAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjAlIj48c3RvcCBzdG9wLWNvbG9yPSIjMEVBNUU5IiBvZmZzZXQ9IjAlIi8+PHN0b3Agc3RvcC1jb2xvcj0iIzM4QkRGOCIgb2Zmc2V0PSIxMDAlIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PC9zdmc+')]" style={{ opacity: '0.05' }}></div>
@@ -144,7 +151,9 @@ const Hero = () => {
                   </div>
                   <div className="mt-3">
                     <Button className="w-full bg-royal-blue hover:bg-royal-blue-dark text-white transition-all duration-300 hover:shadow-jam3a">
-                      {content[language].joinThis}
+                      <Link to={`/join-jam3a?product=${productDetails.product}&price=${productDetails.price} SAR&discount=${productDetails.discount}`}>
+                        {content[language].joinThis}
+                      </Link>
                     </Button>
                   </div>
                 </div>
