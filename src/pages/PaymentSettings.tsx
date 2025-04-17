@@ -3,7 +3,6 @@ import React from 'react';
 import PaymentIntegration from '@/components/admin/PaymentIntegration';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { useSupabaseClient } from '@supabase/auth-helpers-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle, Settings } from 'lucide-react';
@@ -12,12 +11,23 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 
 const PaymentSettings = () => {
-  const supabase = useSupabaseClient();
   const navigate = useNavigate();
   const { isAdmin } = useAuth();
   
+  // Check if Supabase is available
+  let supabaseAvailable = false;
+  try {
+    // Import meta is available at build time
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+    supabaseAvailable = !!(supabaseUrl && supabaseKey);
+  } catch (error) {
+    console.error("Error checking Supabase config:", error);
+    supabaseAvailable = false;
+  }
+  
   // Handle no Supabase configuration case first
-  if (!supabase) {
+  if (!supabaseAvailable) {
     return (
       <div className="flex min-h-screen flex-col">
         <Header />

@@ -44,7 +44,7 @@ const App = () => {
     console.warn('Running without Supabase configuration. Some features will be limited.');
   }
 
-  // The common routes configuration
+  // Define routes configuration
   const routesConfig = (
     <Routes>
       <Route path="/" element={<Index />} />
@@ -85,7 +85,7 @@ const App = () => {
                   {routesConfig}
                 </SessionContextProvider>
               ) : (
-                // Fallback when Supabase is not configured - skip the SessionContextProvider
+                // Fallback when Supabase is not configured
                 routesConfig
               )}
             </BrowserRouter>
