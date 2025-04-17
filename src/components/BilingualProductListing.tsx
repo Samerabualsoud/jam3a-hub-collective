@@ -96,24 +96,24 @@ const BilingualProductListing: React.FC = () => {
     },
     {
       id: 2,
-      image: "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?auto=format&fit=crop&w=1600&q=80",
+      image: "https://images.unsplash.com/photo-1593305841991-05c297ba4575?auto=format&fit=crop&w=1600&q=80",
       title: {
-        en: "Samsung Galaxy S25 Ultra",
-        ar: "سامسونج جالاكسي S25 الترا"
+        en: "Samsung 75\" 4K QLED TV",
+        ar: "تلفاز سامسونج 75 بوصة QLED 4K"
       },
       category: {
-        en: "Mobile",
-        ar: "جوال"
+        en: "TV",
+        ar: "تلفاز"
       },
       description: {
-        en: "Unleash creativity with AI-powered tools and 200MP camera system",
-        ar: "أطلق العنان للإبداع مع أدوات مدعومة بالذكاء الاصطناعي ونظام كاميرا بدقة 200 ميجابكسل"
+        en: "Immersive viewing experience with Quantum Processor and Object Tracking Sound",
+        ar: "تجربة مشاهدة غامرة مع معالج كوانتم وتتبع الصوت للأجسام"
       },
-      originalPrice: 4599,
+      originalPrice: 7999,
       groupPrices: [
-        { minCount: 2, price: 4399 },
-        { minCount: 4, price: 4099 },
-        { minCount: 6, price: 3899 }
+        { minCount: 2, price: 7599 },
+        { minCount: 4, price: 7199 },
+        { minCount: 6, price: 6799 }
       ],
       timeLeft: {
         en: "2 days left",
@@ -125,24 +125,24 @@ const BilingualProductListing: React.FC = () => {
     },
     {
       id: 3,
-      image: "https://images.unsplash.com/photo-1615380547903-c456276b7702?auto=format&fit=crop&w=1600&q=80",
+      image: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=1600&q=80",
       title: {
-        en: "Galaxy Z Fold 6",
-        ar: "جالاكسي زد فولد 6"
+        en: "MacBook Pro 16\" M3 Max",
+        ar: "ماك بوك برو 16 بوصة M3 ماكس"
       },
       category: {
-        en: "Mobile",
-        ar: "جوال"
+        en: "Laptop",
+        ar: "لابتوب"
       },
       description: {
-        en: "Multitask like never before with a stunning foldable display",
-        ar: "تعدد المهام كما لم يحدث من قبل مع شاشة قابلة للطي مذهلة"
+        en: "Revolutionary performance with M3 Max chip and stunning Liquid Retina XDR display",
+        ar: "أداء ثوري مع شريحة M3 ماكس وشاشة ليكويد ريتينا XDR المذهلة"
       },
-      originalPrice: 6999,
+      originalPrice: 11999,
       groupPrices: [
-        { minCount: 3, price: 6699 },
-        { minCount: 5, price: 6299 },
-        { minCount: 7, price: 5799 }
+        { minCount: 3, price: 11399 },
+        { minCount: 5, price: 10799 },
+        { minCount: 7, price: 10299 }
       ],
       timeLeft: {
         en: "12 hours left",
@@ -159,24 +159,24 @@ const BilingualProductListing: React.FC = () => {
     },
     {
       id: 4,
-      image: "https://images.unsplash.com/photo-1675264710674-942dd359ac0a?auto=format&fit=crop&w=1600&q=80",
+      image: "https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?auto=format&fit=crop&w=1600&q=80",
       title: {
-        en: "Galaxy Z Flip 6",
-        ar: "جالاكسي زد فليب 6"
+        en: "LG 65\" OLED TV",
+        ar: "تلفاز إل جي 65 بوصة OLED"
       },
       category: {
-        en: "Mobile",
-        ar: "جوال"
+        en: "TV",
+        ar: "تلفاز"
       },
       description: {
-        en: "Compact, stylish foldable with powerful camera and long-lasting battery",
-        ar: "هاتف قابل للطي أنيق ومدمج مع كاميرا قوية وبطارية طويلة الأمد"
+        en: "Perfect blacks and infinite contrast with self-lit pixels technology",
+        ar: "أسود مثالي وتباين لا نهائي مع تقنية البكسلات ذاتية الإضاءة"
       },
-      originalPrice: 3999,
+      originalPrice: 6999,
       groupPrices: [
-        { minCount: 2, price: 3799 },
-        { minCount: 3, price: 3599 },
-        { minCount: 5, price: 3299 }
+        { minCount: 2, price: 6599 },
+        { minCount: 3, price: 6299 },
+        { minCount: 5, price: 5899 }
       ],
       timeLeft: {
         en: "3 days left",
@@ -190,7 +190,7 @@ const BilingualProductListing: React.FC = () => {
         ar: "وصل حديثاً",
         color: "secondary"
       }
-    },
+    }
   ];
 
   return (
@@ -235,7 +235,7 @@ const BilingualProductListing: React.FC = () => {
                           variant="default" 
                           className="bg-black/70 backdrop-blur-sm px-2 py-1 text-xs"
                         >
-                          {Math.round((product.originalPrice - product.groupPrices[product.groupPrices.length - 1].price) / product.originalPrice * 100)}% {language === 'en' ? 'OFF' : 'خصم'}
+                          {Math.round((product.originalPrice - product.groupPrices[product.groupPrices.length - 1].price) / product.originalPrice * 100)}% {language === 'en' ? 'OFF' : 'خ��م'}
                         </Badge>
                         
                         {product.tag && (

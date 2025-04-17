@@ -128,17 +128,17 @@ const FeaturedDeals = () => {
     },
     {
       id: 2,
-      image: "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?auto=format&fit=crop&w=1600&q=80",
+      image: "https://images.unsplash.com/photo-1593305841991-05c297ba4575?auto=format&fit=crop&w=1600&q=80",
       title: {
-        en: "Samsung Galaxy S25 Ultra",
-        ar: "سامسونج جالاكسي S25 الترا"
+        en: "Samsung 75\" 4K QLED TV",
+        ar: "تلفاز سامسونج 75 بوصة QLED 4K"
       },
       category: {
-        en: "Mobile",
-        ar: "جوال"
+        en: "TV",
+        ar: "تلفاز"
       },
-      originalPrice: 4599,
-      discountedPrice: 3899,
+      originalPrice: 7999,
+      discountedPrice: 6799,
       timeLeft: {
         en: "2 days left",
         ar: "باقي يومان"
@@ -149,17 +149,17 @@ const FeaturedDeals = () => {
     },
     {
       id: 3,
-      image: "https://images.unsplash.com/photo-1615380547903-c456276b7702?auto=format&fit=crop&w=1600&q=80",
+      image: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=1600&q=80",
       title: {
-        en: "Galaxy Z Fold 6",
-        ar: "جالاكسي زد فولد 6"
+        en: "MacBook Pro 16\" M3 Max",
+        ar: "ماك بوك برو 16 بوصة M3 ماكس"
       },
       category: {
-        en: "Mobile",
-        ar: "جوال"
+        en: "Laptop",
+        ar: "لابتوب"
       },
-      originalPrice: 6999,
-      discountedPrice: 5799,
+      originalPrice: 11999,
+      discountedPrice: 10299,
       timeLeft: {
         en: "12 hours left",
         ar: "باقي 12 ساعة"
@@ -170,17 +170,17 @@ const FeaturedDeals = () => {
     },
     {
       id: 4,
-      image: "https://images.unsplash.com/photo-1675264710674-942dd359ac0a?auto=format&fit=crop&w=1600&q=80",
+      image: "https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?auto=format&fit=crop&w=1600&q=80",
       title: {
-        en: "Galaxy Z Flip 6",
-        ar: "جالاكسي زد فليب 6"
+        en: "LG 65\" OLED TV",
+        ar: "تلفاز إل جي 65 بوصة OLED"
       },
       category: {
-        en: "Mobile",
-        ar: "جوال"
+        en: "TV",
+        ar: "تلفاز"
       },
-      originalPrice: 3999,
-      discountedPrice: 3299,
+      originalPrice: 6999,
+      discountedPrice: 5899,
       timeLeft: {
         en: "3 days left",
         ar: "باقي 3 أيام"
