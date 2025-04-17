@@ -5,9 +5,12 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useLanguage } from '@/components/Header';
 import { BlueBanner } from '@/components/BlueBanner';
+import { useAuth } from '@/contexts/AuthContext';
+import AdminButton from '@/components/AdminButton';
 
 const Sellers = () => {
   const { language } = useLanguage();
+  const { isAdmin } = useAuth();
 
   const content = {
     en: {
@@ -26,6 +29,7 @@ const Sellers = () => {
     <div className="flex min-h-screen flex-col">
       <Header />
       <main className="flex-1 relative">
+        {isAdmin && <AdminButton />}
         <BlueBanner text={{
           en: content.en.bannerText,
           ar: content.ar.bannerText

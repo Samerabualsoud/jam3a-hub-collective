@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -20,6 +19,8 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useLanguage } from '@/components/Header';
 import { BlueBanner } from '@/components/BlueBanner';
+import { useAuth } from '@/contexts/AuthContext';
+import AdminButton from '@/components/AdminButton';
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -30,6 +31,7 @@ const SellerLogin = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { language } = useLanguage();
+  const { isAdmin } = useAuth();
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -59,6 +61,7 @@ const SellerLogin = () => {
     <div className="flex min-h-screen flex-col">
       <Header />
       <main className="flex-1 container mx-auto px-4 py-12 relative">
+        {isAdmin && <AdminButton />}
         <BlueBanner text={bannerText} />
         
         <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md mt-16">
