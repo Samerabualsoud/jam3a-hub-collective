@@ -283,8 +283,6 @@ const ShopAllDeals = () => {
     </Card>
   );
 
-  const currentContent = content[language];
-
   return (
     <div className={`flex min-h-screen flex-col ${isRtl ? 'rtl' : 'ltr'}`}>
       <Header />
