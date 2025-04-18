@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ArrowRight, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -28,6 +28,11 @@ const ProductSelectionCard: React.FC<ProductCardProps> = ({
   category
 }) => {
   const { language } = useLanguage();
+  
+  const formattedCategory = useMemo(() => {
+    // Format category for URL parameter
+    return encodeURIComponent(category);
+  }, [category]);
 
   return (
     <Card className="overflow-hidden flex flex-col h-full hover:shadow-md transition-all animate-fade-in">
@@ -36,6 +41,9 @@ const ProductSelectionCard: React.FC<ProductCardProps> = ({
           src={image} 
           alt={name} 
           className="w-full h-full object-cover"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = "https://placehold.co/600x400?text=No+Image";
+          }}
         />
         <div className="absolute top-3 right-3 bg-royal-blue text-white text-sm font-medium px-3 py-1 rounded-full">
           {discount} {language === 'en' ? 'OFF' : 'خصم'}
@@ -60,7 +68,7 @@ const ProductSelectionCard: React.FC<ProductCardProps> = ({
             className="group shadow-sm hover:shadow-md"
             asChild
           >
-            <Link to={`/join-jam3a?product=${encodeURIComponent(name)}&price=${discountPrice} SAR&discount=${discount}&category=${encodeURIComponent(category)}`} className="flex items-center justify-center">
+            <Link to={`/join-jam3a?product=${encodeURIComponent(name)}&price=${discountPrice} SAR&discount=${discount}&category=${formattedCategory}`} className="flex items-center justify-center">
               {language === 'en' ? 'Start Jam3a' : 'ابدأ جمعة'}
               <ArrowRight className="ml-1.5 h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>

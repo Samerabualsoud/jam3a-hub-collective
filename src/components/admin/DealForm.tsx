@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const dealSchema = z.object({
   name: z.string().min(1, "Deal name is required"),
@@ -93,7 +94,7 @@ const DealForm = ({ initialData, products, onSubmit, onCancel }: DealFormProps) 
               <FormLabel>Product</FormLabel>
               <Select 
                 onValueChange={(value) => field.onChange(parseInt(value))}
-                value={field.value.toString()}
+                value={field.value ? field.value.toString() : ""}
               >
                 <FormControl>
                   <SelectTrigger>
@@ -162,6 +163,27 @@ const DealForm = ({ initialData, products, onSubmit, onCancel }: DealFormProps) 
             )}
           />
         </div>
+
+        <FormField
+          control={form.control}
+          name="active"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+              <div className="space-y-1 leading-none">
+                <FormLabel>Active</FormLabel>
+                <p className="text-sm text-muted-foreground">
+                  This deal will be visible on the website when active
+                </p>
+              </div>
+            </FormItem>
+          )}
+        />
 
         <div className="flex justify-end space-x-2 pt-4">
           <Button type="button" variant="outline" onClick={onCancel}>

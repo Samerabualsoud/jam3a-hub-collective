@@ -1,9 +1,12 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Timer, Users, ArrowRight } from 'lucide-react';
 import { useLanguage } from './Header';
+import { useSupabaseApi } from '@/lib/supabase/api';
+import { formatDistanceToNow } from 'date-fns';
+import { ar } from 'date-fns/locale';
 
 interface ProductCardProps {
   id: number;
@@ -112,93 +115,84 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
 const FeaturedDeals = () => {
   const { language } = useLanguage();
+  const [deals, setDeals] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const api = useSupabaseApi();
   
-  const featuredProducts = [
-    {
-      id: 1,
-      image: "https://images.unsplash.com/photo-1616348436168-de43ad0db179?auto=format&fit=crop&w=1600&q=80",
-      title: {
-        en: "iPhone 16 Pro Max 256GB",
-        ar: "آيفون 16 برو ماكس 256 جيجابايت"
-      },
-      category: {
-        en: "Mobile",
-        ar: "جوال"
-      },
-      originalPrice: 4999,
-      discountedPrice: 4199,
-      timeLeft: {
-        en: "1 day left",
-        ar: "باقي يوم واحد"
-      },
-      joinedCount: 3,
-      totalCount: 5,
-      progress: 60,
-    },
-    {
-      id: 2,
-      image: "https://images.unsplash.com/photo-1593305841991-05c297ba4575?auto=format&fit=crop&w=1600&q=80",
-      title: {
-        en: "Samsung 75\" 4K QLED TV",
-        ar: "تلفاز سامسونج 75 بوصة QLED 4K"
-      },
-      category: {
-        en: "TV",
-        ar: "تلفاز"
-      },
-      originalPrice: 7999,
-      discountedPrice: 6799,
-      timeLeft: {
-        en: "2 days left",
-        ar: "باقي يومان"
-      },
-      joinedCount: 4,
-      totalCount: 6,
-      progress: 67,
-    },
-    {
-      id: 3,
-      image: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=1600&q=80",
-      title: {
-        en: "MacBook Pro 16\" M3 Max",
-        ar: "ماك بوك برو 16 بوصة M3 ماكس"
-      },
-      category: {
-        en: "Laptop",
-        ar: "لابتوب"
-      },
-      originalPrice: 11999,
-      discountedPrice: 10299,
-      timeLeft: {
-        en: "12 hours left",
-        ar: "باقي 12 ساعة"
-      },
-      joinedCount: 7,
-      totalCount: 10,
-      progress: 70,
-    },
-    {
-      id: 4,
-      image: "https://images.unsplash.com/photo-1577975882846-431adc8c2009?auto=format&fit=crop&w=1600&q=80", // Updated to a proper TV image
-      title: {
-        en: "LG 65\" OLED TV",
-        ar: "تلفاز إل جي 65 بوصة OLED"
-      },
-      category: {
-        en: "TV",
-        ar: "تلفاز"
-      },
-      originalPrice: 6999,
-      discountedPrice: 5899,
-      timeLeft: {
-        en: "3 days left",
-        ar: "باقي 3 أيام"
-      },
-      joinedCount: 2,
-      totalCount: 5,
-      progress: 40,
-    },
-  ];
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const [dealsData, productsData] = await Promise.all([
+          api.getDeals(),
+          api.getProducts()
+        ]);
+        
+        setDeals(dealsData);
+        setProducts(productsData);
+      } catch (error) {
+        console.error("Error fetching deals:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchData();
+  }, []);
+  
+  // Transform deals data to the format needed for ProductCard
+  const featuredProducts = deals
+    .filter(deal => deal.active)
+    .slice(0, 4)
+    .map(deal => {
+      const product = products.find(p => p.id === deal.productId) || {};
+      const discountedPrice = Math.round(product.price * (1 - deal.discount / 100));
+      
+      // Calculate fake progress metrics for display purposes
+      const totalCount = Math.floor(Math.random() * 5) + 5; // Random between 5-10
+      const joinedCount = Math.floor(Math.random() * (totalCount - 2)) + 2; // At least 2 joined
+      const progress = (joinedCount / totalCount) * 100;
+      
+      // Format end date as time left
+      const endDate = new Date(deal.endDate);
+      const timeLeftEn = formatDistanceToNow(endDate, { addSuffix: true });
+      const timeLeftAr = formatDistanceToNow(endDate, { locale: ar, addSuffix: true });
+      
+      return {
+        id: deal.id,
+        image: product.imageUrl || "https://placehold.co/600x400?text=No+Image",
+        title: {
+          en: product.name || "Unknown Product",
+          ar: product.name || "منتج غير معروف"
+        },
+        category: {
+          en: product.category || "Other",
+          ar: product.category || "آخر"
+        },
+        originalPrice: product.price || 0,
+        discountedPrice: discountedPrice || 0,
+        timeLeft: {
+          en: timeLeftEn,
+          ar: timeLeftAr
+        },
+        joinedCount,
+        totalCount,
+        progress
+      };
+    });
+
+  if (loading) {
+    return (
+      <section className="bg-gray-50 py-12 md:py-16">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="flex justify-center">
+            <p className="text-muted-foreground">{language === 'en' ? 'Loading deals...' : 'جاري تحميل العروض...'}</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="bg-gray-50 py-12 md:py-16">
@@ -221,9 +215,24 @@ const FeaturedDeals = () => {
           </Button>
         </div>
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {featuredProducts.map((product) => (
-            <ProductCard key={product.id} {...product} />
-          ))}
+          {featuredProducts.length > 0 ? (
+            featuredProducts.map((product) => (
+              <ProductCard key={product.id} {...product} />
+            ))
+          ) : (
+            <div className="col-span-4 text-center py-12">
+              <p className="text-muted-foreground">
+                {language === 'en' 
+                  ? 'No active deals found. Check back later or create your own Jam3a!' 
+                  : 'لا توجد صفقات نشطة. تحقق لاحقًا أو أنشئ جمعتك الخاصة!'}
+              </p>
+              <Button variant="default" className="mt-4" asChild>
+                <Link to="/start-jam3a">
+                  {language === 'en' ? 'Start Your Own Jam3a' : 'ابدأ جمعتك الخاصة'}
+                </Link>
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </section>
