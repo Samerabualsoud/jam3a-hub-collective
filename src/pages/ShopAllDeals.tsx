@@ -234,8 +234,9 @@ const ShopAllDeals = () => {
     });
   };
 
+  // Fixed renderProductCard function to ensure all tabs display proper cards with buttons
   const renderProductCard = (deal, index) => (
-    <Card key={index} className="overflow-hidden">
+    <Card key={index} className="overflow-hidden border shadow-md">
       <div className="relative">
         <img 
           src={deal.image} 
@@ -272,11 +273,12 @@ const ShopAllDeals = () => {
             ></div>
           </div>
           
+          {/* Ensure the button has proper z-index, color contrast and is not hidden */}
           <Button 
-            className="w-full bg-royal-green hover:bg-royal-green-dark"
+            className="w-full bg-royal-green hover:bg-royal-green-dark text-white z-10 mt-3 py-2"
             onClick={() => handleJoinJam3a(deal)}
           >
-            {deal.buttonText}
+            {deal.buttonText || (language === 'en' ? 'Join This Jam3a' : 'انضم إلى هذه الجمعة')}
           </Button>
         </div>
       </CardContent>
@@ -397,12 +399,14 @@ const ShopAllDeals = () => {
                     <TabsTrigger value="new">{currentContent.tabs.new}</TabsTrigger>
                   </TabsList>
                   
+                  {/* All Deals Tab */}
                   <TabsContent value="all" className="mt-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {currentContent.deals.map((deal, index) => renderProductCard(deal, index))}
                     </div>
                   </TabsContent>
                   
+                  {/* Ending Soon Tab */}
                   <TabsContent value="ending" className="mt-6">
                     {currentContent.deals.filter((deal, index) => index % 3 === 0).length > 0 ? (
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -415,6 +419,7 @@ const ShopAllDeals = () => {
                     )}
                   </TabsContent>
                   
+                  {/* Most Popular Tab */}
                   <TabsContent value="popular" className="mt-6">
                     {currentContent.deals.filter((deal, index) => index % 2 === 0).length > 0 ? (
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -427,6 +432,7 @@ const ShopAllDeals = () => {
                     )}
                   </TabsContent>
                   
+                  {/* New Arrivals Tab */}
                   <TabsContent value="new" className="mt-6">
                     {currentContent.deals.filter((deal, index) => index >= 4).length > 0 ? (
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
