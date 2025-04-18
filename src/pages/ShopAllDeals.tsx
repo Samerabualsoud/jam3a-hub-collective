@@ -234,18 +234,18 @@ const ShopAllDeals = () => {
     });
   };
 
-  // Fixed renderProductCard function to ensure all tabs display proper cards with buttons
+  // Enhanced product card with highly visible button
   const renderProductCard = (deal, index) => (
-    <Card key={index} className="overflow-hidden border shadow-md">
+    <Card key={index} className="overflow-hidden border border-gray-200 shadow-md flex flex-col">
       <div className="relative">
         <img 
           src={deal.image} 
           alt={deal.title} 
           className="w-full h-48 object-cover"
         />
-        <Badge className="absolute top-2 right-2 bg-royal-green text-white">{deal.discount} OFF</Badge>
+        <Badge className="absolute top-2 right-2 bg-royal-blue text-white font-bold">{deal.discount} OFF</Badge>
       </div>
-      <CardContent className="p-4">
+      <CardContent className="p-4 flex-1 flex flex-col">
         <h3 className="font-semibold text-lg mb-2">{deal.title}</h3>
         <div className="flex justify-between mb-3">
           <div className="flex items-center">
@@ -254,7 +254,7 @@ const ShopAllDeals = () => {
           </div>
         </div>
         
-        <div className="space-y-3">
+        <div className="space-y-3 mt-auto">
           <div className="flex justify-between text-sm">
             <div className="flex items-center">
               <Users className="h-4 w-4 mr-1 text-muted-foreground" />
@@ -268,14 +268,15 @@ const ShopAllDeals = () => {
           
           <div className="w-full bg-gray-200 rounded-full h-2.5">
             <div 
-              className="bg-royal-green h-2.5 rounded-full" 
+              className="bg-royal-blue h-2.5 rounded-full" 
               style={{ width: `${(deal.joined / deal.total) * 100}%` }}
             ></div>
           </div>
           
-          {/* Ensure the button has proper z-index, color contrast and is not hidden */}
           <Button 
-            className="w-full bg-royal-green hover:bg-royal-green-dark text-white z-10 mt-3 py-2"
+            variant="green" 
+            size="wide"
+            className="font-medium text-white mt-4"
             onClick={() => handleJoinJam3a(deal)}
           >
             {deal.buttonText || (language === 'en' ? 'Join This Jam3a' : 'انضم إلى هذه الجمعة')}
@@ -289,7 +290,7 @@ const ShopAllDeals = () => {
     <div className={`flex min-h-screen flex-col ${isRtl ? 'rtl' : 'ltr'}`}>
       <Header />
       <main className="flex-1">
-        <section className="bg-gradient-to-b from-royal-green-50 to-white py-12">
+        <section className="bg-gradient-to-b from-royal-blue-50 to-white py-12">
           <div className="container mx-auto px-4">
             <div className="text-center mb-8">
               <h1 className="text-4xl font-bold tracking-tight mb-2">{currentContent.title}</h1>
@@ -447,8 +448,11 @@ const ShopAllDeals = () => {
                 </Tabs>
                 
                 <div className="flex justify-center mt-8">
-                  <Button className="bg-royal-green hover:bg-royal-green-dark">
-                    <Link to="/start-jam3a" className="text-white">
+                  <Button 
+                    variant="green" 
+                    className="text-white font-medium"
+                  >
+                    <Link to="/start-jam3a" className="text-white w-full inline-block px-6">
                       {currentContent.startJam3a}
                     </Link>
                   </Button>
