@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -10,7 +9,7 @@ import { useLanguage } from '@/components/Header';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useMoyasarPayment } from '@/hooks/useMoyasarPayment';
-import { Loader2, ArrowRight, ArrowLeft, Users, Clock, ShieldCheck, CheckCircle } from 'lucide-react';
+import { Loader2, ArrowRight, ArrowLeft, Users, Clock, ShieldCheck, CheckCircle, BadgePercent } from 'lucide-react';
 
 const JoinJam3a = () => {
   const navigate = useNavigate();
@@ -20,18 +19,15 @@ const JoinJam3a = () => {
   const [activeTab, setActiveTab] = useState('details');
   const { processPayment, isLoading } = useMoyasarPayment();
   
-  // Get product details from URL params
   const productName = searchParams.get('product') || 'Jam3a Deal';
   const productPrice = searchParams.get('price') || '4999 SAR';
   const productDiscount = searchParams.get('discount') || '16%';
   const productCategory = searchParams.get('category') || 'Mobile';
   
-  // Format product name with category
   const formattedTitle = language === 'en' 
     ? `${productCategory} Jam3a: ${productName.replace(`${productCategory} Jam3a: `, '')}`
     : `جمعة ${productCategory}: ${productName.replace(`جمعة ${productCategory}: `, '')}`;
   
-  // For debugging purposes
   useEffect(() => {
     console.log("URL Parameters:", {
       product: productName,
@@ -41,7 +37,6 @@ const JoinJam3a = () => {
     });
   }, [productName, productPrice, productDiscount, productCategory]);
 
-  // Form state
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -63,9 +58,7 @@ const JoinJam3a = () => {
     setFormData(prev => ({ ...prev, paymentMethod: method }));
   };
   
-  // Prevent tab change when clicking on tab triggers directly
   const handleTabChange = (value: string) => {
-    // Don't allow direct tab navigation through clicks
     return;
   };
   
@@ -89,14 +82,11 @@ const JoinJam3a = () => {
     e.preventDefault();
     
     try {
-      // Extract the numeric amount from the price string
       const amount = parseFloat(productPrice.replace(/[^0-9.]/g, ''));
       
-      // Prepare payment source based on selected method
       let source: any = { type: 'creditcard' };
       
       if (formData.paymentMethod === 'credit-card' || formData.paymentMethod === 'mada') {
-        // Process credit card / mada payment
         const [month, year] = formData.cardExpiry.split('/');
         source = {
           type: formData.paymentMethod === 'credit-card' ? 'creditcard' : 'mada',
@@ -112,7 +102,6 @@ const JoinJam3a = () => {
         source = { type: 'stcpay' };
       }
       
-      // Process payment
       await processPayment({
         amount,
         currency: 'SAR',
@@ -125,7 +114,6 @@ const JoinJam3a = () => {
         }
       });
       
-      // If we reach here, payment was successful
       toast({
         title: language === 'en' ? 'Success!' : 'تم بنجاح!',
         description: language === 'en' 
@@ -133,17 +121,14 @@ const JoinJam3a = () => {
           : `لقد انضممت بنجاح إلى جمعة ${formattedTitle}!`,
       });
       
-      // Redirect to home page after successful join
       setTimeout(() => {
         navigate('/');
       }, 2000);
     } catch (error) {
       console.error('Payment error:', error);
-      // Error handling is handled by the useMoyasarPayment hook
     }
   };
   
-  // Add state for available products in the same category
   const [relatedProducts, setRelatedProducts] = useState<{
     id: number;
     name: string;
@@ -151,7 +136,6 @@ const JoinJam3a = () => {
     image: string;
   }[]>([]);
 
-  // Get appropriate product image based on category
   const getProductImage = () => {
     const category = productCategory.toLowerCase();
     if (category === 'mobile' || category === 'phone') {
@@ -164,9 +148,7 @@ const JoinJam3a = () => {
     return "https://placehold.co/400x400/purple/white?text=Product+Image";
   };
 
-  // Get related products based on category
   useEffect(() => {
-    // This would typically come from an API, but for now we'll hardcode some examples
     const getRelatedProducts = () => {
       const category = productCategory.toLowerCase();
       let products = [];
@@ -194,7 +176,6 @@ const JoinJam3a = () => {
     getRelatedProducts();
   }, [productCategory]);
 
-  // Progress indicator component
   const ProgressIndicator = () => {
     const steps = [
       { label: language === 'en' ? 'Deal Details' : 'تفاصيل الصفقة' },
@@ -244,7 +225,6 @@ const JoinJam3a = () => {
     );
   };
 
-  // Benefits component
   const JamaaaBenefits = () => {
     const benefits = [
       {
@@ -286,7 +266,6 @@ const JoinJam3a = () => {
     );
   };
 
-  // Modify the details tab content to include product selection
   const renderDetailsContent = () => (
     <div className="flex flex-col md:flex-row gap-6">
       <div className="md:w-1/3">
@@ -302,7 +281,6 @@ const JoinJam3a = () => {
       <div className="md:w-2/3">
         <h2 className="text-2xl font-bold mb-4">{formattedTitle}</h2>
         
-        {/* Product Selection */}
         <div className="mb-6">
           <h3 className="font-semibold mb-3">
             {language === 'en' ? 'Available Products in this Category' : 'المنتجات المتوفرة في هذه الفئة'}
