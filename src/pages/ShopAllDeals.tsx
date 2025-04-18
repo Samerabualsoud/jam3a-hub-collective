@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -282,6 +283,8 @@ const ShopAllDeals = () => {
     </Card>
   );
 
+  const currentContent = content[language];
+
   return (
     <div className={`flex min-h-screen flex-col ${isRtl ? 'rtl' : 'ltr'}`}>
       <Header />
@@ -403,27 +406,39 @@ const ShopAllDeals = () => {
                   </TabsContent>
                   
                   <TabsContent value="ending" className="mt-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {currentContent.deals
-                        .filter((deal, index) => index % 3 === 0)
-                        .map((deal, index) => renderProductCard(deal, index))}
-                    </div>
+                    {currentContent.deals.filter((deal, index) => index % 3 === 0).length > 0 ? (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {currentContent.deals
+                          .filter((deal, index) => index % 3 === 0)
+                          .map((deal, index) => renderProductCard(deal, index))}
+                      </div>
+                    ) : (
+                      <p className="text-center text-muted-foreground py-8">{currentContent.noDeals}</p>
+                    )}
                   </TabsContent>
                   
                   <TabsContent value="popular" className="mt-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {currentContent.deals
-                        .filter((deal, index) => index % 2 === 0)
-                        .map((deal, index) => renderProductCard(deal, index))}
-                    </div>
+                    {currentContent.deals.filter((deal, index) => index % 2 === 0).length > 0 ? (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {currentContent.deals
+                          .filter((deal, index) => index % 2 === 0)
+                          .map((deal, index) => renderProductCard(deal, index))}
+                      </div>
+                    ) : (
+                      <p className="text-center text-muted-foreground py-8">{currentContent.noDeals}</p>
+                    )}
                   </TabsContent>
                   
                   <TabsContent value="new" className="mt-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {currentContent.deals
-                        .filter((deal, index) => index >= 4)
-                        .map((deal, index) => renderProductCard(deal, index))}
-                    </div>
+                    {currentContent.deals.filter((deal, index) => index >= 4).length > 0 ? (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {currentContent.deals
+                          .filter((deal, index) => index >= 4)
+                          .map((deal, index) => renderProductCard(deal, index))}
+                      </div>
+                    ) : (
+                      <p className="text-center text-muted-foreground py-8">{currentContent.noDeals}</p>
+                    )}
                   </TabsContent>
                 </Tabs>
                 
