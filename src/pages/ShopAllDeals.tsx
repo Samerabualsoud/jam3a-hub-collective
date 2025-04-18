@@ -233,6 +233,55 @@ const ShopAllDeals = () => {
     });
   };
 
+  const renderProductCard = (deal, index) => (
+    <Card key={index} className="overflow-hidden">
+      <div className="relative">
+        <img 
+          src={deal.image} 
+          alt={deal.title} 
+          className="w-full h-48 object-cover"
+        />
+        <Badge className="absolute top-2 right-2 bg-royal-green text-white">{deal.discount} OFF</Badge>
+      </div>
+      <CardContent className="p-4">
+        <h3 className="font-semibold text-lg mb-2">{deal.title}</h3>
+        <div className="flex justify-between mb-3">
+          <div className="flex items-center">
+            <span className="font-bold text-lg">{deal.currentPrice} SAR</span>
+            <span className="text-muted-foreground line-through text-sm ml-2">{deal.originalPrice} SAR</span>
+          </div>
+        </div>
+        
+        <div className="space-y-3">
+          <div className="flex justify-between text-sm">
+            <div className="flex items-center">
+              <Users className="h-4 w-4 mr-1 text-muted-foreground" />
+              <span>{deal.joined} of {deal.total} joined</span>
+            </div>
+            <div className="flex items-center">
+              <Clock className="h-4 w-4 mr-1 text-muted-foreground" />
+              <span>{deal.timeLeft}</span>
+            </div>
+          </div>
+          
+          <div className="w-full bg-gray-200 rounded-full h-2.5">
+            <div 
+              className="bg-royal-green h-2.5 rounded-full" 
+              style={{ width: `${(deal.joined / deal.total) * 100}%` }}
+            ></div>
+          </div>
+          
+          <Button 
+            className="w-full bg-royal-green hover:bg-royal-green-dark"
+            onClick={() => handleJoinJam3a(deal)}
+          >
+            {deal.buttonText}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
   return (
     <div className={`flex min-h-screen flex-col ${isRtl ? 'rtl' : 'ltr'}`}>
       <Header />
@@ -349,54 +398,7 @@ const ShopAllDeals = () => {
                   
                   <TabsContent value="all" className="mt-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {currentContent.deals.map((deal, index) => (
-                        <Card key={index} className="overflow-hidden">
-                          <div className="relative">
-                            <img 
-                              src={deal.image} 
-                              alt={deal.title} 
-                              className="w-full h-48 object-cover"
-                            />
-                            <Badge className="absolute top-2 right-2 bg-royal-green text-white">{deal.discount} OFF</Badge>
-                          </div>
-                          <CardContent className="p-4">
-                            <h3 className="font-semibold text-lg mb-2">{deal.title}</h3>
-                            <div className="flex justify-between mb-3">
-                              <div className="flex items-center">
-                                <span className="font-bold text-lg">{deal.currentPrice} SAR</span>
-                                <span className="text-muted-foreground line-through text-sm ml-2">{deal.originalPrice} SAR</span>
-                              </div>
-                            </div>
-                            
-                            <div className="space-y-3">
-                              <div className="flex justify-between text-sm">
-                                <div className="flex items-center">
-                                  <Users className="h-4 w-4 mr-1 text-muted-foreground" />
-                                  <span>{deal.joined} of {deal.total} joined</span>
-                                </div>
-                                <div className="flex items-center">
-                                  <Clock className="h-4 w-4 mr-1 text-muted-foreground" />
-                                  <span>{deal.timeLeft}</span>
-                                </div>
-                              </div>
-                              
-                              <div className="w-full bg-gray-200 rounded-full h-2.5">
-                                <div 
-                                  className="bg-royal-green h-2.5 rounded-full" 
-                                  style={{ width: `${(deal.joined / deal.total) * 100}%` }}
-                                ></div>
-                              </div>
-                              
-                              <Button 
-                                className="w-full bg-royal-green hover:bg-royal-green-dark"
-                                onClick={() => handleJoinJam3a(deal)}
-                              >
-                                {deal.buttonText}
-                              </Button>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
+                      {currentContent.deals.map((deal, index) => renderProductCard(deal, index))}
                     </div>
                   </TabsContent>
                   
@@ -404,54 +406,7 @@ const ShopAllDeals = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {currentContent.deals
                         .filter((deal, index) => index % 3 === 0)
-                        .map((deal, index) => (
-                          <Card key={index} className="overflow-hidden">
-                            <div className="relative">
-                              <img 
-                                src={deal.image} 
-                                alt={deal.title} 
-                                className="w-full h-48 object-cover"
-                              />
-                              <Badge className="absolute top-2 right-2 bg-royal-green text-white">{deal.discount} OFF</Badge>
-                            </div>
-                            <CardContent className="p-4">
-                              <h3 className="font-semibold text-lg mb-2">{deal.title}</h3>
-                              <div className="flex justify-between mb-3">
-                                <div className="flex items-center">
-                                  <span className="font-bold text-lg">{deal.currentPrice} SAR</span>
-                                  <span className="text-muted-foreground line-through text-sm ml-2">{deal.originalPrice} SAR</span>
-                                </div>
-                              </div>
-                              
-                              <div className="space-y-3">
-                                <div className="flex justify-between text-sm">
-                                  <div className="flex items-center">
-                                    <Users className="h-4 w-4 mr-1 text-muted-foreground" />
-                                    <span>{deal.joined} of {deal.total} joined</span>
-                                  </div>
-                                  <div className="flex items-center">
-                                    <Clock className="h-4 w-4 mr-1 text-muted-foreground" />
-                                    <span>{deal.timeLeft}</span>
-                                  </div>
-                                </div>
-                                
-                                <div className="w-full bg-gray-200 rounded-full h-2.5">
-                                  <div 
-                                    className="bg-royal-green h-2.5 rounded-full" 
-                                    style={{ width: `${(deal.joined / deal.total) * 100}%` }}
-                                  ></div>
-                                </div>
-                                
-                                <Button 
-                                  className="w-full bg-royal-green hover:bg-royal-green-dark"
-                                  onClick={() => handleJoinJam3a(deal)}
-                                >
-                                  {deal.buttonText}
-                                </Button>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        ))}
+                        .map((deal, index) => renderProductCard(deal, index))}
                     </div>
                   </TabsContent>
                   
@@ -459,54 +414,7 @@ const ShopAllDeals = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {currentContent.deals
                         .filter((deal, index) => index % 2 === 0)
-                        .map((deal, index) => (
-                          <Card key={index} className="overflow-hidden">
-                            <div className="relative">
-                              <img 
-                                src={deal.image} 
-                                alt={deal.title} 
-                                className="w-full h-48 object-cover"
-                              />
-                              <Badge className="absolute top-2 right-2 bg-royal-green text-white">{deal.discount} OFF</Badge>
-                            </div>
-                            <CardContent className="p-4">
-                              <h3 className="font-semibold text-lg mb-2">{deal.title}</h3>
-                              <div className="flex justify-between mb-3">
-                                <div className="flex items-center">
-                                  <span className="font-bold text-lg">{deal.currentPrice} SAR</span>
-                                  <span className="text-muted-foreground line-through text-sm ml-2">{deal.originalPrice} SAR</span>
-                                </div>
-                              </div>
-                              
-                              <div className="space-y-3">
-                                <div className="flex justify-between text-sm">
-                                  <div className="flex items-center">
-                                    <Users className="h-4 w-4 mr-1 text-muted-foreground" />
-                                    <span>{deal.joined} of {deal.total} joined</span>
-                                  </div>
-                                  <div className="flex items-center">
-                                    <Clock className="h-4 w-4 mr-1 text-muted-foreground" />
-                                    <span>{deal.timeLeft}</span>
-                                  </div>
-                                </div>
-                                
-                                <div className="w-full bg-gray-200 rounded-full h-2.5">
-                                  <div 
-                                    className="bg-royal-green h-2.5 rounded-full" 
-                                    style={{ width: `${(deal.joined / deal.total) * 100}%` }}
-                                  ></div>
-                                </div>
-                                
-                                <Button 
-                                  className="w-full bg-royal-green hover:bg-royal-green-dark"
-                                  onClick={() => handleJoinJam3a(deal)}
-                                >
-                                  {deal.buttonText}
-                                </Button>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        ))}
+                        .map((deal, index) => renderProductCard(deal, index))}
                     </div>
                   </TabsContent>
                   
@@ -514,54 +422,7 @@ const ShopAllDeals = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {currentContent.deals
                         .filter((deal, index) => index >= 4)
-                        .map((deal, index) => (
-                          <Card key={index} className="overflow-hidden">
-                            <div className="relative">
-                              <img 
-                                src={deal.image} 
-                                alt={deal.title} 
-                                className="w-full h-48 object-cover"
-                              />
-                              <Badge className="absolute top-2 right-2 bg-royal-green text-white">{deal.discount} OFF</Badge>
-                            </div>
-                            <CardContent className="p-4">
-                              <h3 className="font-semibold text-lg mb-2">{deal.title}</h3>
-                              <div className="flex justify-between mb-3">
-                                <div className="flex items-center">
-                                  <span className="font-bold text-lg">{deal.currentPrice} SAR</span>
-                                  <span className="text-muted-foreground line-through text-sm ml-2">{deal.originalPrice} SAR</span>
-                                </div>
-                              </div>
-                              
-                              <div className="space-y-3">
-                                <div className="flex justify-between text-sm">
-                                  <div className="flex items-center">
-                                    <Users className="h-4 w-4 mr-1 text-muted-foreground" />
-                                    <span>{deal.joined} of {deal.total} joined</span>
-                                  </div>
-                                  <div className="flex items-center">
-                                    <Clock className="h-4 w-4 mr-1 text-muted-foreground" />
-                                    <span>{deal.timeLeft}</span>
-                                  </div>
-                                </div>
-                                
-                                <div className="w-full bg-gray-200 rounded-full h-2.5">
-                                  <div 
-                                    className="bg-royal-green h-2.5 rounded-full" 
-                                    style={{ width: `${(deal.joined / deal.total) * 100}%` }}
-                                  ></div>
-                                </div>
-                                
-                                <Button 
-                                  className="w-full bg-royal-green hover:bg-royal-green-dark"
-                                  onClick={() => handleJoinJam3a(deal)}
-                                >
-                                  {deal.buttonText}
-                                </Button>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        ))}
+                        .map((deal, index) => renderProductCard(deal, index))}
                     </div>
                   </TabsContent>
                 </Tabs>
