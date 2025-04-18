@@ -198,12 +198,13 @@ const StartJam3a: React.FC = () => {
         <div className="flex flex-col items-center space-y-4">
           <Link to="/start-jam3a" className="w-full max-w-xs">
             <Button 
+              variant="green"
               size="lg" 
-              className="w-full bg-royal-blue hover:bg-royal-blue-dark text-white px-8 py-6 text-lg shadow-royal-blue hover:shadow-royal-blue-lg transition-all duration-300 hover:-translate-y-1"
+              className="w-full text-white px-8 py-6 text-lg shadow-royal-blue hover:shadow-royal-blue-lg transition-all duration-300 hover:-translate-y-1 group"
             >
               <span className="flex items-center gap-2">
                 {content[language].cta}
-                <ArrowRight className="h-5 w-5" />
+                <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
               </span>
             </Button>
           </Link>

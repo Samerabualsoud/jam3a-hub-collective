@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -9,7 +10,7 @@ import { useLanguage } from '@/components/Header';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useMoyasarPayment } from '@/hooks/useMoyasarPayment';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ArrowRight, ArrowLeft, Users, Clock, ShieldCheck, CheckCircle } from 'lucide-react';
 
 const JoinJam3a = () => {
   const navigate = useNavigate();
@@ -193,6 +194,98 @@ const JoinJam3a = () => {
     getRelatedProducts();
   }, [productCategory]);
 
+  // Progress indicator component
+  const ProgressIndicator = () => {
+    const steps = [
+      { label: language === 'en' ? 'Deal Details' : 'تفاصيل الصفقة' },
+      { label: language === 'en' ? 'Your Info' : 'معلوماتك' },
+      { label: language === 'en' ? 'Payment' : 'الدفع' },
+    ];
+
+    const getActiveIndex = () => {
+      switch (activeTab) {
+        case 'details': return 0;
+        case 'info': return 1;
+        case 'payment': return 2;
+        default: return 0;
+      }
+    };
+
+    return (
+      <div className="mb-8">
+        <div className="flex items-center justify-between">
+          {steps.map((step, index) => (
+            <React.Fragment key={index}>
+              <div className="flex flex-col items-center">
+                <div className={`flex items-center justify-center w-8 h-8 rounded-full ${
+                  index <= getActiveIndex() ? 'bg-royal-blue text-white' : 'bg-gray-200 text-gray-600'
+                }`}>
+                  {index < getActiveIndex() ? 
+                    <CheckCircle className="h-5 w-5" /> : 
+                    <span>{index + 1}</span>
+                  }
+                </div>
+                <span className={`text-sm mt-1 ${index <= getActiveIndex() ? 'text-royal-blue font-medium' : 'text-gray-500'}`}>
+                  {step.label}
+                </span>
+              </div>
+              
+              {index < steps.length - 1 && (
+                <div className="flex-1 mx-2">
+                  <div className={`h-1 ${
+                    index < getActiveIndex() ? 'bg-royal-blue' : 'bg-gray-200'
+                  }`}></div>
+                </div>
+              )}
+            </React.Fragment>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  // Benefits component
+  const JamaaaBenefits = () => {
+    const benefits = [
+      {
+        icon: BadgePercent,
+        title: language === 'en' ? 'Group Discount' : 'خصم جماعي',
+        description: language === 'en' ? 'Save by purchasing as a group' : 'وفر عن طريق الشراء كمجموعة'
+      },
+      {
+        icon: Users,
+        title: language === 'en' ? 'Safe & Secure' : 'آمن ومضمون',
+        description: language === 'en' ? 'Protected payment process' : 'عملية دفع محمية'
+      },
+      {
+        icon: ShieldCheck,
+        title: language === 'en' ? 'Money-Back Guarantee' : 'ضمان استرداد الأموال',
+        description: language === 'en' ? 'Full refund if group doesn\'t fill' : 'استرداد كامل إذا لم تمتلئ المجموعة'
+      }
+    ];
+
+    return (
+      <div className="mt-8 border-t pt-6">
+        <h3 className="font-semibold mb-4 text-lg">
+          {language === 'en' ? 'Jam3a Benefits' : 'مميزات الجمعة'}
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {benefits.map((benefit, idx) => (
+            <div key={idx} className="flex items-start p-3 bg-royal-blue-50 rounded-lg">
+              <div className="mr-3 text-royal-blue">
+                {React.createElement(benefit.icon, { size: 20 })}
+              </div>
+              <div>
+                <h4 className="font-medium">{benefit.title}</h4>
+                <p className="text-sm text-muted-foreground">{benefit.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   // Modify the details tab content to include product selection
   const renderDetailsContent = () => (
     <div className="flex flex-col md:flex-row gap-6">
@@ -255,7 +348,7 @@ const JoinJam3a = () => {
               {productPrice.replace('SAR', '')} SAR
             </span>
             {productDiscount && (
-              <span className="text-sm bg-royal-blue-50 text-royal-blue px-2 py-1 rounded">
+              <span className="text-sm bg-royal-blue-50 text-royal-blue px-2 py-1 rounded font-medium">
                 {productDiscount} OFF
               </span>
             )}
@@ -289,12 +382,19 @@ const JoinJam3a = () => {
             <li>{language === 'en' ? 'Payment options: Credit Card, Apple Pay, STC Pay' : 'خيارات الدفع: بطاقة ائتمان، آبل باي، STC Pay'}</li>
           </ul>
         </div>
+
+        <JamaaaBenefits />
         
         <Button 
+          variant="green"
+          size="wide"
           onClick={handleNextStep}
-          className="w-full bg-royal-blue hover:bg-royal-blue-dark"
+          className="mt-6 group"
         >
-          {language === 'en' ? 'Continue to Next Step' : 'المتابعة إلى الخطوة التالية'}
+          <span className="flex items-center justify-center">
+            {language === 'en' ? 'Continue to Next Step' : 'المتابعة إلى الخطوة التالية'}
+            <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+          </span>
         </Button>
       </div>
     </div>
@@ -308,6 +408,8 @@ const JoinJam3a = () => {
           <h1 className="text-3xl font-bold mb-6 text-center">
             {language === 'en' ? 'Join This Jam3a' : 'انضم إلى هذه الجمعة'}
           </h1>
+          
+          <ProgressIndicator />
           
           <div className="bg-white rounded-lg shadow-md overflow-hidden">
             <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
@@ -393,16 +495,20 @@ const JoinJam3a = () => {
                       type="button"
                       variant="outline"
                       onClick={handlePrevStep}
+                      className="group"
                     >
+                      <ArrowLeft className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" />
                       {language === 'en' ? 'Back' : 'رجوع'}
                     </Button>
                     
                     <Button 
                       type="button"
+                      variant="green"
                       onClick={handleNextStep}
-                      className="bg-royal-blue hover:bg-royal-blue-dark"
+                      className="group"
                     >
                       {language === 'en' ? 'Continue to Payment' : 'المتابعة إلى الدفع'}
+                      <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                     </Button>
                   </div>
                 </form>
@@ -415,9 +521,9 @@ const JoinJam3a = () => {
                       {language === 'en' ? 'Select Payment Method' : 'اختر طريقة الدفع'}
                     </h3>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div 
-                        className={`border rounded-lg p-4 cursor-pointer ${formData.paymentMethod === 'credit-card' ? 'border-royal-blue bg-royal-blue-50' : ''}`}
+                        className={`border rounded-lg p-4 cursor-pointer transition-all ${formData.paymentMethod === 'credit-card' ? 'border-royal-blue bg-royal-blue-50' : 'hover:border-royal-blue'}`}
                         onClick={() => handlePaymentMethodChange('credit-card')}
                       >
                         <div className="flex items-center justify-between mb-2">
@@ -434,7 +540,7 @@ const JoinJam3a = () => {
                       </div>
                       
                       <div 
-                        className={`border rounded-lg p-4 cursor-pointer ${formData.paymentMethod === 'mada' ? 'border-royal-blue bg-royal-blue-50' : ''}`}
+                        className={`border rounded-lg p-4 cursor-pointer transition-all ${formData.paymentMethod === 'mada' ? 'border-royal-blue bg-royal-blue-50' : 'hover:border-royal-blue'}`}
                         onClick={() => handlePaymentMethodChange('mada')}
                       >
                         <div className="flex items-center justify-between mb-2">
@@ -451,7 +557,7 @@ const JoinJam3a = () => {
                       </div>
                       
                       <div 
-                        className={`border rounded-lg p-4 cursor-pointer ${formData.paymentMethod === 'apple-pay' ? 'border-royal-blue bg-royal-blue-50' : ''}`}
+                        className={`border rounded-lg p-4 cursor-pointer transition-all ${formData.paymentMethod === 'apple-pay' ? 'border-royal-blue bg-royal-blue-50' : 'hover:border-royal-blue'}`}
                         onClick={() => handlePaymentMethodChange('apple-pay')}
                       >
                         <div className="flex items-center justify-between mb-2">
@@ -468,7 +574,7 @@ const JoinJam3a = () => {
                       </div>
                       
                       <div 
-                        className={`border rounded-lg p-4 cursor-pointer ${formData.paymentMethod === 'stc-pay' ? 'border-royal-blue bg-royal-blue-50' : ''}`}
+                        className={`border rounded-lg p-4 cursor-pointer transition-all ${formData.paymentMethod === 'stc-pay' ? 'border-royal-blue bg-royal-blue-50' : 'hover:border-royal-blue'}`}
                         onClick={() => handlePaymentMethodChange('stc-pay')}
                       >
                         <div className="flex items-center justify-between mb-2">
@@ -487,7 +593,7 @@ const JoinJam3a = () => {
                   </div>
                   
                   {(formData.paymentMethod === 'credit-card' || formData.paymentMethod === 'mada') && (
-                    <div className="space-y-4">
+                    <div className="space-y-4 bg-royal-blue-50/50 p-4 rounded-lg border border-royal-blue/10">
                       <div className="space-y-2">
                         <Label htmlFor="cardName">
                           {language === 'en' ? 'Name on Card' : 'الاسم على البطاقة'}
@@ -567,14 +673,17 @@ const JoinJam3a = () => {
                       variant="outline"
                       onClick={handlePrevStep}
                       disabled={isLoading}
+                      className="group"
                     >
+                      <ArrowLeft className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" />
                       {language === 'en' ? 'Back' : 'رجوع'}
                     </Button>
                     
                     <Button 
                       type="submit"
-                      className="bg-royal-blue hover:bg-royal-blue-dark"
+                      variant="green"
                       disabled={isLoading}
+                      className="relative"
                     >
                       {isLoading ? (
                         <>
@@ -582,7 +691,10 @@ const JoinJam3a = () => {
                           {language === 'en' ? 'Processing...' : 'جاري المعالجة...'}
                         </>
                       ) : (
-                        language === 'en' ? 'Complete Purchase' : 'إتمام الشراء'
+                        <span className="flex items-center">
+                          {language === 'en' ? 'Complete Purchase' : 'إتمام الشراء'} 
+                          <ShieldCheck className="ml-2 h-4 w-4" />
+                        </span>
                       )}
                     </Button>
                   </div>
