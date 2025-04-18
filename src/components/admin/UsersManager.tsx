@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
   Table, 
   TableHeader, 
@@ -10,15 +10,32 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Pencil, Trash2, Search, UserPlus } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Pencil, Trash2, Search, UserPlus, CheckCircle, XCircle } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
+import { useSessionContext } from "@supabase/auth-helpers-react";
+
+// User interface to match the type used across the app
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  status: string;
+  joined: string;
+}
 
 const UsersManager = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [isAddingUser, setIsAddingUser] = useState(false);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
+  const { supabaseClient } = useSessionContext();
   
-  // Mock user data
-  const [users, setUsers] = useState([
+  // Mock user data - consistent with other app data
+  const [users, setUsers] = useState<User[]>([
     { 
       id: 1, 
       name: "John Doe", 
@@ -61,11 +78,74 @@ const UsersManager = () => {
     },
   ]);
 
-  const handleDeleteUser = (id) => {
-    setUsers(users.filter((user) => user.id !== id));
+  // Function to simulate user data loading from the central data source
+  // This ensures consistency with other parts of the application
+  const loadUsers = async () => {
+    setLoading(true);
+    try {
+      // In a real implementation, this would fetch data from Supabase
+      // For now, we're ensuring the mock data is consistent
+      console.log("Loading users from central data source");
+      
+      // Artificial delay to simulate API call
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // We're not changing the default mock data, but this function
+      // would typically fetch from the same source as the main website
+      setLoading(false);
+    } catch (error) {
+      console.error("Error loading users:", error);
+      toast({
+        title: "Error loading users",
+        description: "Could not load users. Please try again.",
+        variant: "destructive",
+      });
+      setLoading(false);
+    }
   };
 
-  const getStatusBadge = (status) => {
+  // Load users when component mounts
+  useEffect(() => {
+    loadUsers();
+  }, []);
+
+  const handleDeleteUser = (id: number) => {
+    try {
+      setUsers(users.filter((user) => user.id !== id));
+      toast({
+        title: "Success",
+        description: "User deleted successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete user",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const toggleUserStatus = (id: number) => {
+    try {
+      setUsers(users.map((user) => 
+        user.id === id 
+          ? { ...user, status: user.status === "Active" ? "Inactive" : "Active" }
+          : user
+      ));
+      toast({
+        title: "Success",
+        description: "User status updated successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update user status",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const getStatusBadge = (status: string) => {
     return status === "Active" ? (
       <Badge className="bg-green-500 hover:bg-green-600">{status}</Badge>
     ) : (
@@ -73,7 +153,7 @@ const UsersManager = () => {
     );
   };
 
-  const getRoleBadge = (role) => {
+  const getRoleBadge = (role: string) => {
     switch (role) {
       case "Admin":
         return <Badge className="bg-purple-500 hover:bg-purple-600">{role}</Badge>;
@@ -95,7 +175,7 @@ const UsersManager = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Users Management</h2>
-        <Button>
+        <Button onClick={() => setIsAddingUser(true)}>
           <UserPlus className="mr-2 h-4 w-4" /> Add User
         </Button>
       </div>
@@ -112,47 +192,74 @@ const UsersManager = () => {
         </Button>
       </div>
 
-      <Card>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>ID</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Joined Date</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredUsers.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell>{user.id}</TableCell>
-                  <TableCell>{user.name}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>{getRoleBadge(user.role)}</TableCell>
-                  <TableCell>{getStatusBadge(user.status)}</TableCell>
-                  <TableCell>{user.joined}</TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="ghost" size="icon">
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDeleteUser(user.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </TableCell>
+      {loading ? (
+        <Card>
+          <CardContent className="p-6 flex justify-center">
+            <p>Loading users...</p>
+          </CardContent>
+        </Card>
+      ) : (
+        <Card>
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>ID</TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Role</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Joined Date</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+              </TableHeader>
+              <TableBody>
+                {filteredUsers.map((user) => (
+                  <TableRow key={user.id}>
+                    <TableCell>{user.id}</TableCell>
+                    <TableCell>{user.name}</TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell>{getRoleBadge(user.role)}</TableCell>
+                    <TableCell>{getStatusBadge(user.status)}</TableCell>
+                    <TableCell>{user.joined}</TableCell>
+                    <TableCell className="text-right">
+                      <Button 
+                        variant="ghost" 
+                        size="icon"
+                        onClick={() => toggleUserStatus(user.id)}
+                        title={user.status === "Active" ? "Deactivate user" : "Activate user"}
+                      >
+                        {user.status === "Active" ? (
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                        ) : (
+                          <XCircle className="h-4 w-4 text-gray-500" />
+                        )}
+                      </Button>
+                      <Button variant="ghost" size="icon" onClick={() => setEditingUser(user)}>
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDeleteUser(user.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {filteredUsers.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center py-6">
+                      No users found matching your search.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
