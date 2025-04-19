@@ -34,6 +34,14 @@ const ProductSelectionCard: React.FC<ProductCardProps> = ({
     return encodeURIComponent(category);
   }, [category]);
 
+  // Add error handling for image loading
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    const target = e.target as HTMLImageElement;
+    console.log("Image failed to load:", target.src);
+    target.src = "https://placehold.co/600x400?text=No+Image";
+    target.onerror = null; // Prevent infinite fallback loop
+  };
+
   return (
     <Card className="overflow-hidden flex flex-col h-full hover:shadow-md transition-all animate-fade-in">
       <div className="aspect-video bg-gray-100 relative">
@@ -41,9 +49,7 @@ const ProductSelectionCard: React.FC<ProductCardProps> = ({
           src={image} 
           alt={name} 
           className="w-full h-full object-cover"
-          onError={(e) => {
-            (e.target as HTMLImageElement).src = "https://placehold.co/600x400?text=No+Image";
-          }}
+          onError={handleImageError}
         />
         <div className="absolute top-3 right-3 bg-royal-blue text-white text-sm font-medium px-3 py-1 rounded-full">
           {discount} {language === 'en' ? 'OFF' : 'خصم'}
@@ -68,7 +74,11 @@ const ProductSelectionCard: React.FC<ProductCardProps> = ({
             className="group shadow-sm hover:shadow-md"
             asChild
           >
-            <Link to={`/join-jam3a?product=${encodeURIComponent(name)}&price=${discountPrice} SAR&discount=${discount}&category=${formattedCategory}`} className="flex items-center justify-center">
+            <Link 
+              to={`/join-jam3a?product=${encodeURIComponent(name)}&price=${discountPrice} SAR&discount=${discount}&category=${formattedCategory}`} 
+              className="flex items-center justify-center"
+              onClick={() => console.log(`Product selected: ${name}, price: ${discountPrice}, category: ${category}`)}
+            >
               {language === 'en' ? 'Start Jam3a' : 'ابدأ جمعة'}
               <ArrowRight className="ml-1.5 h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>

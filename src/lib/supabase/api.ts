@@ -7,8 +7,8 @@ interface Product {
   category: string;
   price: number;
   stock: number;
-  description: string; // Changed from optional to required to match mock data
-  imageUrl: string;    // Changed from optional to required to match mock data
+  description: string;
+  imageUrl: string;
   created_at?: string;
 }
 
@@ -166,16 +166,20 @@ const mockContentSections = [
 
 export const useSupabaseApi = () => {
   const { supabaseClient } = useSessionContext();
-  // Check if Supabase credentials exist
-  const hasSupabaseConfig = import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY;
+  
+  // Check if we can connect to Supabase
+  const hasSupabaseConfig = typeof window !== 'undefined' && 
+    import.meta.env.VITE_SUPABASE_URL && 
+    import.meta.env.VITE_SUPABASE_ANON_KEY;
 
   const validateClient = () => {
-    // If Supabase is not configured, throw an error that will be caught and handled
     if (!hasSupabaseConfig) {
+      console.warn('Supabase is not configured. Running in demo mode.');
       throw new Error('Supabase is not configured. Running in demo mode.');
     }
     
     if (!supabaseClient) {
+      console.error('Supabase client is not initialized');
       throw new Error('Supabase client is not initialized');
     }
     
@@ -195,12 +199,18 @@ export const useSupabaseApi = () => {
       }
       
       const client = validateClient();
+      console.log('Fetching products from Supabase');
       const { data, error } = await client
         .from('products')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
+      
+      console.log('Products fetched successfully:', data?.length || 0);
       return data || [];
     } catch (error) {
       console.error('Error getting products:', error);
@@ -331,12 +341,18 @@ export const useSupabaseApi = () => {
       }
       
       const client = validateClient();
+      console.log('Fetching deals from Supabase');
       const { data, error } = await client
         .from('deals')
         .select('*, products(name)')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
+      
+      console.log('Deals fetched successfully:', data?.length || 0);
       return data || [];
     } catch (error) {
       console.error('Error getting deals:', error);

@@ -57,6 +57,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
           src={image}
           alt={title[language]}
           className="h-48 w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          onError={(e) => {
+            console.log("Image failed to load:", (e.target as HTMLImageElement).src);
+            (e.target as HTMLImageElement).src = "https://placehold.co/600x400?text=No+Image";
+          }}
         />
         <div className="absolute top-2 right-2 rounded-full bg-black/70 px-2 py-1 text-xs text-white backdrop-blur-sm">
           {Math.round((originalPrice - discountedPrice) / originalPrice * 100)}% {language === 'en' ? 'OFF' : 'خصم'}
@@ -118,21 +122,25 @@ const FeaturedDeals = () => {
   const [deals, setDeals] = useState([]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const api = useSupabaseApi();
   
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
+        console.log('Fetching deals and products for FeaturedDeals component');
         const [dealsData, productsData] = await Promise.all([
           api.getDeals(),
           api.getProducts()
         ]);
         
+        console.log(`Fetched ${dealsData.length} deals and ${productsData.length} products`);
         setDeals(dealsData);
         setProducts(productsData);
       } catch (error) {
         console.error("Error fetching deals:", error);
+        setError(error.message || "Failed to fetch deals");
       } finally {
         setLoading(false);
       }
