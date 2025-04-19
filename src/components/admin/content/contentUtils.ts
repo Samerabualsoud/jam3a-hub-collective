@@ -62,10 +62,19 @@ export const saveContentSection = async (section: Partial<ContentSection>) => {
     throw new Error("Section name is required");
   }
   
+  // Create a properly typed object with the required field
+  const dataToSave = {
+    name: sectionData.name,
+    content: sectionData.content || null,
+    path: sectionData.path || '/',
+    type: sectionData.type || 'section',
+    updated_at: new Date().toISOString()
+  };
+  
   if (id) {
     const { data, error } = await supabase
       .from('content_sections')
-      .update({ ...sectionData, updated_at: new Date().toISOString() })
+      .update(dataToSave)
       .eq('id', id)
       .select()
       .single();
@@ -74,7 +83,7 @@ export const saveContentSection = async (section: Partial<ContentSection>) => {
   } else {
     const { data, error } = await supabase
       .from('content_sections')
-      .insert({ ...sectionData })
+      .insert(dataToSave)
       .select()
       .single();
     if (error) throw error;
@@ -101,10 +110,19 @@ export const saveBanner = async (banner: Partial<Banner>) => {
     throw new Error("Banner title is required");
   }
   
+  // Create a properly typed object with the required field
+  const dataToSave = {
+    title: bannerData.title,
+    image_url: bannerData.image_url || null,
+    link: bannerData.link || null,
+    active: bannerData.active || false,
+    updated_at: new Date().toISOString()
+  };
+  
   if (id) {
     const { data, error } = await supabase
       .from('banners')
-      .update({ ...bannerData, updated_at: new Date().toISOString() })
+      .update(dataToSave)
       .eq('id', id)
       .select()
       .single();
@@ -113,7 +131,7 @@ export const saveBanner = async (banner: Partial<Banner>) => {
   } else {
     const { data, error } = await supabase
       .from('banners')
-      .insert({ ...bannerData })
+      .insert(dataToSave)
       .select()
       .single();
     if (error) throw error;
@@ -144,10 +162,20 @@ export const savePage = async (page: Partial<Page>) => {
     throw new Error("Page slug is required");
   }
   
+  // Create a properly typed object with the required fields
+  const dataToSave = {
+    title: pageData.title,
+    slug: pageData.slug,
+    content: pageData.content || null,
+    meta_description: pageData.meta_description || null,
+    meta_keywords: pageData.meta_keywords || null,
+    updated_at: new Date().toISOString()
+  };
+  
   if (id) {
     const { data, error } = await supabase
       .from('pages')
-      .update({ ...pageData, updated_at: new Date().toISOString() })
+      .update(dataToSave)
       .eq('id', id)
       .select()
       .single();
@@ -156,7 +184,7 @@ export const savePage = async (page: Partial<Page>) => {
   } else {
     const { data, error } = await supabase
       .from('pages')
-      .insert({ ...pageData })
+      .insert(dataToSave)
       .select()
       .single();
     if (error) throw error;
@@ -187,10 +215,19 @@ export const saveFAQ = async (faq: Partial<FAQ>) => {
     throw new Error("FAQ answer is required");
   }
   
+  // Create a properly typed object with the required fields
+  const dataToSave = {
+    question: faqData.question,
+    answer: faqData.answer,
+    category: faqData.category || null,
+    display_order: faqData.display_order || 0,
+    updated_at: new Date().toISOString()
+  };
+  
   if (id) {
     const { data, error } = await supabase
       .from('faqs')
-      .update({ ...faqData, updated_at: new Date().toISOString() })
+      .update(dataToSave)
       .eq('id', id)
       .select()
       .single();
@@ -199,7 +236,7 @@ export const saveFAQ = async (faq: Partial<FAQ>) => {
   } else {
     const { data, error } = await supabase
       .from('faqs')
-      .insert({ ...faqData })
+      .insert(dataToSave)
       .select()
       .single();
     if (error) throw error;
