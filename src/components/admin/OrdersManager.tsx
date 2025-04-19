@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { 
   Table, 
@@ -22,6 +23,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { SarIcon } from "@/components/icons/SarIcon";
 import { useToast } from "@/hooks/use-toast";
+import { Order } from "@/types/admin";
 
 const OrdersManager = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -31,20 +33,25 @@ const OrdersManager = () => {
   const { data: orders = [], isLoading, error, refetch } = useQuery({
     queryKey: ['admin-orders'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('orders')
-        .select('*');
-      
-      if (error) {
-        console.error("Error fetching orders:", error);
-        throw error;
+      try {
+        const { data, error } = await supabase
+          .from('orders')
+          .select('*');
+        
+        if (error) {
+          console.error("Error fetching orders:", error);
+          throw error;
+        }
+        
+        return data as Order[] || [];
+      } catch (error) {
+        console.error("Failed to fetch orders:", error);
+        return [];
       }
-      
-      return data || [];
     }
   });
 
-  const updateOrderStatus = async (orderId, newStatus) => {
+  const updateOrderStatus = async (orderId: number, newStatus: string) => {
     try {
       const { error } = await supabase
         .from('orders')
@@ -71,7 +78,7 @@ const OrdersManager = () => {
     }
   };
 
-  const getStatusBadge = (status) => {
+  const getStatusBadge = (status: string) => {
     switch (status) {
       case "Delivered":
         return <Badge className="bg-green-500 hover:bg-green-600">{status}</Badge>;
@@ -86,7 +93,7 @@ const OrdersManager = () => {
     }
   };
 
-  const getStatusActions = (order) => {
+  const getStatusActions = (order: Order) => {
     switch (order.status) {
       case "Pending":
         return (

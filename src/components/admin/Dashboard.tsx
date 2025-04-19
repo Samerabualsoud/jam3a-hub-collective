@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
@@ -7,10 +8,11 @@ import {
   TrendingUp,
   ArrowUpRight,
 } from "lucide-react";
-import { SarIcon } from "@/components/icons/SarIcon"; // Import the custom SarIcon
+import { SarIcon } from "@/components/icons/SarIcon";
 import { useSupabaseApi } from "@/lib/supabase/api";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
+import { Order } from "@/types/admin";
 
 const Dashboard = () => {
   const api = useSupabaseApi();
@@ -21,20 +23,30 @@ const Dashboard = () => {
     queryFn: api.getProducts,
   });
 
-  // Fetch orders data (assuming we have orders table)
-  const { data: ordersData, isLoading: ordersLoading } = useQuery({
+  // Fetch orders data with proper error handling
+  const { data: ordersData = [], isLoading: ordersLoading } = useQuery({
     queryKey: ['admin-orders'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('orders')
-        .select('*');
-      if (error) throw error;
-      return data || [];
+      try {
+        const { data, error } = await supabase
+          .from('orders')
+          .select('*');
+        
+        if (error) {
+          console.error("Error fetching orders:", error);
+          return [];
+        }
+        
+        return data as Order[];
+      } catch (err) {
+        console.error("Failed to fetch orders:", err);
+        return [];
+      }
     }
   });
 
   // Calculate total revenue from orders
-  const totalRevenue = ordersData?.reduce((sum, order) => sum + (order.total_amount || 0), 0) || 0;
+  const totalRevenue = ordersData.reduce((sum, order) => sum + (order.total_amount || 0), 0);
 
   // Prepare stats data based on real data
   const stats = [

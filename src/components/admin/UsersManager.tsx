@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { 
   Table, 
@@ -15,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
+import { Profile } from "@/types/admin";
 
 interface User {
   id: string;
@@ -36,42 +38,27 @@ const UsersManager = () => {
     queryKey: ['admin-users'],
     queryFn: async () => {
       try {
-        // First try to get users from auth (this might fail with normal permissions)
-        const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers();
-
-        if (authError) {
-          console.error("Error fetching users from auth:", authError);
-          // Fallback to profiles table
-          const { data: profiles, error: profilesError } = await supabase
-            .from('profiles')
-            .select('*');
-          
-          if (profilesError) throw profilesError;
-
-          // Map profiles to the format we need
-          return (profiles || []).map(profile => {
-            return {
-              id: profile.id,
-              name: profile.first_name && profile.last_name 
-                ? `${profile.first_name} ${profile.last_name}` 
-                : (profile.email?.split('@')[0] || 'Unknown'),
-              email: profile.email || 'No email',
-              role: profile.role || 'Customer',
-              status: 'Active',
-              joined: profile.created_at ? new Date(profile.created_at).toISOString().split('T')[0] : 'Unknown'
-            };
-          });
+        // Try to get profiles from profiles table
+        const { data: profiles, error: profilesError } = await supabase
+          .from('profiles')
+          .select('*');
+        
+        if (profilesError) {
+          console.error("Error fetching profiles:", profilesError);
+          return [];
         }
 
-        // If auth listing works, use that data
-        return (authUsers.users || []).map(user => {
+        // Map profiles to the format we need
+        return (profiles as Profile[] || []).map(profile => {
           return {
-            id: user.id,
-            name: user.user_metadata?.name || user.email?.split('@')[0] || 'Unknown',
-            email: user.email || 'No email',
-            role: user.user_metadata?.role || 'Customer',
-            status: user.confirmed_at ? 'Active' : 'Inactive',
-            joined: new Date(user.created_at).toISOString().split('T')[0]
+            id: profile.id,
+            name: profile.first_name && profile.last_name 
+              ? `${profile.first_name} ${profile.last_name}` 
+              : (profile.email?.split('@')[0] || 'Unknown'),
+            email: profile.email || 'No email',
+            role: profile.role || 'Customer',
+            status: 'Active',
+            joined: profile.created_at ? new Date(profile.created_at).toISOString().split('T')[0] : 'Unknown'
           };
         });
       } catch (error) {
