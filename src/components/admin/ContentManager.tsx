@@ -7,7 +7,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { useSupabaseApi } from "@/lib/supabase/api";
 import { useSessionContext } from "@supabase/auth-helpers-react";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -23,6 +22,17 @@ import {
   Component,
   AlertTriangle
 } from 'lucide-react';
+import {
+  fetchContentSections,
+  fetchBanners,
+  fetchPages,
+  fetchFAQs,
+  saveContentSection,
+  saveBanner,
+  savePage,
+  saveFAQ,
+} from "@/components/admin/content/contentUtils";
+import ContentPreview from "@/components/admin/content/ContentPreview";
 
 const ContentManager = () => {
   const [activeTab, setActiveTab] = useState("sections");
@@ -32,7 +42,6 @@ const ContentManager = () => {
   const [selectedSection, setSelectedSection] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const { toast } = useToast();
-  const api = useSupabaseApi();
   const { supabaseClient } = useSessionContext();
 
   const [bannerForm, setBannerForm] = useState({
@@ -67,19 +76,7 @@ const ContentManager = () => {
     refetch: refetchSections
   } = useQuery({
     queryKey: ['content-sections'],
-    queryFn: async () => {
-      try {
-        const { data, error } = await supabaseClient
-          .from('content_sections')
-          .select('*');
-        
-        if (error) throw error;
-        return data || [];
-      } catch (error) {
-        console.error("Error fetching content sections:", error);
-        return [];
-      }
-    }
+    queryFn: fetchContentSections
   });
 
   const { 
@@ -88,19 +85,7 @@ const ContentManager = () => {
     refetch: refetchBanners
   } = useQuery({
     queryKey: ['content-banners'],
-    queryFn: async () => {
-      try {
-        const { data, error } = await supabaseClient
-          .from('banners')
-          .select('*');
-        
-        if (error) throw error;
-        return data || [];
-      } catch (error) {
-        console.error("Error fetching banners:", error);
-        return [];
-      }
-    }
+    queryFn: fetchBanners
   });
 
   const { 
@@ -109,19 +94,7 @@ const ContentManager = () => {
     refetch: refetchPages
   } = useQuery({
     queryKey: ['content-pages'],
-    queryFn: async () => {
-      try {
-        const { data, error } = await supabaseClient
-          .from('pages')
-          .select('*');
-        
-        if (error) throw error;
-        return data || [];
-      } catch (error) {
-        console.error("Error fetching pages:", error);
-        return [];
-      }
-    }
+    queryFn: fetchPages
   });
 
   const { 
@@ -130,19 +103,7 @@ const ContentManager = () => {
     refetch: refetchFaqs
   } = useQuery({
     queryKey: ['content-faqs'],
-    queryFn: async () => {
-      try {
-        const { data, error } = await supabaseClient
-          .from('faqs')
-          .select('*');
-        
-        if (error) throw error;
-        return data || [];
-      } catch (error) {
-        console.error("Error fetching FAQs:", error);
-        return [];
-      }
-    }
+    queryFn: fetchFAQs
   });
 
   const getIconForContentType = (type) => {
@@ -233,114 +194,36 @@ const ContentManager = () => {
     try {
       if (activeTab === 'sections') {
         if (selectedSection) {
-          const { error } = await supabaseClient
-            .from('content_sections')
-            .update({
-              name: sectionForm.name,
-              path: sectionForm.path,
-              content: sectionForm.content,
-              type: sectionForm.type,
-              updated_at: new Date().toISOString()
-            })
-            .eq('id', selectedSection.id);
-          
-          if (error) throw error;
+          await saveContentSection(sectionForm);
+          refetchSections();
         } else {
-          const { error } = await supabaseClient
-            .from('content_sections')
-            .insert({
-              name: sectionForm.name,
-              path: sectionForm.path,
-              content: sectionForm.content,
-              type: sectionForm.type,
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            });
-          
-          if (error) throw error;
+          await saveContentSection(sectionForm);
+          refetchSections();
         }
-        refetchSections();
       } else if (activeTab === 'banners') {
         if (selectedBanner) {
-          const { error } = await supabaseClient
-            .from('banners')
-            .update({
-              title: bannerForm.title,
-              image_url: bannerForm.image,
-              active: bannerForm.active,
-              link: bannerForm.link,
-              updated_at: new Date().toISOString()
-            })
-            .eq('id', selectedBanner.id);
-          
-          if (error) throw error;
+          await saveBanner(bannerForm);
+          refetchBanners();
         } else {
-          const { error } = await supabaseClient
-            .from('banners')
-            .insert({
-              title: bannerForm.title,
-              image_url: bannerForm.image,
-              active: bannerForm.active,
-              link: bannerForm.link,
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            });
-          
-          if (error) throw error;
+          await saveBanner(bannerForm);
+          refetchBanners();
         }
-        refetchBanners();
       } else if (activeTab === 'pages') {
         if (selectedPage) {
-          const { error } = await supabaseClient
-            .from('pages')
-            .update({
-              title: pageForm.title,
-              slug: pageForm.slug,
-              content: pageForm.content,
-              updated_at: new Date().toISOString()
-            })
-            .eq('id', selectedPage.id);
-          
-          if (error) throw error;
+          await savePage(pageForm);
+          refetchPages();
         } else {
-          const { error } = await supabaseClient
-            .from('pages')
-            .insert({
-              title: pageForm.title,
-              slug: pageForm.slug,
-              content: pageForm.content,
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            });
-          
-          if (error) throw error;
+          await savePage(pageForm);
+          refetchPages();
         }
-        refetchPages();
       } else if (activeTab === 'faqs') {
         if (selectedFAQ) {
-          const { error } = await supabaseClient
-            .from('faqs')
-            .update({
-              question: faqForm.question,
-              answer: faqForm.answer,
-              updated_at: new Date().toISOString()
-            })
-            .eq('id', selectedFAQ.id);
-          
-          if (error) throw error;
+          await saveFAQ(faqForm);
+          refetchFaqs();
         } else {
-          const { error } = await supabaseClient
-            .from('faqs')
-            .insert({
-              question: faqForm.question,
-              answer: faqForm.answer,
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            });
-          
-          if (error) throw error;
+          await saveFAQ(faqForm);
+          refetchFaqs();
         }
-        refetchFaqs();
       }
       
       toast({
@@ -352,7 +235,7 @@ const ContentManager = () => {
       console.error("Error saving content:", error);
       toast({
         title: "Error",
-        description: "Failed to save content. The content table might not exist in the database.",
+        description: "Failed to save content. Please try again.",
         variant: "destructive",
       });
     }
@@ -538,6 +421,7 @@ const ContentManager = () => {
                     className="min-h-[200px]"
                   />
                 </div>
+                <ContentPreview content={sectionForm.content || ''} type="html" />
               </CardContent>
               <CardFooter className="flex justify-between">
                 <Button variant="outline" onClick={handleCancel}>Cancel</Button>
@@ -760,6 +644,7 @@ const ContentManager = () => {
                     className="min-h-[200px]"
                   />
                 </div>
+                <ContentPreview content={pageForm.content || ''} type="html" />
               </CardContent>
               <CardFooter className="flex justify-between">
                 <Button variant="outline" onClick={handleCancel}>Cancel</Button>

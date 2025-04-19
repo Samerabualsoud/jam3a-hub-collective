@@ -9,6 +9,96 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      banners: {
+        Row: {
+          active: boolean | null
+          created_at: string | null
+          id: string
+          image_url: string | null
+          link: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          active?: boolean | null
+          created_at?: string | null
+          id?: string
+          image_url?: string | null
+          link?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          active?: boolean | null
+          created_at?: string | null
+          id?: string
+          image_url?: string | null
+          link?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      content_sections: {
+        Row: {
+          content: string | null
+          created_at: string | null
+          id: string
+          name: string
+          path: string | null
+          type: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          name: string
+          path?: string | null
+          type?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          name?: string
+          path?: string | null
+          type?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      faqs: {
+        Row: {
+          answer: string
+          category: string | null
+          created_at: string | null
+          display_order: number | null
+          id: string
+          question: string
+          updated_at: string | null
+        }
+        Insert: {
+          answer: string
+          category?: string | null
+          created_at?: string | null
+          display_order?: number | null
+          id?: string
+          question: string
+          updated_at?: string | null
+        }
+        Update: {
+          answer?: string
+          category?: string | null
+          created_at?: string | null
+          display_order?: number | null
+          id?: string
+          question?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           created_at: string | null
@@ -36,6 +126,39 @@ export type Database = {
           items_count?: number | null
           status?: string
           total_amount?: number
+        }
+        Relationships: []
+      }
+      pages: {
+        Row: {
+          content: string | null
+          created_at: string | null
+          id: string
+          meta_description: string | null
+          meta_keywords: string | null
+          slug: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          meta_description?: string | null
+          meta_keywords?: string | null
+          slug: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          meta_description?: string | null
+          meta_keywords?: string | null
+          slug?: string
+          title?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
