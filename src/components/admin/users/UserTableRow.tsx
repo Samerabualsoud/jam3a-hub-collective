@@ -74,7 +74,7 @@ const UserTableRow = ({ user }: UserTableRowProps) => {
       <TableCell>{getStatusBadge(user.status)}</TableCell>
       <TableCell>{formatDate(user.created_at)}</TableCell>
       <TableCell className="text-right">
-        <Button variant="ghost" size="icon">
+        <Button variant="ghost" size="icon" title={user.status === "active" ? "Active" : "Inactive"}>
           {user.status === "active" ? (
             <CheckCircle className="h-4 w-4 text-green-500" />
           ) : (

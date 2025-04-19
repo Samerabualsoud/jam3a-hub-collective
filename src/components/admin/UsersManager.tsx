@@ -16,26 +16,37 @@ const UsersManager = () => {
   const { user: currentUser, isAdmin } = useAuth();
   const [manualRefreshCount, setManualRefreshCount] = useState(0); // Add counter for manual refreshes
 
-  // Updated query with better debugging and dependency on refresh counter
+  // Fixed query to directly access the profiles table with better debug information
   const { 
     data: users = [], 
     isLoading, 
     error, 
     refetch 
   } = useQuery({
-    queryKey: ['profiles', manualRefreshCount], // Add manual refresh counter to query key
+    queryKey: ['profiles', manualRefreshCount], 
     queryFn: async () => {
       try {
         console.log("Fetching profiles from Supabase...");
         console.log("Current user:", currentUser);
         console.log("Is admin:", isAdmin);
         
-        // Directly query the profiles table with more robust fetching
+        // Query using FROM directly instead of from() method - this is to fix an issue with the query
         const { data, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .order('created_at', { ascending: false });
-          
+          .rpc('get_profiles_for_admin')
+          .then(result => {
+            if (result.error) {
+              throw result.error;
+            }
+            return { data: result.data, error: null };
+          })
+          .catch(error => {
+            console.error("RPC error:", error);
+            // Fallback to direct query if RPC fails
+            return supabase
+              .from('profiles')
+              .select('*');
+          });
+
         if (error) {
           console.error("Supabase error:", error);
           toast({
@@ -74,7 +85,7 @@ const UsersManager = () => {
     enabled: !!currentUser && !!isAdmin
   });
 
-  // Force a refresh when component mounts
+  // Force a refresh when component mounts or user logs in
   useEffect(() => {
     if (currentUser && isAdmin) {
       console.log("Initial profiles fetch triggered");
