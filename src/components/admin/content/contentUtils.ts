@@ -56,6 +56,12 @@ export const fetchContentSections = async () => {
 
 export const saveContentSection = async (section: Partial<ContentSection>) => {
   const { id, ...sectionData } = section;
+  
+  // Ensure required fields are present
+  if (!sectionData.name) {
+    throw new Error("Section name is required");
+  }
+  
   if (id) {
     const { data, error } = await supabase
       .from('content_sections')
@@ -89,6 +95,12 @@ export const fetchBanners = async () => {
 
 export const saveBanner = async (banner: Partial<Banner>) => {
   const { id, ...bannerData } = banner;
+  
+  // Ensure required fields are present
+  if (!bannerData.title) {
+    throw new Error("Banner title is required");
+  }
+  
   if (id) {
     const { data, error } = await supabase
       .from('banners')
@@ -122,6 +134,16 @@ export const fetchPages = async () => {
 
 export const savePage = async (page: Partial<Page>) => {
   const { id, ...pageData } = page;
+  
+  // Ensure required fields are present
+  if (!pageData.title) {
+    throw new Error("Page title is required");
+  }
+  
+  if (!pageData.slug) {
+    throw new Error("Page slug is required");
+  }
+  
   if (id) {
     const { data, error } = await supabase
       .from('pages')
@@ -155,6 +177,16 @@ export const fetchFAQs = async () => {
 
 export const saveFAQ = async (faq: Partial<FAQ>) => {
   const { id, ...faqData } = faq;
+  
+  // Ensure required fields are present
+  if (!faqData.question) {
+    throw new Error("FAQ question is required");
+  }
+  
+  if (!faqData.answer) {
+    throw new Error("FAQ answer is required");
+  }
+  
   if (id) {
     const { data, error } = await supabase
       .from('faqs')
