@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useSessionContext } from '@supabase/auth-helpers-react';
 import { Session } from '@supabase/supabase-js';
@@ -53,55 +52,66 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const { session, supabaseClient } = useSessionContext();
   const [user, setUser] = useState<User | null>(null);
 
-  // Effect to update user when session changes
   useEffect(() => {
     const updateUser = async () => {
       if (session?.user) {
-        // Fetch additional user metadata from Supabase
-        const userData: User = {
-          id: session.user.id,
-          name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
-          email: session.user.email || '',
-          role: (session.user.user_metadata?.role as 'admin' | 'user' | 'seller') || 'user'
-        };
-        setUser(userData);
+        try {
+          // Fetch user's role from Supabase
+          const { data: profile, error } = await supabaseClient
+            .from('profiles')
+            .select('role')
+            .eq('id', session.user.id)
+            .single();
+
+          if (error) throw error;
+
+          const userData: User = {
+            id: session.user.id,
+            name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
+            email: session.user.email || '',
+            role: profile?.role || 'user'
+          };
+          
+          setUser(userData);
+        } catch (error) {
+          console.error('Error fetching user profile:', error);
+          // Fallback to basic user data if profile fetch fails
+          setUser({
+            id: session.user.id,
+            name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
+            email: session.user.email || '',
+            role: 'user'
+          });
+        }
       } else {
         setUser(null);
       }
     };
 
     updateUser();
-  }, [session]);
+  }, [session, supabaseClient]);
 
-  // Login function
   const login = async (email: string, password: string) => {
     try {
-      // Check if supabaseClient is available and properly initialized
-      if (!supabaseClient || !supabaseClient.auth) {
+      if (!supabaseClient?.auth) {
         console.log("Development mode: attempting login with provided credentials");
-        
-        // Find matching credentials
         const matchedUser = validCredentials.find(
           (cred) => cred.email.toLowerCase() === email.toLowerCase() && cred.password === password
         );
         
         if (matchedUser) {
-          // Create a user object from valid credentials
           const userData: User = {
             id: `dev-${Date.now()}`,
             name: matchedUser.name,
             email: matchedUser.email,
             role: matchedUser.role,
           };
-          
           setUser(userData);
           return { error: null };
-        } else {
-          return { error: { message: "Invalid email or password" } };
         }
+        return { error: { message: "Invalid email or password" } };
       }
       
-      // Only try to use Supabase auth if it's properly available
       const { error } = await supabaseClient.auth.signInWithPassword({
         email,
         password,
@@ -114,10 +124,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  // Logout function
   const logout = async () => {
     try {
-      if (supabaseClient && supabaseClient.auth) {
+      if (supabaseClient?.auth) {
         await supabaseClient.auth.signOut();
       }
       setUser(null);
@@ -126,12 +135,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  // Provide the context value
   return (
     <AuthContext.Provider value={{ 
       user, 
       session, 
-      isAuthenticated: !!user, // Using user instead of session to work in dev mode
+      isAuthenticated: !!user,
       isAdmin: user?.role === 'admin', 
       login, 
       logout 

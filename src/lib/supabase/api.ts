@@ -1,4 +1,3 @@
-
 import { useSessionContext } from '@supabase/auth-helpers-react';
 
 interface Product {
@@ -21,14 +20,6 @@ interface Deal {
   endDate: string;
   active: boolean;
   created_at?: string;
-}
-
-interface ContentSection {
-  id: string;
-  name: string;
-  path: string;
-  type: 'page' | 'section' | 'component';
-  lastUpdated?: string;
 }
 
 // Mock data to use when Supabase is not configured
@@ -98,6 +89,7 @@ const mockDeals = [
   }
 ];
 
+// Mock data to use when Supabase is not configured
 const mockContentSections = [
   {
     id: 'hero',
@@ -162,34 +154,14 @@ const mockContentSections = [
     type: 'component',
     lastUpdated: '2025-04-08',
   }
-] as ContentSection[];
+] as any[];
 
 export const useSupabaseApi = () => {
   const { supabaseClient } = useSessionContext();
   
-  // Check if we can connect to Supabase
   const hasSupabaseConfig = typeof window !== 'undefined' && 
     import.meta.env.VITE_SUPABASE_URL && 
     import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-  const validateClient = () => {
-    if (!hasSupabaseConfig) {
-      console.warn('Supabase is not configured. Running in demo mode.');
-      throw new Error('Supabase is not configured. Running in demo mode.');
-    }
-    
-    if (!supabaseClient) {
-      console.error('Supabase client is not initialized');
-      throw new Error('Supabase client is not initialized');
-    }
-    
-    if (typeof supabaseClient.from !== 'function') {
-      console.error('Supabase client is missing the "from" method', supabaseClient);
-      throw new Error('Supabase client is not initialized properly');
-    }
-    
-    return supabaseClient;
-  };
 
   const getProducts = async () => {
     try {
@@ -198,9 +170,8 @@ export const useSupabaseApi = () => {
         return mockProducts;
       }
       
-      const client = validateClient();
       console.log('Fetching products from Supabase');
-      const { data, error } = await client
+      const { data, error } = await supabaseClient
         .from('products')
         .select('*')
         .order('created_at', { ascending: false });
@@ -210,127 +181,74 @@ export const useSupabaseApi = () => {
         throw error;
       }
       
-      console.log('Products fetched successfully:', data?.length || 0);
       return data || [];
     } catch (error) {
       console.error('Error getting products:', error);
-      return mockProducts; // Fallback to mock data on error
+      return mockProducts;
     }
   };
 
   const createProduct = async (product: Product) => {
-    try {
-      if (!hasSupabaseConfig) {
-        console.log('Running in demo mode - mocking product creation');
-        const newProduct = {
-          ...product,
-          id: Date.now(),
-          // Ensure description and imageUrl are never undefined to match the Product type
-          description: product.description || "",
-          imageUrl: product.imageUrl || "",
-          created_at: new Date().toISOString()
-        };
-        mockProducts.unshift(newProduct);
-        return newProduct;
-      }
-      
-      const client = validateClient();
-      const { data, error } = await client
-        .from('products')
-        .insert(product)
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error('Error creating product:', error);
-      throw error;
+    if (!hasSupabaseConfig) {
+      console.log('Running in demo mode - mocking product creation');
+      const newProduct = {
+        ...product,
+        id: Date.now(),
+        created_at: new Date().toISOString()
+      };
+      mockProducts.unshift(newProduct);
+      return newProduct;
     }
-  };
 
-  const createMultipleProducts = async (products: Product[]) => {
-    try {
-      if (!hasSupabaseConfig) {
-        console.log('Running in demo mode - mocking multiple product creation');
-        const newProducts = products.map((product, index) => ({
-          ...product,
-          id: Date.now() + index,
-          // Ensure description and imageUrl are never undefined
-          description: product.description || "",
-          imageUrl: product.imageUrl || "",
-          created_at: new Date().toISOString()
-        }));
-        
-        mockProducts.unshift(...newProducts);
-        return newProducts;
-      }
-      
-      const client = validateClient();
-      const { data, error } = await client
-        .from('products')
-        .insert(products)
-        .select();
+    const { data, error } = await supabaseClient
+      .from('products')
+      .insert(product)
+      .select()
+      .single();
 
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error('Error creating multiple products:', error);
-      throw error;
-    }
+    if (error) throw error;
+    return data;
   };
 
   const updateProduct = async (id: number, product: Partial<Product>) => {
-    try {
-      if (!hasSupabaseConfig) {
-        console.log('Running in demo mode - mocking product update');
-        const index = mockProducts.findIndex(p => p.id === id);
-        if (index !== -1) {
-          mockProducts[index] = { ...mockProducts[index], ...product };
-          return mockProducts[index];
-        }
-        throw new Error('Product not found');
+    if (!hasSupabaseConfig) {
+      console.log('Running in demo mode - mocking product update');
+      const index = mockProducts.findIndex(p => p.id === id);
+      if (index !== -1) {
+        mockProducts[index] = { ...mockProducts[index], ...product };
+        return mockProducts[index];
       }
-      
-      const client = validateClient();
-      const { data, error } = await client
-        .from('products')
-        .update(product)
-        .eq('id', id)
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error('Error updating product:', error);
-      throw error;
+      throw new Error('Product not found');
     }
+
+    const { data, error } = await supabaseClient
+      .from('products')
+      .update(product)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
   };
 
   const deleteProduct = async (id: number) => {
-    try {
-      if (!hasSupabaseConfig) {
-        console.log('Running in demo mode - mocking product deletion');
-        const index = mockProducts.findIndex(p => p.id === id);
-        if (index !== -1) {
-          mockProducts.splice(index, 1);
-          return;
-        }
-        throw new Error('Product not found');
+    if (!hasSupabaseConfig) {
+      console.log('Running in demo mode - mocking product deletion');
+      const index = mockProducts.findIndex(p => p.id === id);
+      if (index !== -1) {
+        mockProducts.splice(index, 1);
+        return;
       }
-      
-      const client = validateClient();
-      const { error } = await client
-        .from('products')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-    } catch (error) {
-      console.error('Error deleting product:', error);
-      throw error;
+      throw new Error('Product not found');
     }
+
+    const { error } = await supabaseClient
+      .from('products')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
   };
 
   const getDeals = async () => {
@@ -339,10 +257,9 @@ export const useSupabaseApi = () => {
         console.log('Running in demo mode - returning mock deals');
         return mockDeals;
       }
-      
-      const client = validateClient();
+
       console.log('Fetching deals from Supabase');
-      const { data, error } = await client
+      const { data, error } = await supabaseClient
         .from('deals')
         .select('*, products(name)')
         .order('created_at', { ascending: false });
@@ -351,97 +268,78 @@ export const useSupabaseApi = () => {
         console.error('Supabase error:', error);
         throw error;
       }
-      
-      console.log('Deals fetched successfully:', data?.length || 0);
+
       return data || [];
     } catch (error) {
       console.error('Error getting deals:', error);
-      return mockDeals; // Fallback to mock data on error
+      return mockDeals;
     }
   };
 
   const createDeal = async (deal: Deal) => {
-    try {
-      if (!hasSupabaseConfig) {
-        console.log('Running in demo mode - mocking deal creation');
-        const newDeal = {
-          ...deal,
-          id: Date.now(),
-          created_at: new Date().toISOString()
-        };
-        mockDeals.unshift(newDeal);
-        return newDeal;
-      }
-      
-      const client = validateClient();
-      const { data, error } = await client
-        .from('deals')
-        .insert(deal)
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error('Error creating deal:', error);
-      throw error;
+    if (!hasSupabaseConfig) {
+      console.log('Running in demo mode - mocking deal creation');
+      const newDeal = {
+        ...deal,
+        id: Date.now(),
+        created_at: new Date().toISOString()
+      };
+      mockDeals.unshift(newDeal);
+      return newDeal;
     }
+
+    const { data, error } = await supabaseClient
+      .from('deals')
+      .insert(deal)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
   };
 
   const updateDeal = async (id: number, deal: Partial<Deal>) => {
-    try {
-      if (!hasSupabaseConfig) {
-        console.log('Running in demo mode - mocking deal update');
-        const index = mockDeals.findIndex(d => d.id === id);
-        if (index !== -1) {
-          mockDeals[index] = { ...mockDeals[index], ...deal };
-          return mockDeals[index];
-        }
-        throw new Error('Deal not found');
+    if (!hasSupabaseConfig) {
+      console.log('Running in demo mode - mocking deal update');
+      const index = mockDeals.findIndex(d => d.id === id);
+      if (index !== -1) {
+        mockDeals[index] = { ...mockDeals[index], ...deal };
+        return mockDeals[index];
       }
-      
-      const client = validateClient();
-      const { data, error } = await client
-        .from('deals')
-        .update(deal)
-        .eq('id', id)
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error('Error updating deal:', error);
-      throw error;
+      throw new Error('Deal not found');
     }
+
+    const { data, error } = await supabaseClient
+      .from('deals')
+      .update(deal)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
   };
 
   const deleteDeal = async (id: number) => {
-    try {
-      if (!hasSupabaseConfig) {
-        console.log('Running in demo mode - mocking deal deletion');
-        const index = mockDeals.findIndex(d => d.id === id);
-        if (index !== -1) {
-          mockDeals.splice(index, 1);
-          return;
-        }
-        throw new Error('Deal not found');
+    if (!hasSupabaseConfig) {
+      console.log('Running in demo mode - mocking deal deletion');
+      const index = mockDeals.findIndex(d => d.id === id);
+      if (index !== -1) {
+        mockDeals.splice(index, 1);
+        return;
       }
-      
-      const client = validateClient();
-      const { error } = await client
-        .from('deals')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-    } catch (error) {
-      console.error('Error deleting deal:', error);
-      throw error;
+      throw new Error('Deal not found');
     }
+
+    const { error } = await supabaseClient
+      .from('deals')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
   };
 
-  const getContentSections = async () => {
+    const getContentSections = async () => {
     try {
       if (!hasSupabaseConfig) {
         console.log('Running in demo mode - returning mock content sections');
@@ -460,7 +358,7 @@ export const useSupabaseApi = () => {
   return {
     getProducts,
     createProduct,
-    createMultipleProducts,
+    createMultipleProducts: async () => {},
     updateProduct,
     deleteProduct,
     getDeals,
