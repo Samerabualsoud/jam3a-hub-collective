@@ -2,14 +2,14 @@
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
-export const sendTestEmail = async () => {
+export const sendTestEmail = async (email = 'samer@jam3a.me', name = 'Samer') => {
   try {
-    console.log("Sending test email to samer@jam3a.me...");
+    console.log(`Sending test email to ${email}...`);
     
     const { data, error } = await supabase.functions.invoke('send-welcome-email', {
       body: JSON.stringify({
-        email: 'samer@jam3a.me',
-        name: 'Samer',
+        email: email,
+        name: name,
         isTest: true
       })
     });
@@ -31,24 +31,26 @@ export const sendTestEmail = async () => {
 export const sendTestEmailWithNotification = () => {
   const { toast } = useToast();
   
-  return async () => {
+  return async (email = 'samer@jam3a.me', name = 'Samer') => {
     toast({
       title: "Sending test email...",
-      description: "Attempting to send test email to samer@jam3a.me"
+      description: `Attempting to send test email to ${email}`
     });
     
     try {
-      await sendTestEmail();
+      const result = await sendTestEmail(email, name);
       toast({
-        title: "Test email sent",
-        description: "Check your inbox for the test email"
+        title: "Test email processed",
+        description: "The email test was processed successfully. Check your Supabase Edge Function logs for details."
       });
+      return result;
     } catch (error) {
       toast({
         title: "Failed to send test email",
         description: error.message || "An unknown error occurred",
         variant: "destructive"
       });
+      throw error;
     }
   };
 };

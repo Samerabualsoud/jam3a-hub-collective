@@ -6,9 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { sendTestEmailWithNotification, sendTestEmail } from "@/tests/send-test-email";
+import { sendTestEmail } from "@/tests/send-test-email";
 import { useToast } from "@/hooks/use-toast";
 import { useSessionContext } from "@supabase/auth-helpers-react";
+import { AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const EmailManager = () => {
   const { toast } = useToast();
@@ -17,22 +19,27 @@ const EmailManager = () => {
   const [recipient, setRecipient] = useState("samer@jam3a.me");
   const [subject, setSubject] = useState("Test Email");
   const [content, setContent] = useState("This is a test email from Jam3a Hub.");
+  const [showError, setShowError] = useState(false);
+  const [errorDetails, setErrorDetails] = useState("");
 
   const handleSendTestEmail = async () => {
     setIsSending(true);
+    setShowError(false);
     try {
       toast({
         title: "Sending test email...",
         description: `Attempting to send test email to ${recipient}`
       });
       
-      await sendTestEmail();
+      await sendTestEmail(recipient);
       
       toast({
-        title: "Test email sent",
-        description: "Please check your inbox for the test email"
+        title: "Test email processed",
+        description: "The email test was processed successfully. Check your Supabase Edge Function logs for details."
       });
     } catch (error) {
+      setShowError(true);
+      setErrorDetails(error.message || "Unknown error");
       toast({
         title: "Failed to send test email",
         description: error.message || "An unknown error occurred",
@@ -56,6 +63,18 @@ const EmailManager = () => {
         </TabsList>
         
         <TabsContent value="send-test" className="space-y-4">
+          {showError && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                There was an issue sending the test email. The Edge Function might be misconfigured.
+                Check the Supabase Edge Function logs for more details.
+                <br/>
+                Error: {errorDetails}
+              </AlertDescription>
+            </Alert>
+          )}
+          
           <Card>
             <CardHeader>
               <CardTitle>Send Test Email</CardTitle>
@@ -81,7 +100,9 @@ const EmailManager = () => {
                   value={subject} 
                   onChange={(e) => setSubject(e.target.value)}
                   placeholder="Email subject"
+                  disabled
                 />
+                <p className="text-xs text-muted-foreground">Subject is fixed for test emails</p>
               </div>
               
               <div className="space-y-2">
@@ -92,7 +113,9 @@ const EmailManager = () => {
                   onChange={(e) => setContent(e.target.value)}
                   placeholder="Email content"
                   rows={5}
+                  disabled
                 />
+                <p className="text-xs text-muted-foreground">Content is fixed for test emails</p>
               </div>
               
               <Button 
