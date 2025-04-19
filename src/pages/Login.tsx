@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -58,7 +57,6 @@ const Login = ({ defaultTab = "login" }: LoginProps) => {
   const [userEmail, setUserEmail] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
       navigate("/");
@@ -137,7 +135,6 @@ const Login = ({ defaultTab = "login" }: LoginProps) => {
       const firstName = nameParts[0] || '';
       const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
       
-      // Log the metadata being sent for debugging
       console.log("Registration metadata:", {
         name: firstName,
         last_name: lastName,
@@ -168,7 +165,6 @@ const Login = ({ defaultTab = "login" }: LoginProps) => {
         return;
       }
 
-      // Log success response for debugging
       console.log("Registration success:", userData);
       setUserEmail(data.email);
       
@@ -177,7 +173,7 @@ const Login = ({ defaultTab = "login" }: LoginProps) => {
         description: "Please check your email to verify your account.",
       });
       
-      setActiveTab("login");
+      setShowOTPVerification(true);
       setIsSubmitting(false);
       
     } catch (err: any) {
@@ -446,27 +442,6 @@ const Login = ({ defaultTab = "login" }: LoginProps) => {
       <Footer />
     </div>
   );
-
-  function onOTPSubmit(data: z.infer<typeof otpSchema>) {
-    console.log("OTP verification:", data);
-    
-    toast({
-      title: "Registration successful",
-      description: "Your account has been created successfully!",
-    });
-    
-    setTimeout(() => {
-      setShowOTPVerification(false);
-      setActiveTab("login");
-    }, 1500);
-  }
-
-  function handleOTPChange(value: string) {
-    setOTPValue(value);
-    if (value.length === 6) {
-      otpForm.setValue("otp", value);
-    }
-  }
 };
 
 export default Login;
