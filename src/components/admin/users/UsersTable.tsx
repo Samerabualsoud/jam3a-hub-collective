@@ -9,9 +9,10 @@ import {
   TableCell 
 } from "@/components/ui/table";
 import { Card, CardContent } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertCircle } from "lucide-react";
 import { Profile } from "@/types/admin";
 import UserTableRow from "./UserTableRow";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface UsersTableProps {
   users: Profile[];
@@ -35,9 +36,15 @@ const UsersTable = ({ users, isLoading, error }: UsersTableProps) => {
     return (
       <Card>
         <CardContent className="p-6">
-          <p className="text-red-500">Error loading users: {error.message}</p>
-          <p className="mt-2">
-            Make sure you have created a 'profiles' table in your Supabase database with the correct structure.
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              Error loading users: {error.message}
+            </AlertDescription>
+          </Alert>
+          <p className="mt-2 text-sm text-muted-foreground">
+            This could be due to a Row Level Security (RLS) policy issue or a network problem.
+            Make sure you are logged in as an admin user or refresh and try again.
           </p>
         </CardContent>
       </Card>
@@ -67,16 +74,20 @@ const UsersTable = ({ users, isLoading, error }: UsersTableProps) => {
             ) : (
               <TableRow>
                 <TableCell colSpan={7} className="text-center py-6">
-                  <div className="space-y-2">
-                    <p>No users found in the database.</p>
-                    <p className="text-sm text-muted-foreground">
-                      This could be because:
+                  <div className="space-y-3">
+                    <p className="font-medium">No users found in the database.</p>
+                    <div className="text-sm text-muted-foreground space-y-1">
+                      <p>Possible reasons:</p>
+                      <ul className="list-disc list-inside">
+                        <li>You may not have admin permissions</li>
+                        <li>There might be an issue with RLS policies</li>
+                        <li>Users haven't been properly added to the profiles table</li>
+                        <li>You need to refresh your authentication session</li>
+                      </ul>
+                    </div>
+                    <p className="text-sm">
+                      Try going back to the login page, log out, and log back in as an admin user.
                     </p>
-                    <ul className="text-sm list-disc list-inside text-muted-foreground">
-                      <li>The profiles table hasn't been created yet</li>
-                      <li>Users haven't been properly added to the profiles table</li>
-                      <li>The database migration hasn't been applied</li>
-                    </ul>
                   </div>
                 </TableCell>
               </TableRow>

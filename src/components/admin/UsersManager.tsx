@@ -13,15 +13,18 @@ import { useAuth } from "@/contexts/AuthContext";
 const UsersManager = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
-  const { user: currentUser } = useAuth();
+  const { user: currentUser, isAdmin } = useAuth();
 
-  // Updated query to fetch profiles with better error handling and debugging
+  // Updated query with forced data fetching and better debugging
   const { data: users = [], isLoading, error, refetch } = useQuery({
     queryKey: ['profiles'],
     queryFn: async () => {
       try {
         console.log("Fetching profiles from Supabase...");
+        console.log("Current user:", currentUser);
+        console.log("Is admin:", isAdmin);
         
+        // Directly query the profiles table
         const { data, error } = await supabase
           .from('profiles')
           .select('*')
@@ -37,7 +40,8 @@ const UsersManager = () => {
           throw error;
         }
         
-        console.log("Profiles fetched:", data);
+        console.log("Profiles fetched:", data?.length || 0);
+        console.log("First few profiles:", data?.slice(0, 3));
         
         if (!data || data.length === 0) {
           console.log("No profiles found in the database");
@@ -55,15 +59,25 @@ const UsersManager = () => {
       }
     },
     refetchOnWindowFocus: true,
+    refetchOnMount: true,
+    staleTime: 0, // Consider data always stale to force refetch
     enabled: !!currentUser
   });
 
-  // Force a refetch when the component mounts
+  // Force a refetch when the component mounts or currentUser changes
   useEffect(() => {
     if (currentUser) {
+      console.log("Triggering profiles refetch due to user change");
       refetch();
     }
   }, [currentUser, refetch]);
+
+  // Handle empty users with better messaging
+  useEffect(() => {
+    if (users.length === 0 && !isLoading && !error) {
+      console.log("No users found after fetch completed");
+    }
+  }, [users, isLoading, error]);
 
   const filteredUsers = users.filter(
     (user) =>
@@ -80,13 +94,23 @@ const UsersManager = () => {
     });
   };
 
+  const handleRefresh = () => {
+    console.log("Manual refresh triggered");
+    refetch();
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Users Management</h2>
-        <Button onClick={handleAddUser}>
-          <UserPlus className="mr-2 h-4 w-4" /> Add User
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={handleRefresh}>
+            Refresh
+          </Button>
+          <Button onClick={handleAddUser}>
+            <UserPlus className="mr-2 h-4 w-4" /> Add User
+          </Button>
+        </div>
       </div>
 
       <SearchBar
