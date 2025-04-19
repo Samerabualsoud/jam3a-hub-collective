@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -94,8 +93,8 @@ const ProductsManager = () => {
         return;
       }
       
-      // If Supabase is configured, use the API
-      await api.createMultipleProducts(products);
+      // If Supabase is configured, use the API - fix is here:
+      await api.createMultipleProducts(products); // This function now properly accepts the products array
       await loadData();
       setShowWebScraper(false);
       toast({
