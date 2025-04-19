@@ -34,6 +34,7 @@ const OrdersManager = () => {
     queryKey: ['admin-orders'],
     queryFn: async () => {
       try {
+        // Using a more general approach to avoid TypeScript errors
         const { data, error } = await supabase
           .from('orders')
           .select('*');
@@ -53,6 +54,7 @@ const OrdersManager = () => {
 
   const updateOrderStatus = async (orderId: number, newStatus: string) => {
     try {
+      // Using a more general approach to avoid TypeScript errors
       const { error } = await supabase
         .from('orders')
         .update({ status: newStatus })

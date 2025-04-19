@@ -28,6 +28,7 @@ const Dashboard = () => {
     queryKey: ['admin-orders'],
     queryFn: async () => {
       try {
+        // Using a more general approach to avoid TypeScript errors
         const { data, error } = await supabase
           .from('orders')
           .select('*');
