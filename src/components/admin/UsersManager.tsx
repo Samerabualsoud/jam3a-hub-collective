@@ -35,7 +35,8 @@ const UsersManager = () => {
         // First try to use the RPC function
         if (isAdmin) {
           console.log("Attempting to fetch profiles using RPC function");
-          const rpcResult = await supabase.rpc('get_profiles_for_admin');
+          // Fix: Use a type assertion to resolve the TypeScript error
+          const rpcResult = await supabase.rpc('get_profiles_for_admin' as any);
           
           if (rpcResult.error) {
             console.error("RPC error:", rpcResult.error);
