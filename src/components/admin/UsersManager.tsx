@@ -18,6 +18,22 @@ import { useQuery } from "@tanstack/react-query";
 import { Profile } from "@/types/admin";
 import { supabase } from "@/integrations/supabase/client";
 
+// Helper function to ensure the role type is valid
+const normalizeRole = (role: string | null): 'admin' | 'user' | 'seller' => {
+  if (role === 'admin' || role === 'seller') {
+    return role;
+  }
+  return 'user'; // Default to user if undefined or unrecognized
+};
+
+// Helper function to ensure status type is valid
+const normalizeStatus = (status: string | null): 'active' | 'inactive' | 'suspended' => {
+  if (status === 'inactive' || status === 'suspended') {
+    return status;
+  }
+  return 'active'; // Default to active if undefined or unrecognized
+};
+
 // Mock data for when database tables don't exist
 const mockUsers = [
   { 
@@ -80,7 +96,11 @@ const UsersManager = () => {
           throw error;
         }
         
-        return data || mockUsers;
+        return data?.map(user => ({
+          ...user,
+          role: normalizeRole(user.role),
+          status: normalizeStatus(user.status)
+        })) || mockUsers;
       } catch (error) {
         console.error("Error fetching users:", error);
         // In case of error, return mock data
@@ -258,7 +278,7 @@ const UsersManager = () => {
                             <XCircle className="h-4 w-4 text-gray-500" />
                           )}
                         </Button>
-                        <Button variant="ghost" size="icon" onClick={() => setEditingUser(user)}>
+                        <Button variant="ghost" size="icon" onClick={() => setEditingUser({...user})}>
                           <Pencil className="h-4 w-4" />
                         </Button>
                         <Button

@@ -14,8 +14,7 @@ export interface Profile {
   first_name: string | null;
   last_name: string | null;
   email: string | null;
-  role: 'user' | 'admin' | 'seller';
-  status: 'active' | 'suspended' | 'inactive';
+  role: 'user' | 'admin' | 'seller' | string;  // Allow any string but prefer the specific ones
+  status: 'active' | 'suspended' | 'inactive' | string;  // Allow any string but prefer the specific ones
   created_at: string;
 }
-

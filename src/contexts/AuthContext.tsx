@@ -9,7 +9,7 @@ interface User {
   id: string;
   name: string;
   email: string;
-  role?: 'admin' | 'user' | 'seller';
+  role?: 'admin' | 'user' | 'seller' | string;
 }
 
 // Define the AuthContext type
@@ -46,6 +46,14 @@ const validCredentials: Array<{
 }> = [
   { email: 'samer@jam3a.me', password: '2141991@Sam', role: 'admin', name: 'Samer' },
 ];
+
+// Function to ensure role is one of the expected values
+const validateRole = (role: string | null): 'admin' | 'user' | 'seller' => {
+  if (role === 'admin' || role === 'seller') {
+    return role;
+  }
+  return 'user'; // Default role
+};
 
 // Create the AuthProvider component
 export const AuthProvider = ({ children }: AuthProviderProps) => {
@@ -107,10 +115,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         ? `${firstName} ${lastName}`.trim()
         : currentSession.user.email?.split('@')[0] || 'User';
 
+      // Validate and normalize the role
+      const validatedRole = validateRole(profile?.role || null);
+
       const userData: User = {
         ...basicUserData,
         name: displayName,
-        role: profile?.role || 'user'
+        role: validatedRole
       };
       
       setUser(userData);
