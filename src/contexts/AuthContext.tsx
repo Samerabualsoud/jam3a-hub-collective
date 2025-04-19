@@ -1,6 +1,8 @@
+
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useSessionContext } from '@supabase/auth-helpers-react';
 import { Session } from '@supabase/supabase-js';
+import { supabase } from '@/integrations/supabase/client';
 
 // Define the User type
 interface User {
@@ -57,20 +59,28 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           // Fetch user's role from Supabase
           const { data: profile, error } = await supabaseClient
             .from('profiles')
-            .select('role')
+            .select('role, first_name, last_name')
             .eq('id', session.user.id)
             .single();
 
           if (error) throw error;
 
+          // Get name from profile or metadata
+          const firstName = profile?.first_name || session.user.user_metadata?.name || '';
+          const lastName = profile?.last_name || '';
+          const displayName = (firstName || lastName) 
+            ? `${firstName} ${lastName}`.trim()
+            : session.user.email?.split('@')[0] || 'User';
+
           const userData: User = {
             id: session.user.id,
-            name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
+            name: displayName,
             email: session.user.email || '',
             role: profile?.role || 'user'
           };
           
           setUser(userData);
+          console.log("User authenticated:", userData);
         } catch (error) {
           console.error('Error fetching user profile:', error);
           // Fallback to basic user data if profile fetch fails
@@ -87,6 +97,23 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     };
 
     updateUser();
+
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, currentSession) => {
+        if (currentSession?.user) {
+          // Don't call updateUser directly from here to avoid Supabase deadlocks
+          // Instead, let the effect trigger from the session change
+          console.log("Auth state changed with user:", currentSession.user.email);
+        } else {
+          setUser(null);
+        }
+      }
+    );
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [session, supabaseClient]);
 
   const login = async (email: string, password: string) => {
@@ -110,10 +137,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         return { error: { message: "Invalid email or password" } };
       }
       
-      const { error } = await supabaseClient.auth.signInWithPassword({
+      console.log("Attempting login with Supabase:", email);
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
+      
+      if (error) {
+        console.error("Supabase login error:", error);
+      }
       
       return { error };
     } catch (error) {
@@ -125,7 +157,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const logout = async () => {
     try {
       if (supabaseClient?.auth) {
-        await supabaseClient.auth.signOut();
+        await supabase.auth.signOut();
       }
       setUser(null);
     } catch (error) {

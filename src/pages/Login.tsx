@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
@@ -25,6 +26,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Phone, User, Mail, Lock, ArrowRight } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -42,11 +44,15 @@ const otpSchema = z.object({
   otp: z.string().length(6, { message: "OTP must be 6 digits" }),
 });
 
-const Login = () => {
+interface LoginProps {
+  defaultTab?: "login" | "register";
+}
+
+const Login = ({ defaultTab = "login" }: LoginProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { login } = useAuth();
-  const [activeTab, setActiveTab] = useState<"login" | "register">("login");
+  const [activeTab, setActiveTab] = useState<"login" | "register">(defaultTab);
   const [showOTPVerification, setShowOTPVerification] = useState<boolean>(false);
   const [otpValue, setOTPValue] = useState<string>("");
   const [userPhone, setUserPhone] = useState<string>("");
@@ -76,6 +82,11 @@ const Login = () => {
       otp: "",
     },
   });
+
+  // Initialize the tab based on the defaultTab prop
+  useEffect(() => {
+    setActiveTab(defaultTab);
+  }, [defaultTab]);
 
   const onLoginSubmit = async (data: z.infer<typeof loginSchema>) => {
     console.log("Login data:", data);
@@ -111,27 +122,79 @@ const Login = () => {
     }
   };
 
-  const onRegisterSubmit = (data: z.infer<typeof registerSchema>) => {
+  const onRegisterSubmit = async (data: z.infer<typeof registerSchema>) => {
     console.log("Register data:", data);
-    setUserPhone(data.phone);
+    setIsSubmitting(true);
     
-    toast({
-      title: "OTP sent",
-      description: `Verification code sent to ${data.phone}`,
-    });
-    
-    setShowOTPVerification(true);
+    try {
+      // Use the Supabase client directly for registration
+      const { data: userData, error } = await supabase.auth.signUp({
+        email: data.email,
+        password: data.password,
+        options: {
+          data: {
+            name: data.name,
+            phone: data.phone,
+          }
+        }
+      });
+      
+      if (error) {
+        toast({
+          title: "Registration failed",
+          description: error.message,
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+      }
+      
+      // If phone verification is needed
+      if (data.phone) {
+        setUserPhone(data.phone);
+        // In a real app, this is where you'd trigger SMS verification
+        toast({
+          title: "OTP sent",
+          description: `Verification code sent to ${data.phone}`,
+        });
+        setShowOTPVerification(true);
+      } else {
+        toast({
+          title: "Registration successful",
+          description: "Please check your email to verify your account.",
+        });
+        
+        // Switch to login tab after successful registration
+        setActiveTab("login");
+      }
+      
+    } catch (err) {
+      console.error("Registration error:", err);
+      toast({
+        title: "Registration failed",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const onOTPSubmit = (data: z.infer<typeof otpSchema>) => {
     console.log("OTP verification:", data);
+    
+    // Here you would verify the OTP with your backend
+    // For now, we'll just simulate success
     
     toast({
       title: "Registration successful",
       description: "Your account has been created successfully!",
     });
     
-    setTimeout(() => navigate("/"), 1500);
+    setTimeout(() => {
+      setShowOTPVerification(false);
+      setActiveTab("login");
+    }, 1500);
   };
 
   const handleOTPChange = (value: string) => {
@@ -205,6 +268,7 @@ const Login = () => {
         <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
           <Tabs 
             defaultValue={activeTab} 
+            value={activeTab}
             onValueChange={(value) => setActiveTab(value as "login" | "register")}
             className="w-full"
           >
@@ -358,8 +422,12 @@ const Login = () => {
                     )}
                   />
                   
-                  <Button type="submit" className="w-full bg-jam3a-purple hover:bg-jam3a-deep-purple">
-                    Create Account <ArrowRight className="h-4 w-4 ml-2" />
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-jam3a-purple hover:bg-jam3a-deep-purple"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Creating Account..." : "Create Account"} {!isSubmitting && <ArrowRight className="h-4 w-4 ml-2" />}
                   </Button>
                 </form>
               </Form>

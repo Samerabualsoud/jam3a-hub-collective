@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -21,6 +22,7 @@ import { useLanguage } from '@/components/Header';
 import { BlueBanner } from '@/components/BlueBanner';
 import { useAuth } from '@/contexts/AuthContext';
 import AdminButton from '@/components/AdminButton';
+import { supabase } from '@/integrations/supabase/client';
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -32,6 +34,7 @@ const SellerLogin = () => {
   const { toast } = useToast();
   const { language } = useLanguage();
   const { isAdmin } = useAuth();
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -41,15 +44,63 @@ const SellerLogin = () => {
     },
   });
 
-  const onSubmit = (data: z.infer<typeof loginSchema>) => {
-    console.log("Login data:", data);
+  const onSubmit = async (data: z.infer<typeof loginSchema>) => {
+    setIsLoading(true);
     
-    toast({
-      title: language === 'en' ? "Login successful" : "تم تسجيل الدخول بنجاح",
-      description: language === 'en' ? "Welcome to your Seller Dashboard!" : "مرحبًا بك في لوحة تحكم البائع!",
-    });
-    
-    setTimeout(() => navigate("/seller-dashboard"), 1000);
+    try {
+      // Try to sign in with Supabase
+      const { error } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password,
+      });
+      
+      if (error) {
+        toast({
+          title: language === 'en' ? "Login failed" : "فشل تسجيل الدخول",
+          description: error.message,
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+      
+      // Check if the user is a seller
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', (await supabase.auth.getSession()).data.session?.user.id)
+        .single();
+      
+      if (profileError || profile?.role !== 'seller') {
+        toast({
+          title: language === 'en' ? "Access denied" : "تم رفض الوصول",
+          description: language === 'en' 
+            ? "This account does not have seller permissions" 
+            : "هذا الحساب ليس لديه صلاحيات البائع",
+          variant: "destructive",
+        });
+        // Sign out since this is not a seller account
+        await supabase.auth.signOut();
+        setIsLoading(false);
+        return;
+      }
+      
+      toast({
+        title: language === 'en' ? "Login successful" : "تم تسجيل الدخول بنجاح",
+        description: language === 'en' ? "Welcome to your Seller Dashboard!" : "مرحبًا بك في لوحة تحكم البائع!",
+      });
+      
+      setTimeout(() => navigate("/seller-dashboard"), 1000);
+    } catch (err) {
+      console.error("Login error:", err);
+      toast({
+        title: language === 'en' ? "Login failed" : "فشل تسجيل الدخول",
+        description: language === 'en' ? "An unexpected error occurred" : "حدث خطأ غير متوقع",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const bannerText = {
@@ -120,8 +171,15 @@ const SellerLogin = () => {
                 </Button>
               </div>
               
-              <Button type="submit" className="w-full bg-royal-blue hover:bg-royal-blue-dark">
-                {language === 'en' ? 'Sign In' : 'تسجيل الدخول'}
+              <Button 
+                type="submit" 
+                className="w-full bg-royal-blue hover:bg-royal-blue-dark"
+                disabled={isLoading}
+              >
+                {isLoading 
+                  ? (language === 'en' ? 'Signing in...' : 'جاري تسجيل الدخول...')
+                  : (language === 'en' ? 'Sign In' : 'تسجيل الدخول')
+                }
               </Button>
               
               <div className="text-center mt-4">
