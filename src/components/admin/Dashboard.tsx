@@ -56,7 +56,7 @@ const Dashboard = () => {
       <h2 className="text-2xl font-bold">Dashboard Overview</h2>
       
       {!hasSupabaseConfig && (
-        <Alert variant="warning">
+        <Alert variant="default" className="border-amber-500 bg-amber-50 text-amber-800">
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle>Demo Mode</AlertTitle>
           <AlertDescription>
