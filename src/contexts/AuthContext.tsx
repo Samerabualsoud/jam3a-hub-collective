@@ -42,9 +42,7 @@ const validCredentials: Array<{
   role: 'admin' | 'user' | 'seller';
   name: string;
 }> = [
-  { email: 'admin@example.com', password: 'admin123', role: 'admin', name: 'Admin User' },
-  { email: 'user@example.com', password: 'user123', role: 'user', name: 'Regular User' },
-  { email: 'seller@example.com', password: 'seller123', role: 'seller', name: 'Seller Account' },
+  { email: 'samer@jam3a.me', password: '2141991@Sam', role: 'admin', name: 'Samer' },
 ];
 
 // Create the AuthProvider component
