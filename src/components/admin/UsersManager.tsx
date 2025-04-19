@@ -7,33 +7,51 @@ import { supabase } from "@/integrations/supabase/client";
 import SearchBar from "./users/SearchBar";
 import UsersTable from "./users/UsersTable";
 import { Profile } from "@/types/admin";
+import { useToast } from "@/hooks/use-toast";
 
 const UsersManager = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const { toast } = useToast();
 
+  // Updated query to fetch profiles with better error handling and debugging
   const { data: users = [], isLoading, error } = useQuery({
     queryKey: ['profiles'],
     queryFn: async () => {
       try {
+        console.log("Fetching profiles from Supabase...");
+        
         const { data, error } = await supabase
           .from('profiles')
-          .select('*')
-          .order('created_at', { ascending: false });
+          .select('*');
           
         if (error) {
+          console.error("Supabase error:", error);
+          toast({
+            title: "Error fetching users",
+            description: error.message,
+            variant: "destructive",
+          });
           throw error;
         }
         
-        return data?.map(user => ({
+        console.log("Profiles fetched:", data);
+        
+        if (!data || data.length === 0) {
+          console.log("No profiles found in the database");
+        }
+        
+        // Map the data to ensure consistent structure
+        return (data || []).map(user => ({
           ...user,
           role: user.role || 'user',
           status: user.status || 'active'
-        })) || [];
+        }));
       } catch (error) {
         console.error("Error fetching profiles:", error);
         return [];
       }
-    }
+    },
+    refetchOnWindowFocus: false
   });
 
   const filteredUsers = users.filter(

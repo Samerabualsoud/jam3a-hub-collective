@@ -67,7 +67,17 @@ const UsersTable = ({ users, isLoading, error }: UsersTableProps) => {
             ) : (
               <TableRow>
                 <TableCell colSpan={7} className="text-center py-6">
-                  No users found in the database.
+                  <div className="space-y-2">
+                    <p>No users found in the database.</p>
+                    <p className="text-sm text-muted-foreground">
+                      This could be because:
+                    </p>
+                    <ul className="text-sm list-disc list-inside text-muted-foreground">
+                      <li>The profiles table hasn't been created yet</li>
+                      <li>Users haven't been properly added to the profiles table</li>
+                      <li>The database migration hasn't been applied</li>
+                    </ul>
+                  </div>
                 </TableCell>
               </TableRow>
             )}
