@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
@@ -10,11 +9,10 @@ import {
 } from "lucide-react";
 import { SarIcon } from "@/components/icons/SarIcon"; // Import the custom SarIcon
 import { useSupabaseApi } from "@/lib/supabase/api";
-import { useSessionContext } from "@supabase/auth-helpers-react";
+import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 
 const Dashboard = () => {
-  const { supabaseClient } = useSessionContext();
   const api = useSupabaseApi();
 
   // Fetch products data
@@ -27,7 +25,7 @@ const Dashboard = () => {
   const { data: ordersData, isLoading: ordersLoading } = useQuery({
     queryKey: ['admin-orders'],
     queryFn: async () => {
-      const { data, error } = await supabaseClient
+      const { data, error } = await supabase
         .from('orders')
         .select('*');
       if (error) throw error;

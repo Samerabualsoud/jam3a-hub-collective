@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { 
   Table, 
@@ -19,21 +18,20 @@ import {
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useSessionContext } from "@supabase/auth-helpers-react";
+import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { SarIcon } from "@/components/icons/SarIcon";
 import { useToast } from "@/hooks/use-toast";
 
 const OrdersManager = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const { supabaseClient } = useSessionContext();
   const { toast } = useToast();
   
   // Use React Query to fetch real orders from Supabase
   const { data: orders = [], isLoading, error, refetch } = useQuery({
     queryKey: ['admin-orders'],
     queryFn: async () => {
-      const { data, error } = await supabaseClient
+      const { data, error } = await supabase
         .from('orders')
         .select('*');
       
@@ -48,7 +46,7 @@ const OrdersManager = () => {
 
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
-      const { error } = await supabaseClient
+      const { error } = await supabase
         .from('orders')
         .update({ status: newStatus })
         .eq('id', orderId);

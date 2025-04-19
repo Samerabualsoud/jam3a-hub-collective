@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { 
   Table, 
   TableHeader, 
@@ -14,7 +13,7 @@ import { Pencil, Trash2, Search, UserPlus, CheckCircle, XCircle } from "lucide-r
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { useSessionContext } from "@supabase/auth-helpers-react";
+import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 
 interface User {
@@ -31,42 +30,55 @@ const UsersManager = () => {
   const [isAddingUser, setIsAddingUser] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const { toast } = useToast();
-  const { supabaseClient } = useSessionContext();
   
   // Use React Query to fetch real users from Supabase
   const { data: users = [], isLoading, error, refetch } = useQuery({
     queryKey: ['admin-users'],
     queryFn: async () => {
-      const { data: authUsers, error: authError } = await supabaseClient
-        .from('auth.users')
-        .select('*');
+      try {
+        // First try to get users from auth (this might fail with normal permissions)
+        const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers();
 
-      if (authError) {
-        console.error("Error fetching users:", authError);
-        throw authError;
+        if (authError) {
+          console.error("Error fetching users from auth:", authError);
+          // Fallback to profiles table
+          const { data: profiles, error: profilesError } = await supabase
+            .from('profiles')
+            .select('*');
+          
+          if (profilesError) throw profilesError;
+
+          // Map profiles to the format we need
+          return (profiles || []).map(profile => {
+            return {
+              id: profile.id,
+              name: profile.first_name && profile.last_name 
+                ? `${profile.first_name} ${profile.last_name}` 
+                : (profile.email?.split('@')[0] || 'Unknown'),
+              email: profile.email || 'No email',
+              role: profile.role || 'Customer',
+              status: 'Active',
+              joined: profile.created_at ? new Date(profile.created_at).toISOString().split('T')[0] : 'Unknown'
+            };
+          });
+        }
+
+        // If auth listing works, use that data
+        return (authUsers.users || []).map(user => {
+          return {
+            id: user.id,
+            name: user.user_metadata?.name || user.email?.split('@')[0] || 'Unknown',
+            email: user.email || 'No email',
+            role: user.user_metadata?.role || 'Customer',
+            status: user.confirmed_at ? 'Active' : 'Inactive',
+            joined: new Date(user.created_at).toISOString().split('T')[0]
+          };
+        });
+      } catch (error) {
+        console.error("Error fetching users:", error);
+        // Return empty array in case of error
+        return [];
       }
-
-      // Try to get user profiles from the profiles table if it exists
-      const { data: profiles, error: profilesError } = await supabaseClient
-        .from('profiles')
-        .select('*');
-
-      // Map the auth users to the format we need
-      return (authUsers || []).map(user => {
-        // Find matching profile if it exists
-        const profile = profiles?.find(p => p.id === user.id);
-        
-        return {
-          id: user.id,
-          name: profile?.first_name && profile?.last_name 
-            ? `${profile.first_name} ${profile.last_name}` 
-            : user.email?.split('@')[0] || 'Unknown',
-          email: user.email || 'No email',
-          role: profile?.role || 'Customer',
-          status: user.confirmed_at ? 'Active' : 'Inactive',
-          joined: new Date(user.created_at).toISOString().split('T')[0]
-        };
-      });
     }
   });
 
@@ -142,6 +154,9 @@ const UsersManager = () => {
       <Card>
         <CardContent className="p-6">
           <p className="text-red-500">Error loading users: {error instanceof Error ? error.message : 'Unknown error'}</p>
+          <p className="mt-2">
+            Make sure you have created a 'profiles' table in your Supabase database.
+          </p>
         </CardContent>
       </Card>
     );
