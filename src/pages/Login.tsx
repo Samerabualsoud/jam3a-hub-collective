@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -126,18 +125,16 @@ const Login = ({ defaultTab = "login" }: LoginProps) => {
     setIsSubmitting(true);
     
     try {
-      // Create a profile without triggering the profile creation trigger
-      // which seems to be causing the apikey configuration issue
       const { data: userData, error } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
         options: {
           data: {
             name: data.name,
-            phone: data.phone,
+            last_name: '',
+            phone: data.phone
           },
-          // Make sure the redirectTo URL is correct and properly escaped
-          emailRedirectTo: `${window.location.origin}/login`,
+          emailRedirectTo: `${window.location.origin}/login`
         }
       });
       
@@ -152,7 +149,6 @@ const Login = ({ defaultTab = "login" }: LoginProps) => {
         return;
       }
 
-      // If we reach this point, the registration was successful
       setUserEmail(data.email);
       
       toast({
@@ -160,7 +156,6 @@ const Login = ({ defaultTab = "login" }: LoginProps) => {
         description: "Please check your email to verify your account.",
       });
       
-      // Switch to login tab after successful registration
       setActiveTab("login");
       
     } catch (err: any) {

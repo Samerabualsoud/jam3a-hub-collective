@@ -56,7 +56,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const updateUser = async () => {
       if (session?.user) {
         try {
-          // Fetch user's profile data from profiles table
+          // Set up a safer profile data fetch with error handling
+          console.log("Fetching profile for user:", session.user.id);
+          
+          // First set up basic user data regardless of profile fetch success
+          const basicUserData: User = {
+            id: session.user.id,
+            name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
+            email: session.user.email || '',
+            role: 'user' // Default role until profile is loaded
+          };
+          
+          // Attempt to fetch profile data, but don't block on it
           const { data: profile, error } = await supabaseClient
             .from('profiles')
             .select('role, first_name, last_name, email')
@@ -66,16 +77,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           if (error) {
             console.error('Error fetching profile:', error);
             
-            // If there's no profile yet (maybe it's a new user), try to create one
             if (error.code === 'PGRST116') {
-              // No profile found - this is often the issue right after signup
-              console.log("No profile found, user may be new. Using metadata instead.");
+              console.log("No profile found for user. Using metadata instead.");
             } else {
-              throw error; // Rethrow if it's a different error
+              console.error("Profile fetch error:", error.message);
             }
+            
+            // Still set the user with basic data even if profile fetch fails
+            setUser(basicUserData);
+            return;
           }
 
-          // Get name from profile or metadata
+          // If we get here, we have profile data to enhance the user object
           const firstName = profile?.first_name || session.user.user_metadata?.name || '';
           const lastName = profile?.last_name || '';
           const displayName = (firstName || lastName) 
@@ -83,17 +96,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             : session.user.email?.split('@')[0] || 'User';
 
           const userData: User = {
-            id: session.user.id,
+            ...basicUserData,
             name: displayName,
-            email: session.user.email || '',
             role: profile?.role || 'user'
           };
           
           setUser(userData);
-          console.log("User authenticated:", userData);
+          console.log("User authenticated with profile:", userData);
         } catch (error) {
           console.error('Error in user profile handling:', error);
-          // Fallback to basic user data if profile fetch fails
+          // Fallback to basic user data if profile fetch fails completely
           setUser({
             id: session.user.id,
             name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
@@ -108,13 +120,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     updateUser();
 
-    // Set up auth state listener
+    // Set up auth state listener with safer pattern to avoid Supabase deadlocks
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, currentSession) => {
         if (currentSession?.user) {
-          // Don't call updateUser directly from here to avoid Supabase deadlocks
-          // Instead, let the effect trigger from the session change
+          // Just log that we detected auth change, but don't call updateUser directly
           console.log("Auth state changed with user:", currentSession.user.email);
+          
+          // Use setTimeout to avoid potential deadlocks with Supabase client
+          setTimeout(() => updateUser(), 0);
         } else {
           setUser(null);
         }
