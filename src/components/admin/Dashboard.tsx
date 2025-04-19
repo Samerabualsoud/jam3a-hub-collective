@@ -1,13 +1,14 @@
+
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
   Users, 
   ShoppingCart, 
-  SarIcon, 
   Package,  
   TrendingUp,
   ArrowUpRight,
 } from "lucide-react";
+import { SarIcon } from "@/components/icons/SarIcon"; // Import the custom SarIcon
 import { useSupabaseApi } from "@/lib/supabase/api";
 import { useSessionContext } from "@supabase/auth-helpers-react";
 import { useQuery } from "@tanstack/react-query";
