@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { UserPlus } from "lucide-react";
+import { UserPlus, RefreshCcw } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import SearchBar from "./users/SearchBar";
@@ -14,15 +14,16 @@ const UsersManager = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
   const { user: currentUser, isAdmin } = useAuth();
+  const [manualRefreshCount, setManualRefreshCount] = useState(0); // Add counter for manual refreshes
 
-  // Updated query with forced data fetching and better debugging
+  // Updated query with better debugging and dependency on refresh counter
   const { 
     data: users = [], 
     isLoading, 
     error, 
     refetch 
   } = useQuery({
-    queryKey: ['profiles'],
+    queryKey: ['profiles', manualRefreshCount], // Add manual refresh counter to query key
     queryFn: async () => {
       try {
         console.log("Fetching profiles from Supabase...");
@@ -46,17 +47,22 @@ const UsersManager = () => {
         }
         
         console.log("Profiles fetched:", data?.length || 0);
-        console.log("First few profiles:", data?.slice(0, 3));
+        console.log("Raw profiles data:", data); // Log the entire data for debugging
         
         // Ensure data has correct structure and default values
-        return (data || []).map(user => ({
+        const processedData = (data || []).map(user => ({
           ...user,
+          id: user.id || '',
           role: user.role || 'user',
           status: user.status || 'active',
           first_name: user.first_name || 'Unknown',
           last_name: user.last_name || '',
-          email: user.email || 'No email'
+          email: user.email || 'No email',
+          created_at: user.created_at || new Date().toISOString()
         }));
+        
+        console.log("Processed profiles data:", processedData);
+        return processedData;
       } catch (error) {
         console.error("Error fetching profiles:", error);
         return [];
@@ -65,8 +71,16 @@ const UsersManager = () => {
     refetchOnWindowFocus: true,
     refetchOnMount: true,
     staleTime: 0, // Force refetch
-    enabled: !!currentUser && isAdmin
+    enabled: !!currentUser && !!isAdmin
   });
+
+  // Force a refresh when component mounts
+  useEffect(() => {
+    if (currentUser && isAdmin) {
+      console.log("Initial profiles fetch triggered");
+      refetch();
+    }
+  }, [currentUser, isAdmin, refetch]);
 
   // Additional logging for empty users
   useEffect(() => {
@@ -77,8 +91,10 @@ const UsersManager = () => {
         description: "Either no users exist or there's an issue with data retrieval.",
         variant: "default"
       });
+    } else if (users.length > 0) {
+      console.log(`Successfully loaded ${users.length} users`);
     }
-  }, [users, isLoading, error]);
+  }, [users, isLoading, error, toast]);
 
   const filteredUsers = users.filter(
     (user) =>
@@ -97,6 +113,11 @@ const UsersManager = () => {
 
   const handleRefresh = () => {
     console.log("Manual refresh triggered");
+    setManualRefreshCount(prev => prev + 1); // Increment to force a refresh
+    toast({
+      title: "Refreshing Users",
+      description: "Fetching the latest user data...",
+    });
     refetch();
   };
 
@@ -106,7 +127,7 @@ const UsersManager = () => {
         <h2 className="text-2xl font-bold">Users Management</h2>
         <div className="flex gap-2">
           <Button variant="outline" onClick={handleRefresh}>
-            Refresh
+            <RefreshCcw className="mr-2 h-4 w-4" /> Refresh
           </Button>
           <Button onClick={handleAddUser}>
             <UserPlus className="mr-2 h-4 w-4" /> Add User
@@ -124,6 +145,12 @@ const UsersManager = () => {
         isLoading={isLoading}
         error={error instanceof Error ? error : null}
       />
+
+      <div className="mt-4 text-sm text-muted-foreground">
+        {users.length > 0 ? (
+          <p>Showing {filteredUsers.length} of {users.length} users</p>
+        ) : null}
+      </div>
     </div>
   );
 };
