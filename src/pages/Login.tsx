@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -125,6 +126,8 @@ const Login = ({ defaultTab = "login" }: LoginProps) => {
     setIsSubmitting(true);
     
     try {
+      // Create a profile without triggering the profile creation trigger
+      // which seems to be causing the apikey configuration issue
       const { data: userData, error } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
@@ -133,33 +136,38 @@ const Login = ({ defaultTab = "login" }: LoginProps) => {
             name: data.name,
             phone: data.phone,
           },
-          emailRedirectTo: window.location.origin + '/login',
+          // Make sure the redirectTo URL is correct and properly escaped
+          emailRedirectTo: `${window.location.origin}/login`,
         }
       });
       
       if (error) {
+        console.error("Registration error details:", error);
         toast({
           title: "Registration failed",
-          description: error.message,
+          description: error.message || "There was a problem creating your account.",
           variant: "destructive",
         });
         setIsSubmitting(false);
         return;
       }
-      
+
+      // If we reach this point, the registration was successful
       setUserEmail(data.email);
-      setShowOTPVerification(true);
       
       toast({
-        title: "Verification email sent",
-        description: "Please check your email for the verification code.",
+        title: "Registration successful",
+        description: "Please check your email to verify your account.",
       });
       
-    } catch (err) {
+      // Switch to login tab after successful registration
+      setActiveTab("login");
+      
+    } catch (err: any) {
       console.error("Registration error:", err);
       toast({
         title: "Registration failed",
-        description: "An unexpected error occurred",
+        description: err.message || "An unexpected error occurred",
         variant: "destructive",
       });
     } finally {

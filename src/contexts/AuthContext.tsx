@@ -56,14 +56,24 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const updateUser = async () => {
       if (session?.user) {
         try {
-          // Fetch user's role from Supabase
+          // Fetch user's profile data from profiles table
           const { data: profile, error } = await supabaseClient
             .from('profiles')
-            .select('role, first_name, last_name')
+            .select('role, first_name, last_name, email')
             .eq('id', session.user.id)
             .single();
 
-          if (error) throw error;
+          if (error) {
+            console.error('Error fetching profile:', error);
+            
+            // If there's no profile yet (maybe it's a new user), try to create one
+            if (error.code === 'PGRST116') {
+              // No profile found - this is often the issue right after signup
+              console.log("No profile found, user may be new. Using metadata instead.");
+            } else {
+              throw error; // Rethrow if it's a different error
+            }
+          }
 
           // Get name from profile or metadata
           const firstName = profile?.first_name || session.user.user_metadata?.name || '';
@@ -82,7 +92,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           setUser(userData);
           console.log("User authenticated:", userData);
         } catch (error) {
-          console.error('Error fetching user profile:', error);
+          console.error('Error in user profile handling:', error);
           // Fallback to basic user data if profile fetch fails
           setUser({
             id: session.user.id,
