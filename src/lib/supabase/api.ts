@@ -23,14 +23,25 @@ export interface Deal {
   active: boolean;
 }
 
-// Initialize Supabase client
-const supabaseClient = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY
-);
+// Initialize Supabase client with safety checks
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+const hasSupabaseConfig = supabaseUrl && supabaseKey;
+
+// Only create the client if configuration is available
+const supabaseClient = hasSupabaseConfig ? createClient(supabaseUrl, supabaseKey) : null;
+
+// Empty results for fallback when Supabase is not configured
+const emptyArray: any[] = [];
+const emptyObject = {};
 
 // Functions for interacting with Supabase
 const createProduct = async (product: Omit<Product, 'id'>) => {
+  if (!supabaseClient) {
+    console.warn('Supabase client not initialized. Cannot create product.');
+    throw new Error('Supabase client not initialized');
+  }
+
   const { data, error } = await supabaseClient
     .from('products')
     .insert(product)
@@ -42,6 +53,11 @@ const createProduct = async (product: Omit<Product, 'id'>) => {
 };
 
 const createMultipleProducts = async (products: Omit<Product, 'id'>[]) => {
+  if (!supabaseClient) {
+    console.warn('Supabase client not initialized. Cannot create products.');
+    throw new Error('Supabase client not initialized');
+  }
+
   const { data, error } = await supabaseClient
     .from('products')
     .insert(products)
@@ -52,6 +68,11 @@ const createMultipleProducts = async (products: Omit<Product, 'id'>[]) => {
 };
 
 const getProducts = async () => {
+  if (!supabaseClient) {
+    console.warn('Supabase client not initialized. Returning empty products array.');
+    return emptyArray;
+  }
+
   const { data, error } = await supabaseClient
     .from('products')
     .select('*');
@@ -61,6 +82,11 @@ const getProducts = async () => {
 };
 
 const getProduct = async (id: number) => {
+  if (!supabaseClient) {
+    console.warn('Supabase client not initialized. Cannot get product.');
+    throw new Error('Supabase client not initialized');
+  }
+
   const { data, error } = await supabaseClient
     .from('products')
     .select('*')
@@ -72,6 +98,11 @@ const getProduct = async (id: number) => {
 };
 
 const updateProduct = async (id: number, updates: Partial<Product>) => {
+  if (!supabaseClient) {
+    console.warn('Supabase client not initialized. Cannot update product.');
+    throw new Error('Supabase client not initialized');
+  }
+
   const { data, error } = await supabaseClient
     .from('products')
     .update(updates)
@@ -84,6 +115,11 @@ const updateProduct = async (id: number, updates: Partial<Product>) => {
 };
 
 const deleteProduct = async (id: number) => {
+  if (!supabaseClient) {
+    console.warn('Supabase client not initialized. Cannot delete product.');
+    throw new Error('Supabase client not initialized');
+  }
+
   const { error } = await supabaseClient
     .from('products')
     .delete()
@@ -94,6 +130,11 @@ const deleteProduct = async (id: number) => {
 };
 
 const getDeals = async () => {
+  if (!supabaseClient) {
+    console.warn('Supabase client not initialized. Returning empty deals array.');
+    return emptyArray;
+  }
+
   const { data, error } = await supabaseClient
     .from('deals')
     .select('*');
@@ -103,6 +144,11 @@ const getDeals = async () => {
 };
 
 const getDeal = async (id: number) => {
+  if (!supabaseClient) {
+    console.warn('Supabase client not initialized. Cannot get deal.');
+    throw new Error('Supabase client not initialized');
+  }
+
   const { data, error } = await supabaseClient
     .from('deals')
     .select('*')
@@ -114,6 +160,11 @@ const getDeal = async (id: number) => {
 };
 
 const createDeal = async (deal: Omit<Deal, 'id'>) => {
+  if (!supabaseClient) {
+    console.warn('Supabase client not initialized. Cannot create deal.');
+    throw new Error('Supabase client not initialized');
+  }
+
   const { data, error } = await supabaseClient
     .from('deals')
     .insert(deal)
@@ -125,6 +176,11 @@ const createDeal = async (deal: Omit<Deal, 'id'>) => {
 };
 
 const updateDeal = async (id: number, updates: Partial<Deal>) => {
+  if (!supabaseClient) {
+    console.warn('Supabase client not initialized. Cannot update deal.');
+    throw new Error('Supabase client not initialized');
+  }
+
   const { data, error } = await supabaseClient
     .from('deals')
     .update(updates)
@@ -137,6 +193,11 @@ const updateDeal = async (id: number, updates: Partial<Deal>) => {
 };
 
 const deleteDeal = async (id: number) => {
+  if (!supabaseClient) {
+    console.warn('Supabase client not initialized. Cannot delete deal.');
+    throw new Error('Supabase client not initialized');
+  }
+
   const { error } = await supabaseClient
     .from('deals')
     .delete()
@@ -147,6 +208,11 @@ const deleteDeal = async (id: number) => {
 };
 
 const getContentSections = async () => {
+  if (!supabaseClient) {
+    console.warn('Supabase client not initialized. Returning empty content sections array.');
+    return emptyArray;
+  }
+
   const { data, error } = await supabaseClient
     .from('content_sections')
     .select('*');
@@ -169,6 +235,7 @@ export const useSupabaseApi = () => {
     createDeal,
     updateDeal,
     deleteDeal,
-    getContentSections
+    getContentSections,
+    hasSupabaseConfig
   };
 };
