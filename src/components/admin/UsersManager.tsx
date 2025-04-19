@@ -14,9 +14,8 @@ const UsersManager = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
   const { user: currentUser, isAdmin } = useAuth();
-  const [manualRefreshCount, setManualRefreshCount] = useState(0); // Add counter for manual refreshes
+  const [manualRefreshCount, setManualRefreshCount] = useState(0);
 
-  // Fixed query to directly access the profiles table with better debug information
   const { 
     data: users = [], 
     isLoading, 
@@ -30,38 +29,49 @@ const UsersManager = () => {
         console.log("Current user:", currentUser);
         console.log("Is admin:", isAdmin);
         
-        // Query using FROM directly instead of from() method - this is to fix an issue with the query
-        const { data, error } = await supabase
-          .rpc('get_profiles_for_admin')
-          .then(result => {
-            if (result.error) {
-              throw result.error;
-            }
-            return { data: result.data, error: null };
-          })
-          .catch(error => {
-            console.error("RPC error:", error);
-            // Fallback to direct query if RPC fails
-            return supabase
-              .from('profiles')
-              .select('*');
-          });
+        let profilesData;
+        let profilesError = null;
 
-        if (error) {
-          console.error("Supabase error:", error);
+        // First try to use the RPC function
+        if (isAdmin) {
+          console.log("Attempting to fetch profiles using RPC function");
+          const rpcResult = await supabase.rpc('get_profiles_for_admin');
+          
+          if (rpcResult.error) {
+            console.error("RPC error:", rpcResult.error);
+            profilesError = rpcResult.error;
+          } else {
+            profilesData = rpcResult.data;
+            console.log("RPC function succeeded, returned", profilesData?.length || 0, "profiles");
+          }
+        }
+
+        // If RPC failed or user is not admin, fall back to direct query
+        if (!profilesData) {
+          console.log("Falling back to direct query");
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('*');
+            
+          profilesData = data;
+          profilesError = error;
+        }
+
+        if (profilesError) {
+          console.error("Supabase error:", profilesError);
           toast({
             title: "Error fetching users",
-            description: error.message,
+            description: profilesError.message,
             variant: "destructive",
           });
-          throw error;
+          throw profilesError;
         }
         
-        console.log("Profiles fetched:", data?.length || 0);
-        console.log("Raw profiles data:", data); // Log the entire data for debugging
+        console.log("Profiles fetched:", profilesData?.length || 0);
+        console.log("Raw profiles data:", profilesData); // Log the entire data for debugging
         
         // Ensure data has correct structure and default values
-        const processedData = (data || []).map(user => ({
+        const processedData = (profilesData || []).map(user => ({
           ...user,
           id: user.id || '',
           role: user.role || 'user',
