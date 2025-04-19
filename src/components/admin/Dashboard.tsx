@@ -1,70 +1,92 @@
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { 
   Users, 
   ShoppingCart, 
   DollarSign, 
-  Package, 
+  Package,  
   TrendingUp,
   ArrowUpRight,
-  AlertTriangle
 } from "lucide-react";
+import { useSupabaseApi } from "@/lib/supabase/api";
 import { useSessionContext } from "@supabase/auth-helpers-react";
+import { useQuery } from "@tanstack/react-query";
 
 const Dashboard = () => {
   const { supabaseClient } = useSessionContext();
-  const hasSupabaseConfig = supabaseClient?.auth && 
-    window.location.hostname !== "localhost" && 
-    window.location.hostname !== "127.0.0.1";
+  const api = useSupabaseApi();
 
-  // Mock data for the dashboard when Supabase is not configured
+  // Fetch products data
+  const { data: productsData, isLoading: productsLoading } = useQuery({
+    queryKey: ['admin-products'],
+    queryFn: api.getProducts,
+  });
+
+  // Fetch orders data (assuming we have orders table)
+  const { data: ordersData, isLoading: ordersLoading } = useQuery({
+    queryKey: ['admin-orders'],
+    queryFn: async () => {
+      const { data, error } = await supabaseClient
+        .from('orders')
+        .select('*');
+      if (error) throw error;
+      return data || [];
+    }
+  });
+
+  // Calculate total revenue from orders
+  const totalRevenue = ordersData?.reduce((sum, order) => sum + (order.total_amount || 0), 0) || 0;
+
+  // Prepare stats data based on real data
   const stats = [
     {
       title: "Total Revenue",
-      value: "$12,345",
+      value: `$${totalRevenue.toFixed(2)}`,
       icon: <DollarSign className="h-8 w-8 text-muted-foreground" />,
-      change: "+12%",
+      change: "",
       trend: <TrendingUp className="h-4 w-4 text-green-500" />
     },
     {
       title: "Active Users",
-      value: "2,345",
+      value: "Loading...", // This would need to be implemented with actual user data
       icon: <Users className="h-8 w-8 text-muted-foreground" />,
-      change: "+5%",
+      change: "",
       trend: <ArrowUpRight className="h-4 w-4 text-green-500" />
     },
     {
-      title: "New Orders",
-      value: "123",
+      title: "Orders",
+      value: ordersData?.length.toString() || "0",
       icon: <ShoppingCart className="h-8 w-8 text-muted-foreground" />,
-      change: "+8%",
+      change: "",
       trend: <ArrowUpRight className="h-4 w-4 text-green-500" />
     },
     {
       title: "Products",
-      value: "456",
+      value: productsData?.length.toString() || "0",
       icon: <Package className="h-8 w-8 text-muted-foreground" />,
-      change: "+3%",
+      change: "",
       trend: <ArrowUpRight className="h-4 w-4 text-green-500" />
     },
   ];
 
+  const isLoading = productsLoading || ordersLoading;
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <Card>
+          <CardContent className="flex justify-center p-6">
+            <p>Loading...</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold">Dashboard Overview</h2>
-      
-      {!hasSupabaseConfig && (
-        <Alert variant="default" className="border-amber-500 bg-amber-50 text-amber-800">
-          <AlertTriangle className="h-4 w-4" />
-          <AlertTitle>Demo Mode</AlertTitle>
-          <AlertDescription>
-            You are currently viewing demo data. Connect to Supabase to see real data.
-          </AlertDescription>
-        </Alert>
-      )}
-      
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => (
           <Card key={stat.title}>
@@ -78,13 +100,8 @@ const Dashboard = () => {
               <div className="text-2xl font-bold">{stat.value}</div>
               <div className="mt-1 flex items-center text-sm text-muted-foreground">
                 {stat.trend}
-                <span className="ml-1">{stat.change} from last month</span>
+                <span className="ml-1">{stat.change}</span>
               </div>
-              {!hasSupabaseConfig && (
-                <div className="mt-2 text-xs text-muted-foreground">
-                  Demo data
-                </div>
-              )}
             </CardContent>
           </Card>
         ))}
@@ -93,27 +110,26 @@ const Dashboard = () => {
       <div className="grid gap-4 md:grid-cols-2">
         <Card className="col-span-1">
           <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
+            <CardTitle>Recent Orders</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {!hasSupabaseConfig ? (
-                [1, 2, 3, 4].map((i) => (
-                  <div key={i} className="flex items-center gap-4">
+              {ordersData && ordersData.length > 0 ? (
+                ordersData.slice(0, 5).map((order) => (
+                  <div key={order.id} className="flex items-center gap-4">
                     <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
-                      <Users className="h-5 w-5 text-muted-foreground" />
+                      <ShoppingCart className="h-5 w-5 text-muted-foreground" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium">User #{i} placed an order</p>
-                      <p className="text-xs text-muted-foreground">{i * 10} minutes ago</p>
-                      <p className="text-xs text-muted-foreground">(Demo data)</p>
+                      <p className="text-sm font-medium">Order #{order.id}</p>
+                      <p className="text-xs text-muted-foreground">
+                        ${order.total_amount}
+                      </p>
                     </div>
                   </div>
                 ))
               ) : (
-                <div className="flex justify-center items-center h-40">
-                  <p className="text-muted-foreground">Loading real data...</p>
-                </div>
+                <p className="text-muted-foreground">No orders found</p>
               )}
             </div>
           </CardContent>
@@ -121,49 +137,36 @@ const Dashboard = () => {
         
         <Card className="col-span-1">
           <CardHeader>
-            <CardTitle>Sales Overview</CardTitle>
+            <CardTitle>Recent Products</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {!hasSupabaseConfig ? (
-                <>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div className="text-sm">Today</div>
-                      <div className="font-medium">$345</div>
+              {productsData && productsData.length > 0 ? (
+                productsData.slice(0, 5).map((product) => (
+                  <div key={product.id} className="flex items-center gap-4">
+                    <div className="h-10 w-10 rounded-md overflow-hidden">
+                      {product.imageUrl ? (
+                        <img 
+                          src={product.imageUrl}
+                          alt={product.name}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <div className="h-full w-full bg-muted flex items-center justify-center">
+                          <Package className="h-5 w-5 text-muted-foreground" />
+                        </div>
+                      )}
                     </div>
-                    <div className="h-2 w-full rounded-full bg-muted">
-                      <div className="h-2 rounded-full bg-primary" style={{ width: "45%" }}></div>
+                    <div>
+                      <p className="text-sm font-medium">{product.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        ${product.price}
+                      </p>
                     </div>
-                    <div className="text-xs text-muted-foreground">(Demo data)</div>
                   </div>
-                  
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div className="text-sm">This Week</div>
-                      <div className="font-medium">$1,345</div>
-                    </div>
-                    <div className="h-2 w-full rounded-full bg-muted">
-                      <div className="h-2 rounded-full bg-primary" style={{ width: "65%" }}></div>
-                    </div>
-                    <div className="text-xs text-muted-foreground">(Demo data)</div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div className="text-sm">This Month</div>
-                      <div className="font-medium">$5,345</div>
-                    </div>
-                    <div className="h-2 w-full rounded-full bg-muted">
-                      <div className="h-2 rounded-full bg-primary" style={{ width: "85%" }}></div>
-                    </div>
-                    <div className="text-xs text-muted-foreground">(Demo data)</div>
-                  </div>
-                </>
+                ))
               ) : (
-                <div className="flex justify-center items-center h-40">
-                  <p className="text-muted-foreground">Loading real data...</p>
-                </div>
+                <p className="text-muted-foreground">No products found</p>
               )}
             </div>
           </CardContent>
