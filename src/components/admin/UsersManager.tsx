@@ -29,49 +29,69 @@ const UsersManager = () => {
         console.log("Current user:", currentUser);
         console.log("Is admin:", isAdmin);
         
-        let profilesData;
+        // Default empty arrays for handling errors
+        let profilesData: any[] = [];
         let profilesError = null;
 
-        // First try to use the RPC function
         if (isAdmin) {
-          console.log("Attempting to fetch profiles using RPC function");
-          // Fix: Use a type assertion to resolve the TypeScript error
-          const rpcResult = await supabase.rpc('get_profiles_for_admin' as any);
+          console.log("Attempting to fetch profiles as admin");
           
-          if (rpcResult.error) {
-            console.error("RPC error:", rpcResult.error);
-            profilesError = rpcResult.error;
-          } else {
-            profilesData = rpcResult.data;
-            console.log("RPC function succeeded, returned", profilesData?.length || 0, "profiles");
+          try {
+            // First attempt: Use RPC function if available
+            const rpcResult = await supabase.rpc('get_profiles_for_admin');
+            
+            if (rpcResult.error) {
+              console.error("RPC function error:", rpcResult.error);
+              
+              // Second attempt: Direct query if RPC fails
+              console.log("Falling back to direct query");
+              const queryResult = await supabase.from('profiles').select('*');
+              
+              if (queryResult.error) {
+                throw queryResult.error;
+              }
+              
+              profilesData = queryResult.data || [];
+            } else {
+              profilesData = rpcResult.data || [];
+              console.log("RPC function succeeded, returned", profilesData.length, "profiles");
+            }
+          } catch (error) {
+            console.error("Failed to fetch profiles:", error);
+            profilesError = error;
+          }
+        } else {
+          // Non-admin users can only see their own profile
+          console.log("Fetching only current user's profile (non-admin)");
+          if (currentUser?.id) {
+            const { data, error } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('id', currentUser.id)
+              .single();
+              
+            if (error) {
+              console.error("Error fetching own profile:", error);
+              profilesError = error;
+            } else {
+              profilesData = data ? [data] : [];
+            }
           }
         }
 
-        // If RPC failed or user is not admin, fall back to direct query
-        if (!profilesData) {
-          console.log("Falling back to direct query");
-          const { data, error } = await supabase
-            .from('profiles')
-            .select('*');
-            
-          profilesData = data;
-          profilesError = error;
-        }
-
         if (profilesError) {
-          console.error("Supabase error:", profilesError);
+          console.error("Error occurred while fetching profiles:", profilesError);
           toast({
             title: "Error fetching users",
-            description: profilesError.message,
+            description: profilesError.message || "Failed to load user profiles",
             variant: "destructive",
           });
-          throw profilesError;
+          return [];
         }
         
         console.log("Profiles fetched:", profilesData?.length || 0);
-        console.log("Raw profiles data:", profilesData); // Log the entire data for debugging
         
-        // Ensure data has correct structure and default values
+        // Process profile data to ensure consistent structure
         const processedData = (profilesData || []).map(user => ({
           ...user,
           id: user.id || '',
@@ -83,40 +103,39 @@ const UsersManager = () => {
           created_at: user.created_at || new Date().toISOString()
         }));
         
-        console.log("Processed profiles data:", processedData);
         return processedData;
       } catch (error) {
-        console.error("Error fetching profiles:", error);
+        console.error("Unexpected error in profile fetch:", error);
+        toast({
+          title: "Error",
+          description: "An unexpected error occurred while fetching user data",
+          variant: "destructive",
+        });
         return [];
       }
     },
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
     refetchOnMount: true,
-    staleTime: 0, // Force refetch
-    enabled: !!currentUser && !!isAdmin
+    staleTime: 30000, // 30 seconds before considering data stale
+    enabled: !!currentUser // Only run query if user is logged in
   });
 
   // Force a refresh when component mounts or user logs in
   useEffect(() => {
-    if (currentUser && isAdmin) {
+    if (currentUser) {
       console.log("Initial profiles fetch triggered");
       refetch();
     }
-  }, [currentUser, isAdmin, refetch]);
+  }, [currentUser, refetch]);
 
   // Additional logging for empty users
   useEffect(() => {
     if (users.length === 0 && !isLoading && !error) {
       console.warn("No users found after fetch completed");
-      toast({
-        title: "No Users Found",
-        description: "Either no users exist or there's an issue with data retrieval.",
-        variant: "default"
-      });
     } else if (users.length > 0) {
       console.log(`Successfully loaded ${users.length} users`);
     }
-  }, [users, isLoading, error, toast]);
+  }, [users, isLoading, error]);
 
   const filteredUsers = users.filter(
     (user) =>
@@ -140,7 +159,6 @@ const UsersManager = () => {
       title: "Refreshing Users",
       description: "Fetching the latest user data...",
     });
-    refetch();
   };
 
   return (
