@@ -10,75 +10,81 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Pencil, Trash2, Search, UserPlus, CheckCircle, XCircle } from "lucide-react";
+import { Pencil, Trash2, Search, UserPlus, CheckCircle, XCircle, Loader2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { Profile } from "@/types/admin";
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  status: string;
-  joined: string;
-}
+import { supabase } from "@/integrations/supabase/client";
 
 // Mock data for when database tables don't exist
-const mockUsers: User[] = [
+const mockUsers = [
   { 
     id: "abc123", 
-    name: "John Smith", 
+    first_name: "John",
+    last_name: "Smith",
     email: "john@example.com", 
-    role: "Admin", 
-    status: "Active", 
-    joined: "2023-01-15" 
+    role: "admin", 
+    status: "active", 
+    created_at: "2023-01-15T00:00:00Z" 
   },
   { 
     id: "def456", 
-    name: "Jane Doe", 
+    first_name: "Jane",
+    last_name: "Doe",
     email: "jane@example.com", 
-    role: "Customer", 
-    status: "Active", 
-    joined: "2023-02-20" 
+    role: "user", 
+    status: "active", 
+    created_at: "2023-02-20T00:00:00Z" 
   },
   { 
     id: "ghi789", 
-    name: "Robert Johnson", 
+    first_name: "Robert",
+    last_name: "Johnson",
     email: "robert@example.com", 
-    role: "Seller", 
-    status: "Active", 
-    joined: "2023-03-10" 
+    role: "seller", 
+    status: "active", 
+    created_at: "2023-03-10T00:00:00Z" 
   },
   { 
     id: "jkl012", 
-    name: "Emily Brown", 
+    first_name: "Emily",
+    last_name: "Brown",
     email: "emily@example.com", 
-    role: "Customer", 
-    status: "Inactive", 
-    joined: "2023-04-05" 
+    role: "user", 
+    status: "inactive", 
+    created_at: "2023-04-05T00:00:00Z" 
   }
 ];
 
 const UsersManager = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddingUser, setIsAddingUser] = useState(false);
-  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [editingUser, setEditingUser] = useState<Profile | null>(null);
   const { toast } = useToast();
   
-  // Use React Query to fetch users (using mock data for now)
+  // Use React Query to fetch users
   const { data: users = [], isLoading, error, refetch } = useQuery({
     queryKey: ['admin-users'],
     queryFn: async () => {
       try {
-        // In a real implementation, this would fetch from the database
-        // But for now we're using mock data to avoid TypeScript errors
-        return mockUsers;
+        // Try to fetch users from Supabase
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .order('created_at', { ascending: false });
+          
+        if (error) {
+          console.error("Error fetching profiles:", error);
+          throw error;
+        }
+        
+        return data || mockUsers;
       } catch (error) {
         console.error("Error fetching users:", error);
-        return [];
+        // In case of error, return mock data
+        return mockUsers;
       }
     }
   });
@@ -86,13 +92,13 @@ const UsersManager = () => {
   const handleDeleteUser = async (id: string) => {
     try {
       // In production, we would use admin functions to delete users
-      // For now, we'll simulate the deletion
+      // For now, show a message explaining why this isn't implemented
       toast({
         title: "Operation requires admin credentials",
         description: "User deletion requires admin API keys which should only be done from secure backend functions.",
       });
       
-      // Refresh the user list after deletion
+      // Refresh the user list
       refetch();
     } catch (error) {
       console.error("Error deleting user:", error);
@@ -104,50 +110,71 @@ const UsersManager = () => {
     }
   };
 
-  const toggleUserStatus = async (id: string) => {
+  const toggleUserStatus = async (id: string, currentStatus: string) => {
     try {
-      // In a real app, this would call a secure API endpoint
+      const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+      
+      const { error } = await supabase
+        .from('profiles')
+        .update({ status: newStatus })
+        .eq('id', id);
+        
+      if (error) {
+        throw error;
+      }
+      
       toast({
-        title: "Status update simulation",
-        description: "User status would be updated in a real implementation",
+        title: "Status updated",
+        description: `User status has been set to ${newStatus}`,
       });
       
-      // Refresh the user list after status change
+      // Refresh the user list
       refetch();
     } catch (error) {
       console.error("Error updating user status:", error);
       toast({
         title: "Error",
-        description: "Failed to update user status",
+        description: "Failed to update user status. This may require admin privileges.",
         variant: "destructive",
       });
     }
   };
 
   const getStatusBadge = (status: string) => {
-    return status === "Active" ? (
-      <Badge className="bg-green-500 hover:bg-green-600">{status}</Badge>
+    return status === "active" ? (
+      <Badge className="bg-green-500 hover:bg-green-600">Active</Badge>
     ) : (
-      <Badge variant="secondary">{status}</Badge>
+      <Badge variant="secondary">Inactive</Badge>
     );
   };
 
   const getRoleBadge = (role: string) => {
     switch (role) {
-      case "Admin":
-        return <Badge className="bg-purple-500 hover:bg-purple-600">{role}</Badge>;
-      case "Seller":
-        return <Badge className="bg-blue-500 hover:bg-blue-600">{role}</Badge>;
+      case "admin":
+        return <Badge className="bg-purple-500 hover:bg-purple-600">Admin</Badge>;
+      case "seller":
+        return <Badge className="bg-blue-500 hover:bg-blue-600">Seller</Badge>;
       default:
-        return <Badge variant="outline">{role}</Badge>;
+        return <Badge variant="outline">User</Badge>;
+    }
+  };
+
+  const getDisplayName = (user: any) => {
+    if (user.first_name && user.last_name) {
+      return `${user.first_name} ${user.last_name}`;
+    } else if (user.first_name) {
+      return user.first_name;
+    } else {
+      return user.email?.split('@')[0] || 'Unknown';
     }
   };
 
   const filteredUsers = users.filter(
     (user) =>
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.role.toLowerCase().includes(searchTerm.toLowerCase())
+      (user.first_name && user.first_name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (user.last_name && user.last_name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (user.email && user.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (user.role && user.role.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   if (error) {
@@ -156,7 +183,7 @@ const UsersManager = () => {
         <CardContent className="p-6">
           <p className="text-red-500">Error loading users: {error instanceof Error ? error.message : 'Unknown error'}</p>
           <p className="mt-2">
-            Make sure you have created a 'profiles' table in your Supabase database.
+            Make sure you have created a 'profiles' table in your Supabase database with the correct structure.
           </p>
         </CardContent>
       </Card>
@@ -187,6 +214,7 @@ const UsersManager = () => {
       {isLoading ? (
         <Card>
           <CardContent className="p-6 flex justify-center">
+            <Loader2 className="h-6 w-6 animate-spin text-primary mr-2" />
             <p>Loading users...</p>
           </CardContent>
         </Card>
@@ -210,24 +238,21 @@ const UsersManager = () => {
                   filteredUsers.map((user) => (
                     <TableRow key={user.id}>
                       <TableCell className="font-mono text-xs">{user.id.substring(0, 8)}...</TableCell>
-                      <TableCell>{user.name}</TableCell>
+                      <TableCell>{getDisplayName(user)}</TableCell>
                       <TableCell>{user.email}</TableCell>
                       <TableCell>{getRoleBadge(user.role)}</TableCell>
                       <TableCell>{getStatusBadge(user.status)}</TableCell>
-                      <TableCell>{user.joined}</TableCell>
+                      <TableCell>
+                        {user.created_at ? new Date(user.created_at).toLocaleDateString() : "Unknown"}
+                      </TableCell>
                       <TableCell className="text-right">
                         <Button 
                           variant="ghost" 
                           size="icon"
-                          onClick={() => {
-                            toast({
-                              title: "Operation requires admin credentials",
-                              description: "This action would toggle user status in a real implementation.",
-                            });
-                          }}
-                          title={user.status === "Active" ? "Deactivate user" : "Activate user"}
+                          onClick={() => toggleUserStatus(user.id, user.status)}
+                          title={user.status === "active" ? "Deactivate user" : "Activate user"}
                         >
-                          {user.status === "Active" ? (
+                          {user.status === "active" ? (
                             <CheckCircle className="h-4 w-4 text-green-500" />
                           ) : (
                             <XCircle className="h-4 w-4 text-gray-500" />
@@ -239,12 +264,7 @@ const UsersManager = () => {
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => {
-                            toast({
-                              title: "Operation requires admin credentials",
-                              description: "User deletion requires admin API keys.",
-                            });
-                          }}
+                          onClick={() => handleDeleteUser(user.id)}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>

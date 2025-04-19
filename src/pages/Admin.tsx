@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,7 +16,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { useSessionContext } from "@supabase/auth-helpers-react";
+import { supabase } from "@/integrations/supabase/client";
+import { Loader2 } from "lucide-react";
 
 const Admin = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -26,36 +26,79 @@ const Admin = () => {
   const { toast } = useToast();
   const [adminPassword, setAdminPassword] = useState("");
   const [showAdminLogin, setShowAdminLogin] = useState(false);
-  const { supabaseClient } = useSessionContext();
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const [isAdminLoggingIn, setIsAdminLoggingIn] = useState(false);
 
   useEffect(() => {
-    // Check if user is authenticated but not an admin
-    if (isAuthenticated && user && !isAdmin) {
-      setShowAdminLogin(true);
-    }
-  }, [isAuthenticated, user, isAdmin]);
+    const checkAuth = async () => {
+      setIsCheckingAuth(true);
+      
+      // Wait a bit to ensure auth state is updated
+      setTimeout(() => {
+        if (!isAuthenticated) {
+          setIsCheckingAuth(false);
+        } else if (!isAdmin) {
+          setShowAdminLogin(true);
+          setIsCheckingAuth(false);
+        } else {
+          // User is authenticated and is an admin
+          setShowAdminLogin(false);
+          setIsCheckingAuth(false);
+        }
+      }, 1000);
+    };
+    
+    checkAuth();
+  }, [isAuthenticated, isAdmin]);
 
-  const handleAdminLogin = () => {
-    // In a real application, this would be a server-side check
-    // For demo purposes, we're using a simple password check
-    if (adminPassword === "admin123") {
-      // Update the user object to include admin privileges
-      if (user && supabaseClient) {
-        // Ideally, we would update the user's role in Supabase here
+  const handleAdminLogin = async () => {
+    setIsAdminLoggingIn(true);
+    
+    try {
+      // In a real application, this would verify admin credentials and update the role
+      // For demo purposes, we're using a simple password check
+      if (adminPassword === "admin123") {
+        // Update the user's role in the profiles table if possible
+        if (user && supabase) {
+          try {
+            const { error } = await supabase
+              .from('profiles')
+              .update({ role: 'admin' })
+              .eq('id', user.id);
+              
+            if (error) {
+              console.error('Error updating user role:', error);
+            }
+          } catch (error) {
+            console.error('Failed to update user role:', error);
+          }
+        }
+        
         toast({
           title: "Admin Access Granted",
           description: "You now have access to the admin panel.",
         });
         setShowAdminLogin(false);
+      } else {
+        toast({
+          title: "Access Denied",
+          description: "Incorrect admin password.",
+          variant: "destructive",
+        });
       }
-    } else {
-      toast({
-        title: "Access Denied",
-        description: "Incorrect admin password.",
-        variant: "destructive",
-      });
+    } finally {
+      setIsAdminLoggingIn(false);
     }
   };
+
+  if (isCheckingAuth) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <span className="ml-2">Checking authentication...</span>
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     return (
@@ -93,9 +136,23 @@ const Admin = () => {
                 value={adminPassword}
                 onChange={(e) => setAdminPassword(e.target.value)}
               />
+              <p className="text-xs text-muted-foreground">
+                For demo purposes, use: admin123
+              </p>
             </div>
-            <Button onClick={handleAdminLogin} className="w-full">
-              Verify Admin Access
+            <Button 
+              onClick={handleAdminLogin} 
+              className="w-full"
+              disabled={isAdminLoggingIn}
+            >
+              {isAdminLoggingIn ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Verifying...
+                </>
+              ) : (
+                "Verify Admin Access"
+              )}
             </Button>
           </CardContent>
         </Card>

@@ -39,6 +39,27 @@ export type Database = {
         }
         Relationships: []
       }
+      products: {
+        Row: {
+          created_at: string
+          id: number
+          name: string | null
+          price: number | null
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          name?: string | null
+          price?: number | null
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          name?: string | null
+          price?: number | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string | null

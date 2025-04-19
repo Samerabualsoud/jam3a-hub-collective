@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -50,12 +51,19 @@ interface LoginProps {
 const Login = ({ defaultTab = "login" }: LoginProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { login } = useAuth();
+  const { login, isAuthenticated } = useAuth();
   const [activeTab, setActiveTab] = useState<"login" | "register">(defaultTab);
   const [showOTPVerification, setShowOTPVerification] = useState<boolean>(false);
   const [otpValue, setOTPValue] = useState<string>("");
   const [userEmail, setUserEmail] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/");
+    }
+  }, [isAuthenticated, navigate]);
 
   const loginForm = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -129,6 +137,13 @@ const Login = ({ defaultTab = "login" }: LoginProps) => {
       const firstName = nameParts[0] || '';
       const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
       
+      // Log the metadata being sent for debugging
+      console.log("Registration metadata:", {
+        name: firstName,
+        last_name: lastName,
+        phone: data.phone
+      });
+      
       const { data: userData, error } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
@@ -153,6 +168,8 @@ const Login = ({ defaultTab = "login" }: LoginProps) => {
         return;
       }
 
+      // Log success response for debugging
+      console.log("Registration success:", userData);
       setUserEmail(data.email);
       
       toast({
@@ -429,6 +446,27 @@ const Login = ({ defaultTab = "login" }: LoginProps) => {
       <Footer />
     </div>
   );
+
+  function onOTPSubmit(data: z.infer<typeof otpSchema>) {
+    console.log("OTP verification:", data);
+    
+    toast({
+      title: "Registration successful",
+      description: "Your account has been created successfully!",
+    });
+    
+    setTimeout(() => {
+      setShowOTPVerification(false);
+      setActiveTab("login");
+    }, 1500);
+  }
+
+  function handleOTPChange(value: string) {
+    setOTPValue(value);
+    if (value.length === 6) {
+      otpForm.setValue("otp", value);
+    }
+  }
 };
 
 export default Login;

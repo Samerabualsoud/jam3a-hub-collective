@@ -53,92 +53,79 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const updateUser = async () => {
-      if (session?.user) {
-        try {
-          // Set up a safer profile data fetch with error handling
-          console.log("Fetching profile for user:", session.user.id);
-          
-          // First set up basic user data regardless of profile fetch success
-          const basicUserData: User = {
-            id: session.user.id,
-            name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
-            email: session.user.email || '',
-            role: 'user' // Default role until profile is loaded
-          };
-          
-          // Attempt to fetch profile data, but don't block on it
-          const { data: profile, error } = await supabaseClient
-            .from('profiles')
-            .select('role, first_name, last_name, email')
-            .eq('id', session.user.id)
-            .maybeSingle();
-
-          if (error) {
-            console.error('Error fetching profile:', error);
-            
-            if (error.code === 'PGRST116') {
-              console.log("No profile found for user. Using metadata instead.");
-            } else {
-              console.error("Profile fetch error:", error.message);
-            }
-            
-            // Still set the user with basic data even if profile fetch fails
-            setUser(basicUserData);
-            return;
-          }
-
-          // If we get here, we have profile data to enhance the user object
-          const firstName = profile?.first_name || session.user.user_metadata?.name || '';
-          const lastName = profile?.last_name || '';
-          const displayName = (firstName || lastName) 
-            ? `${firstName} ${lastName}`.trim()
-            : session.user.email?.split('@')[0] || 'User';
-
-          const userData: User = {
-            ...basicUserData,
-            name: displayName,
-            role: profile?.role || 'user'
-          };
-          
-          setUser(userData);
-          console.log("User authenticated with profile:", userData);
-        } catch (error) {
-          console.error('Error in user profile handling:', error);
-          // Fallback to basic user data if profile fetch fails completely
-          setUser({
-            id: session.user.id,
-            name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
-            email: session.user.email || '',
-            role: 'user'
-          });
-        }
-      } else {
-        setUser(null);
-      }
-    };
-
-    updateUser();
-
-    // Set up auth state listener with safer pattern to avoid Supabase deadlocks
+    // Set up auth state listener first to avoid missing events
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, currentSession) => {
         if (currentSession?.user) {
-          // Just log that we detected auth change, but don't call updateUser directly
-          console.log("Auth state changed with user:", currentSession.user.email);
-          
           // Use setTimeout to avoid potential deadlocks with Supabase client
-          setTimeout(() => updateUser(), 0);
+          setTimeout(() => updateUserData(currentSession), 0);
         } else {
           setUser(null);
         }
       }
     );
 
+    // Then check for existing session
+    if (session) {
+      updateUserData(session);
+    }
+
     return () => {
       subscription.unsubscribe();
     };
-  }, [session, supabaseClient]);
+  }, [session]);
+
+  const updateUserData = async (currentSession: Session) => {
+    try {
+      // Set up basic user data regardless of profile fetch success
+      const basicUserData: User = {
+        id: currentSession.user.id,
+        name: currentSession.user.user_metadata?.name || currentSession.user.email?.split('@')[0] || 'User',
+        email: currentSession.user.email || '',
+        role: 'user' // Default role until profile is loaded
+      };
+      
+      // Attempt to fetch profile data
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('role, first_name, last_name, email')
+        .eq('id', currentSession.user.id)
+        .maybeSingle();
+
+      if (error) {
+        console.error('Error fetching profile:', error);
+        
+        // Still set the user with basic data even if profile fetch fails
+        setUser(basicUserData);
+        return;
+      }
+
+      // If we get here, we have profile data to enhance the user object
+      const firstName = profile?.first_name || currentSession.user.user_metadata?.name || '';
+      const lastName = profile?.last_name || '';
+      const displayName = (firstName || lastName) 
+        ? `${firstName} ${lastName}`.trim()
+        : currentSession.user.email?.split('@')[0] || 'User';
+
+      const userData: User = {
+        ...basicUserData,
+        name: displayName,
+        role: profile?.role || 'user'
+      };
+      
+      setUser(userData);
+      console.log("User authenticated with profile:", userData);
+    } catch (error) {
+      console.error('Error in user profile handling:', error);
+      // Fallback to basic user data if profile fetch fails completely
+      setUser({
+        id: currentSession.user.id,
+        name: currentSession.user.user_metadata?.name || currentSession.user.email?.split('@')[0] || 'User',
+        email: currentSession.user.email || '',
+        role: 'user'
+      });
+    }
+  };
 
   const login = async (email: string, password: string) => {
     try {
