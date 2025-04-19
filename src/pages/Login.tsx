@@ -125,13 +125,17 @@ const Login = ({ defaultTab = "login" }: LoginProps) => {
     setIsSubmitting(true);
     
     try {
+      const nameParts = data.name.trim().split(/\s+/);
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
+      
       const { data: userData, error } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
         options: {
           data: {
-            name: data.name,
-            last_name: '',
+            name: firstName,
+            last_name: lastName,
             phone: data.phone
           },
           emailRedirectTo: `${window.location.origin}/login`
@@ -157,6 +161,7 @@ const Login = ({ defaultTab = "login" }: LoginProps) => {
       });
       
       setActiveTab("login");
+      setIsSubmitting(false);
       
     } catch (err: any) {
       console.error("Registration error:", err);
@@ -165,7 +170,6 @@ const Login = ({ defaultTab = "login" }: LoginProps) => {
         description: err.message || "An unexpected error occurred",
         variant: "destructive",
       });
-    } finally {
       setIsSubmitting(false);
     }
   };

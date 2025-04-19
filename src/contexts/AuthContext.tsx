@@ -72,7 +72,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             .from('profiles')
             .select('role, first_name, last_name, email')
             .eq('id', session.user.id)
-            .single();
+            .maybeSingle();
 
           if (error) {
             console.error('Error fetching profile:', error);
