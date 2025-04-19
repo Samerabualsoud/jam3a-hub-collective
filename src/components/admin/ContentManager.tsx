@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -9,6 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useSupabaseApi } from "@/lib/supabase/api";
+import { useSessionContext } from "@supabase/auth-helpers-react";
+import { useQuery } from "@tanstack/react-query";
 import {
   PlusCircle,
   ImagePlus,
@@ -19,48 +20,21 @@ import {
   Layout,
   FileText,
   Palette,
-  Component
+  Component,
+  AlertTriangle
 } from 'lucide-react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
-// Mock data for content items
-const mockBanners = [
-  { id: 1, title: 'Welcome Banner', image: 'https://images.unsplash.com/photo-1616348436168-de43ad0db179?auto=format&fit=crop&w=1600&q=80', active: true },
-  { id: 2, title: 'Summer Sale', image: 'https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?auto=format&fit=crop&w=1600&q=80', active: false },
-  { id: 3, title: 'New Products', image: 'https://images.unsplash.com/photo-1615380547903-c456276b7702?auto=format&fit=crop&w=1600&q=80', active: false },
-];
-
-const mockPages = [
-  { id: 1, title: 'About Us', slug: 'about', lastUpdated: '2025-03-28' },
-  { id: 2, title: 'FAQ', slug: 'faq', lastUpdated: '2025-03-29' },
-  { id: 3, title: 'Terms of Service', slug: 'terms', lastUpdated: '2025-03-30' },
-  { id: 4, title: 'Privacy Policy', slug: 'privacy', lastUpdated: '2025-03-30' },
-];
-
-const mockFAQs = [
-  { id: 1, question: 'What is Jam3a?', answer: 'Jam3a is a social shopping platform where people team up to get better prices on products.' },
-  { id: 2, question: 'How does a Jam3a deal work?', answer: 'A Jam3a starts when someone selects a product and shares it with others. Once enough people join the deal within a set time, everyone gets the discounted price.' },
-  { id: 3, question: 'Can I start my own Jam3a?', answer: 'Yes! You can start your own Jam3a by picking a product, setting the group size, and inviting others to join.' },
-];
 
 const ContentManager = () => {
   const [activeTab, setActiveTab] = useState("sections");
-  const [selectedBanner, setSelectedBanner] = useState<any>(null);
-  const [selectedPage, setSelectedPage] = useState<any>(null);
-  const [selectedFAQ, setSelectedFAQ] = useState<any>(null);
-  const [selectedSection, setSelectedSection] = useState<any>(null);
+  const [selectedBanner, setSelectedBanner] = useState(null);
+  const [selectedPage, setSelectedPage] = useState(null);
+  const [selectedFAQ, setSelectedFAQ] = useState(null);
+  const [selectedSection, setSelectedSection] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [contentSections, setContentSections] = useState([]);
-  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const api = useSupabaseApi();
+  const { supabaseClient } = useSessionContext();
 
-  // Form states
   const [bannerForm, setBannerForm] = useState({
     title: '',
     image: '',
@@ -83,27 +57,93 @@ const ContentManager = () => {
     name: '',
     content: '',
     path: '',
+    type: 'section'
   });
 
-  useEffect(() => {
-    loadContentSections();
-  }, []);
-
-  const loadContentSections = async () => {
-    setLoading(true);
-    try {
-      const sections = await api.getContentSections();
-      setContentSections(sections);
-    } catch (error) {
-      toast({
-        title: "Error loading content sections",
-        description: "Failed to load website sections. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
+  const { 
+    data: contentSections = [], 
+    isLoading: sectionsLoading, 
+    error: sectionsError,
+    refetch: refetchSections
+  } = useQuery({
+    queryKey: ['content-sections'],
+    queryFn: async () => {
+      try {
+        const { data, error } = await supabaseClient
+          .from('content_sections')
+          .select('*');
+        
+        if (error) throw error;
+        return data || [];
+      } catch (error) {
+        console.error("Error fetching content sections:", error);
+        return [];
+      }
     }
-  };
+  });
+
+  const { 
+    data: banners = [], 
+    isLoading: bannersLoading,
+    refetch: refetchBanners
+  } = useQuery({
+    queryKey: ['content-banners'],
+    queryFn: async () => {
+      try {
+        const { data, error } = await supabaseClient
+          .from('banners')
+          .select('*');
+        
+        if (error) throw error;
+        return data || [];
+      } catch (error) {
+        console.error("Error fetching banners:", error);
+        return [];
+      }
+    }
+  });
+
+  const { 
+    data: pages = [], 
+    isLoading: pagesLoading,
+    refetch: refetchPages
+  } = useQuery({
+    queryKey: ['content-pages'],
+    queryFn: async () => {
+      try {
+        const { data, error } = await supabaseClient
+          .from('pages')
+          .select('*');
+        
+        if (error) throw error;
+        return data || [];
+      } catch (error) {
+        console.error("Error fetching pages:", error);
+        return [];
+      }
+    }
+  });
+
+  const { 
+    data: faqs = [], 
+    isLoading: faqsLoading,
+    refetch: refetchFaqs
+  } = useQuery({
+    queryKey: ['content-faqs'],
+    queryFn: async () => {
+      try {
+        const { data, error } = await supabaseClient
+          .from('faqs')
+          .select('*');
+        
+        if (error) throw error;
+        return data || [];
+      } catch (error) {
+        console.error("Error fetching FAQs:", error);
+        return [];
+      }
+    }
+  });
 
   const getIconForContentType = (type) => {
     switch (type) {
@@ -114,28 +154,28 @@ const ContentManager = () => {
     }
   };
 
-  const handleBannerSelect = (banner: any) => {
+  const handleBannerSelect = (banner) => {
     setSelectedBanner(banner);
     setBannerForm({
       title: banner.title,
-      image: banner.image,
-      active: banner.active,
+      image: banner.image_url || '',
+      active: banner.active || false,
       link: banner.link || '',
     });
     setIsEditing(true);
   };
 
-  const handlePageSelect = (page: any) => {
+  const handlePageSelect = (page) => {
     setSelectedPage(page);
     setPageForm({
       title: page.title,
       slug: page.slug,
-      content: 'This is the content for ' + page.title + '. In a real implementation, this would be loaded from a database or CMS.',
+      content: page.content || '',
     });
     setIsEditing(true);
   };
 
-  const handleFAQSelect = (faq: any) => {
+  const handleFAQSelect = (faq) => {
     setSelectedFAQ(faq);
     setFaqForm({
       question: faq.question,
@@ -144,12 +184,13 @@ const ContentManager = () => {
     setIsEditing(true);
   };
 
-  const handleSectionSelect = (section: any) => {
+  const handleSectionSelect = (section) => {
     setSelectedSection(section);
     setSectionForm({
       name: section.name,
-      path: section.path,
-      content: `Content for the ${section.name} section. This would be loaded from database in a real implementation.`,
+      path: section.path || '/',
+      content: section.content || '',
+      type: section.type || 'section'
     });
     setIsEditing(true);
   };
@@ -183,17 +224,138 @@ const ContentManager = () => {
         name: '',
         content: '',
         path: '/',
+        type: 'section'
       });
     }
   };
 
-  const handleSave = () => {
-    // In a real implementation, this would save to a database or API
-    toast({
-      title: "Content saved",
-      description: "Your changes have been saved successfully.",
-    });
-    setIsEditing(false);
+  const handleSave = async () => {
+    try {
+      if (activeTab === 'sections') {
+        if (selectedSection) {
+          const { error } = await supabaseClient
+            .from('content_sections')
+            .update({
+              name: sectionForm.name,
+              path: sectionForm.path,
+              content: sectionForm.content,
+              type: sectionForm.type,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', selectedSection.id);
+          
+          if (error) throw error;
+        } else {
+          const { error } = await supabaseClient
+            .from('content_sections')
+            .insert({
+              name: sectionForm.name,
+              path: sectionForm.path,
+              content: sectionForm.content,
+              type: sectionForm.type,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            });
+          
+          if (error) throw error;
+        }
+        refetchSections();
+      } else if (activeTab === 'banners') {
+        if (selectedBanner) {
+          const { error } = await supabaseClient
+            .from('banners')
+            .update({
+              title: bannerForm.title,
+              image_url: bannerForm.image,
+              active: bannerForm.active,
+              link: bannerForm.link,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', selectedBanner.id);
+          
+          if (error) throw error;
+        } else {
+          const { error } = await supabaseClient
+            .from('banners')
+            .insert({
+              title: bannerForm.title,
+              image_url: bannerForm.image,
+              active: bannerForm.active,
+              link: bannerForm.link,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            });
+          
+          if (error) throw error;
+        }
+        refetchBanners();
+      } else if (activeTab === 'pages') {
+        if (selectedPage) {
+          const { error } = await supabaseClient
+            .from('pages')
+            .update({
+              title: pageForm.title,
+              slug: pageForm.slug,
+              content: pageForm.content,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', selectedPage.id);
+          
+          if (error) throw error;
+        } else {
+          const { error } = await supabaseClient
+            .from('pages')
+            .insert({
+              title: pageForm.title,
+              slug: pageForm.slug,
+              content: pageForm.content,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            });
+          
+          if (error) throw error;
+        }
+        refetchPages();
+      } else if (activeTab === 'faqs') {
+        if (selectedFAQ) {
+          const { error } = await supabaseClient
+            .from('faqs')
+            .update({
+              question: faqForm.question,
+              answer: faqForm.answer,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', selectedFAQ.id);
+          
+          if (error) throw error;
+        } else {
+          const { error } = await supabaseClient
+            .from('faqs')
+            .insert({
+              question: faqForm.question,
+              answer: faqForm.answer,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            });
+          
+          if (error) throw error;
+        }
+        refetchFaqs();
+      }
+      
+      toast({
+        title: "Content saved",
+        description: "Your changes have been saved successfully.",
+      });
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Error saving content:", error);
+      toast({
+        title: "Error",
+        description: "Failed to save content. The content table might not exist in the database.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleCancel = () => {
@@ -203,6 +365,13 @@ const ContentManager = () => {
     setSelectedFAQ(null);
     setSelectedSection(null);
   };
+
+  const isLoading = sectionsLoading || bannersLoading || pagesLoading || faqsLoading;
+  const noTablesExist = 
+    contentSections.length === 0 && 
+    banners.length === 0 && 
+    pages.length === 0 && 
+    faqs.length === 0;
 
   return (
     <div className="space-y-6">
@@ -214,6 +383,30 @@ const ContentManager = () => {
           </Button>
         )}
       </div>
+
+      {noTablesExist && !isLoading && (
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center space-x-2 text-amber-600 mb-4">
+              <AlertTriangle />
+              <h3 className="text-lg font-semibold">Content Tables Not Found</h3>
+            </div>
+            <p className="mb-4">
+              It appears that the necessary content tables don't exist in your database yet. 
+              To manage website content, you need to create the following tables in your Supabase database:
+            </p>
+            <ul className="list-disc pl-6 mb-4 space-y-1">
+              <li><code>content_sections</code> - For managing website sections</li>
+              <li><code>banners</code> - For managing banners</li>
+              <li><code>pages</code> - For managing pages</li>
+              <li><code>faqs</code> - For managing FAQs</li>
+            </ul>
+            <p>
+              Please create these tables first to enable content management functionality.
+            </p>
+          </CardContent>
+        </Card>
+      )}
 
       <Tabs defaultValue="sections" value={activeTab} onValueChange={(value) => {
         setActiveTab(value);
@@ -230,17 +423,27 @@ const ContentManager = () => {
           <TabsTrigger value="faqs">FAQs</TabsTrigger>
         </TabsList>
 
-        {/* Website Sections Tab */}
         <TabsContent value="sections">
           {!isEditing ? (
             <div className="space-y-4">
-              {loading ? (
+              {sectionsLoading ? (
                 <Card>
                   <CardContent className="flex justify-center p-6">
                     <p>Loading sections...</p>
                   </CardContent>
                 </Card>
-              ) : (
+              ) : sectionsError ? (
+                <Card>
+                  <CardContent className="p-6">
+                    <p className="text-red-500">Error loading sections: {
+                      sectionsError instanceof Error ? sectionsError.message : 'Unknown error'
+                    }</p>
+                    <p className="mt-2">
+                      Make sure you have created the 'content_sections' table in your database.
+                    </p>
+                  </CardContent>
+                </Card>
+              ) : contentSections.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {contentSections.map((section) => (
                     <Card key={section.id} className="overflow-hidden">
@@ -258,7 +461,7 @@ const ContentManager = () => {
                       <CardFooter className="pt-2 pb-4">
                         <div className="flex justify-between w-full">
                           <div className="text-sm text-muted-foreground">
-                            Last updated: {section.lastUpdated}
+                            Last updated: {new Date(section.updated_at).toLocaleDateString()}
                           </div>
                           <div className="flex gap-2">
                             <Button variant="outline" size="sm" onClick={() => handleSectionSelect(section)}>
@@ -273,6 +476,12 @@ const ContentManager = () => {
                     </Card>
                   ))}
                 </div>
+              ) : (
+                <Card>
+                  <CardContent className="p-6 text-center">
+                    <p>No website sections found. Click "Add New" to create your first website section.</p>
+                  </CardContent>
+                </Card>
               )}
             </div>
           ) : (
@@ -304,7 +513,10 @@ const ContentManager = () => {
                 
                 <div className="space-y-2">
                   <Label htmlFor="section-type">Section Type</Label>
-                  <Select defaultValue="section">
+                  <Select 
+                    value={sectionForm.type}
+                    onValueChange={(value) => setSectionForm({...sectionForm, type: value})}
+                  >
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
@@ -337,37 +549,55 @@ const ContentManager = () => {
           )}
         </TabsContent>
 
-        {/* Banners Tab */}
         <TabsContent value="banners">
           {!isEditing ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {mockBanners.map((banner) => (
-                <Card key={banner.id} className="overflow-hidden">
-                  <div className="relative h-40">
-                    <img 
-                      src={banner.image} 
-                      alt={banner.title} 
-                      className="w-full h-full object-cover"
-                    />
-                    {banner.active && (
-                      <div className="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded text-xs">
-                        Active
-                      </div>
-                    )}
-                  </div>
-                  <CardHeader className="pb-2">
-                    <CardTitle>{banner.title}</CardTitle>
-                  </CardHeader>
-                  <CardFooter>
-                    <Button variant="outline" size="sm" className="mr-2" onClick={() => handleBannerSelect(banner)}>
-                      <Edit className="h-4 w-4 mr-1" /> Edit
-                    </Button>
-                    <Button variant="destructive" size="sm">
-                      <Trash2 className="h-4 w-4 mr-1" /> Delete
-                    </Button>
-                  </CardFooter>
+            <div>
+              {bannersLoading ? (
+                <Card>
+                  <CardContent className="flex justify-center p-6">
+                    <p>Loading banners...</p>
+                  </CardContent>
                 </Card>
-              ))}
+              ) : banners.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {banners.map((banner) => (
+                    <Card key={banner.id} className="overflow-hidden">
+                      <div className="relative h-40">
+                        <img 
+                          src={banner.image_url} 
+                          alt={banner.title} 
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.src = 'https://via.placeholder.com/400x150?text=Banner+Image';
+                          }}
+                        />
+                        {banner.active && (
+                          <div className="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded text-xs">
+                            Active
+                          </div>
+                        )}
+                      </div>
+                      <CardHeader className="pb-2">
+                        <CardTitle>{banner.title}</CardTitle>
+                      </CardHeader>
+                      <CardFooter>
+                        <Button variant="outline" size="sm" className="mr-2" onClick={() => handleBannerSelect(banner)}>
+                          <Edit className="h-4 w-4 mr-1" /> Edit
+                        </Button>
+                        <Button variant="destructive" size="sm">
+                          <Trash2 className="h-4 w-4 mr-1" /> Delete
+                        </Button>
+                      </CardFooter>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <Card>
+                  <CardContent className="p-6 text-center">
+                    <p>No banners found. Click "Add New" to create your first banner.</p>
+                  </CardContent>
+                </Card>
+              )}
             </div>
           ) : (
             <Card>
@@ -408,6 +638,9 @@ const ContentManager = () => {
                       src={bannerForm.image} 
                       alt="Banner preview" 
                       className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src = 'https://via.placeholder.com/400x150?text=Banner+Preview';
+                      }}
                     />
                   </div>
                 )}
@@ -443,39 +676,52 @@ const ContentManager = () => {
           )}
         </TabsContent>
 
-        {/* Pages Tab */}
         <TabsContent value="pages">
           {!isEditing ? (
             <div className="space-y-4">
-              <div className="rounded-md border">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Slug</th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Updated</th>
-                      <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {mockPages.map((page) => (
-                      <tr key={page.id}>
-                        <td className="px-6 py-4 whitespace-nowrap">{page.title}</td>
-                        <td className="px-6 py-4 whitespace-nowrap">{page.slug}</td>
-                        <td className="px-6 py-4 whitespace-nowrap">{page.lastUpdated}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right">
-                          <Button variant="ghost" size="sm" className="mr-2" onClick={() => handlePageSelect(page)}>
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm">
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                        </td>
+              {pagesLoading ? (
+                <Card>
+                  <CardContent className="flex justify-center p-6">
+                    <p>Loading pages...</p>
+                  </CardContent>
+                </Card>
+              ) : pages.length > 0 ? (
+                <div className="rounded-md border">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Slug</th>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Updated</th>
+                        <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {pages.map((page) => (
+                        <tr key={page.id}>
+                          <td className="px-6 py-4 whitespace-nowrap">{page.title}</td>
+                          <td className="px-6 py-4 whitespace-nowrap">{page.slug}</td>
+                          <td className="px-6 py-4 whitespace-nowrap">{new Date(page.updated_at).toLocaleDateString()}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right">
+                            <Button variant="ghost" size="sm" className="mr-2" onClick={() => handlePageSelect(page)}>
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button variant="ghost" size="sm">
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <Card>
+                  <CardContent className="p-6 text-center">
+                    <p>No pages found. Click "Add New" to create your first page.</p>
+                  </CardContent>
+                </Card>
+              )}
             </div>
           ) : (
             <Card>
@@ -525,28 +771,41 @@ const ContentManager = () => {
           )}
         </TabsContent>
 
-        {/* FAQs Tab */}
         <TabsContent value="faqs">
           {!isEditing ? (
             <div className="space-y-4">
-              {mockFAQs.map((faq) => (
-                <Card key={faq.id}>
-                  <CardHeader>
-                    <CardTitle className="text-lg">{faq.question}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p>{faq.answer}</p>
+              {faqsLoading ? (
+                <Card>
+                  <CardContent className="flex justify-center p-6">
+                    <p>Loading FAQs...</p>
                   </CardContent>
-                  <CardFooter className="flex justify-end">
-                    <Button variant="outline" size="sm" className="mr-2" onClick={() => handleFAQSelect(faq)}>
-                      <Edit className="h-4 w-4 mr-1" /> Edit
-                    </Button>
-                    <Button variant="destructive" size="sm">
-                      <Trash2 className="h-4 w-4 mr-1" /> Delete
-                    </Button>
-                  </CardFooter>
                 </Card>
-              ))}
+              ) : faqs.length > 0 ? (
+                faqs.map((faq) => (
+                  <Card key={faq.id}>
+                    <CardHeader>
+                      <CardTitle className="text-lg">{faq.question}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p>{faq.answer}</p>
+                    </CardContent>
+                    <CardFooter className="flex justify-end">
+                      <Button variant="outline" size="sm" className="mr-2" onClick={() => handleFAQSelect(faq)}>
+                        <Edit className="h-4 w-4 mr-1" /> Edit
+                      </Button>
+                      <Button variant="destructive" size="sm">
+                        <Trash2 className="h-4 w-4 mr-1" /> Delete
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                ))
+              ) : (
+                <Card>
+                  <CardContent className="p-6 text-center">
+                    <p>No FAQs found. Click "Add New" to create your first FAQ.</p>
+                  </CardContent>
+                </Card>
+              )}
             </div>
           ) : (
             <Card>
