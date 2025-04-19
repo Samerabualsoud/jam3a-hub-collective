@@ -24,7 +24,7 @@ import Footer from "@/components/Footer";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Phone, User, Mail, Lock, ArrowRight } from "lucide-react";
+import { User, Mail, Lock, ArrowRight } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -36,7 +36,6 @@ const loginSchema = z.object({
 const registerSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters" }),
   email: z.string().email({ message: "Invalid email address" }),
-  phone: z.string().min(10, { message: "Phone number must be at least 10 digits" }),
   password: z.string().min(8, { message: "Password must be at least 8 characters" }),
 });
 
@@ -55,7 +54,7 @@ const Login = ({ defaultTab = "login" }: LoginProps) => {
   const [activeTab, setActiveTab] = useState<"login" | "register">(defaultTab);
   const [showOTPVerification, setShowOTPVerification] = useState<boolean>(false);
   const [otpValue, setOTPValue] = useState<string>("");
-  const [userPhone, setUserPhone] = useState<string>("");
+  const [userEmail, setUserEmail] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const loginForm = useForm<z.infer<typeof loginSchema>>({
@@ -71,7 +70,6 @@ const Login = ({ defaultTab = "login" }: LoginProps) => {
     defaultValues: {
       name: "",
       email: "",
-      phone: "",
       password: "",
     },
   });
@@ -134,8 +132,8 @@ const Login = ({ defaultTab = "login" }: LoginProps) => {
         options: {
           data: {
             name: data.name,
-            phone: data.phone,
-          }
+          },
+          emailRedirectTo: window.location.origin + '/login',
         }
       });
       
@@ -149,24 +147,16 @@ const Login = ({ defaultTab = "login" }: LoginProps) => {
         return;
       }
       
-      // If phone verification is needed
-      if (data.phone) {
-        setUserPhone(data.phone);
-        // In a real app, this is where you'd trigger SMS verification
-        toast({
-          title: "OTP sent",
-          description: `Verification code sent to ${data.phone}`,
-        });
-        setShowOTPVerification(true);
-      } else {
-        toast({
-          title: "Registration successful",
-          description: "Please check your email to verify your account.",
-        });
-        
-        // Switch to login tab after successful registration
-        setActiveTab("login");
-      }
+      // Store email for OTP verification (if needed in the future)
+      setUserEmail(data.email);
+      
+      toast({
+        title: "Registration successful",
+        description: "Please check your email to verify your account.",
+      });
+      
+      // Switch to login tab after successful registration
+      setActiveTab("login");
       
     } catch (err) {
       console.error("Registration error:", err);
@@ -210,9 +200,9 @@ const Login = ({ defaultTab = "login" }: LoginProps) => {
         <Header />
         <main className="flex-1 container mx-auto px-4 py-8">
           <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
-            <h2 className="text-2xl font-bold text-center mb-6">Verify Your Phone</h2>
+            <h2 className="text-2xl font-bold text-center mb-6">Verify Your Email</h2>
             <p className="text-center text-muted-foreground mb-6">
-              We've sent a verification code to {userPhone}
+              We've sent a verification code to {userEmail}
             </p>
             
             <Form {...otpForm}>
@@ -369,27 +359,6 @@ const Login = ({ defaultTab = "login" }: LoginProps) => {
                             <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                             <Input 
                               placeholder="your@email.com" 
-                              className="pl-10" 
-                              {...field} 
-                            />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={registerForm.control}
-                    name="phone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Phone Number</FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                            <Input 
-                              placeholder="+966 5X XXX XXXX" 
                               className="pl-10" 
                               {...field} 
                             />
