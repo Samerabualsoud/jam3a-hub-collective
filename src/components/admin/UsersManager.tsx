@@ -30,7 +30,7 @@ const UsersManager = () => {
         console.log("Is admin:", isAdmin);
         
         // Default empty arrays for handling errors
-        let profilesData: any[] = [];
+        let profilesData: Profile[] = [];
         let profilesError = null;
 
         if (isAdmin) {
@@ -38,7 +38,8 @@ const UsersManager = () => {
           
           try {
             // First attempt: Use RPC function if available
-            const rpcResult = await supabase.rpc('get_profiles_for_admin');
+            // Add type assertion to fix the TypeScript error
+            const rpcResult = await supabase.rpc('get_profiles_for_admin' as any);
             
             if (rpcResult.error) {
               console.error("RPC function error:", rpcResult.error);
@@ -53,7 +54,8 @@ const UsersManager = () => {
               
               profilesData = queryResult.data || [];
             } else {
-              profilesData = rpcResult.data || [];
+              // Fix the type error by ensuring profilesData is an array
+              profilesData = Array.isArray(rpcResult.data) ? rpcResult.data : [];
               console.log("RPC function succeeded, returned", profilesData.length, "profiles");
             }
           } catch (error) {
