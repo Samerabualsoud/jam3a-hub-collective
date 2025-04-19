@@ -1,11 +1,9 @@
-
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { 
   Users, 
   ShoppingCart, 
-  DollarSign, 
+  SarIcon, 
   Package,  
   TrendingUp,
   ArrowUpRight,
@@ -43,14 +41,14 @@ const Dashboard = () => {
   const stats = [
     {
       title: "Total Revenue",
-      value: `$${totalRevenue.toFixed(2)}`,
-      icon: <DollarSign className="h-8 w-8 text-muted-foreground" />,
+      value: `${totalRevenue.toFixed(2)} SAR`,
+      icon: <SarIcon className="h-8 w-8 text-muted-foreground" />,
       change: "",
       trend: <TrendingUp className="h-4 w-4 text-green-500" />
     },
     {
       title: "Active Users",
-      value: "Loading...", // This would need to be implemented with actual user data
+      value: "Loading...",
       icon: <Users className="h-8 w-8 text-muted-foreground" />,
       change: "",
       trend: <ArrowUpRight className="h-4 w-4 text-green-500" />
