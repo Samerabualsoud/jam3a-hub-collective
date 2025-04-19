@@ -1,30 +1,21 @@
 
 export interface Order {
   id: number;
-  customer_name?: string;
-  customer_email?: string;
+  customer_name: string | null;
+  customer_email: string | null;
   total_amount: number;
-  status: 'Pending' | 'Processing' | 'Shipped' | 'Delivered' | string;
+  status: 'Pending' | 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled';
   created_at: string;
-  items_count?: number;
+  items_count: number;
 }
 
 export interface Profile {
   id: string;
-  first_name?: string;
-  last_name?: string;
-  email?: string;
-  role?: string;
-  created_at?: string;
-  status?: string;
-}
-
-export interface ContentSection {
-  id: number;
-  title: string;
-  content: string;
-  type: string;
-  position: number;
-  active: boolean;
+  first_name: string | null;
+  last_name: string | null;
+  email: string | null;
+  role: 'user' | 'admin' | 'seller';
+  status: 'active' | 'suspended' | 'inactive';
   created_at: string;
 }
+
