@@ -339,8 +339,7 @@ export const useSupabaseApi = () => {
     if (error) throw error;
   };
 
-  // Add proper implementation for createMultipleProducts
-  const createMultipleProducts = async (products) => {
+  const createMultipleProducts = async (products: Product[]) => {
     if (!hasSupabaseConfig) {
       console.log('Running in demo mode - mocking multiple products creation');
       const newProducts = products.map((product, index) => ({
@@ -364,10 +363,10 @@ export const useSupabaseApi = () => {
       .select();
 
     if (error) throw error;
-    return data;
+    return data || [];
   };
 
-    const getContentSections = async () => {
+  const getContentSections = async () => {
     try {
       if (!hasSupabaseConfig) {
         console.log('Running in demo mode - returning mock content sections');
@@ -386,7 +385,7 @@ export const useSupabaseApi = () => {
   return {
     getProducts,
     createProduct,
-    createMultipleProducts, // Now properly implemented
+    createMultipleProducts,
     updateProduct,
     deleteProduct,
     getDeals,
