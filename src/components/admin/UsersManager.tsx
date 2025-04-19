@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { UserPlus } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
@@ -8,13 +8,15 @@ import SearchBar from "./users/SearchBar";
 import UsersTable from "./users/UsersTable";
 import { Profile } from "@/types/admin";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 const UsersManager = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
+  const { user: currentUser } = useAuth();
 
   // Updated query to fetch profiles with better error handling and debugging
-  const { data: users = [], isLoading, error } = useQuery({
+  const { data: users = [], isLoading, error, refetch } = useQuery({
     queryKey: ['profiles'],
     queryFn: async () => {
       try {
@@ -22,7 +24,8 @@ const UsersManager = () => {
         
         const { data, error } = await supabase
           .from('profiles')
-          .select('*');
+          .select('*')
+          .order('created_at', { ascending: false });
           
         if (error) {
           console.error("Supabase error:", error);
@@ -51,8 +54,16 @@ const UsersManager = () => {
         return [];
       }
     },
-    refetchOnWindowFocus: false
+    refetchOnWindowFocus: true,
+    enabled: !!currentUser
   });
+
+  // Force a refetch when the component mounts
+  useEffect(() => {
+    if (currentUser) {
+      refetch();
+    }
+  }, [currentUser, refetch]);
 
   const filteredUsers = users.filter(
     (user) =>
@@ -62,11 +73,18 @@ const UsersManager = () => {
       (user.role && user.role.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
+  const handleAddUser = () => {
+    toast({
+      title: "Feature Coming Soon",
+      description: "The ability to add users directly will be available soon.",
+    });
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Users Management</h2>
-        <Button>
+        <Button onClick={handleAddUser}>
           <UserPlus className="mr-2 h-4 w-4" /> Add User
         </Button>
       </div>
