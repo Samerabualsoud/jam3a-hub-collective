@@ -16,7 +16,12 @@ const UsersManager = () => {
   const { user: currentUser, isAdmin } = useAuth();
 
   // Updated query with forced data fetching and better debugging
-  const { data: users = [], isLoading, error, refetch } = useQuery({
+  const { 
+    data: users = [], 
+    isLoading, 
+    error, 
+    refetch 
+  } = useQuery({
     queryKey: ['profiles'],
     queryFn: async () => {
       try {
@@ -24,7 +29,7 @@ const UsersManager = () => {
         console.log("Current user:", currentUser);
         console.log("Is admin:", isAdmin);
         
-        // Directly query the profiles table
+        // Directly query the profiles table with more robust fetching
         const { data, error } = await supabase
           .from('profiles')
           .select('*')
@@ -43,15 +48,14 @@ const UsersManager = () => {
         console.log("Profiles fetched:", data?.length || 0);
         console.log("First few profiles:", data?.slice(0, 3));
         
-        if (!data || data.length === 0) {
-          console.log("No profiles found in the database");
-        }
-        
-        // Map the data to ensure consistent structure
+        // Ensure data has correct structure and default values
         return (data || []).map(user => ({
           ...user,
           role: user.role || 'user',
-          status: user.status || 'active'
+          status: user.status || 'active',
+          first_name: user.first_name || 'Unknown',
+          last_name: user.last_name || '',
+          email: user.email || 'No email'
         }));
       } catch (error) {
         console.error("Error fetching profiles:", error);
@@ -60,22 +64,19 @@ const UsersManager = () => {
     },
     refetchOnWindowFocus: true,
     refetchOnMount: true,
-    staleTime: 0, // Consider data always stale to force refetch
-    enabled: !!currentUser
+    staleTime: 0, // Force refetch
+    enabled: !!currentUser && isAdmin
   });
 
-  // Force a refetch when the component mounts or currentUser changes
-  useEffect(() => {
-    if (currentUser) {
-      console.log("Triggering profiles refetch due to user change");
-      refetch();
-    }
-  }, [currentUser, refetch]);
-
-  // Handle empty users with better messaging
+  // Additional logging for empty users
   useEffect(() => {
     if (users.length === 0 && !isLoading && !error) {
-      console.log("No users found after fetch completed");
+      console.warn("No users found after fetch completed");
+      toast({
+        title: "No Users Found",
+        description: "Either no users exist or there's an issue with data retrieval.",
+        variant: "default"
+      });
     }
   }, [users, isLoading, error]);
 
