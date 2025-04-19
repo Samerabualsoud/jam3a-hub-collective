@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -24,7 +23,7 @@ import Footer from "@/components/Footer";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { User, Mail, Lock, ArrowRight } from "lucide-react";
+import { User, Mail, Lock, ArrowRight, Phone } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -36,6 +35,7 @@ const loginSchema = z.object({
 const registerSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters" }),
   email: z.string().email({ message: "Invalid email address" }),
+  phone: z.string().min(10, { message: "Phone number must be at least 10 digits" }),
   password: z.string().min(8, { message: "Password must be at least 8 characters" }),
 });
 
@@ -70,6 +70,7 @@ const Login = ({ defaultTab = "login" }: LoginProps) => {
     defaultValues: {
       name: "",
       email: "",
+      phone: "",
       password: "",
     },
   });
@@ -81,7 +82,6 @@ const Login = ({ defaultTab = "login" }: LoginProps) => {
     },
   });
 
-  // Initialize the tab based on the defaultTab prop
   useEffect(() => {
     setActiveTab(defaultTab);
   }, [defaultTab]);
@@ -125,13 +125,13 @@ const Login = ({ defaultTab = "login" }: LoginProps) => {
     setIsSubmitting(true);
     
     try {
-      // Use the Supabase client directly for registration
       const { data: userData, error } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
         options: {
           data: {
             name: data.name,
+            phone: data.phone,
           },
           emailRedirectTo: window.location.origin + '/login',
         }
@@ -147,16 +147,13 @@ const Login = ({ defaultTab = "login" }: LoginProps) => {
         return;
       }
       
-      // Store email for OTP verification (if needed in the future)
       setUserEmail(data.email);
+      setShowOTPVerification(true);
       
       toast({
-        title: "Registration successful",
-        description: "Please check your email to verify your account.",
+        title: "Verification email sent",
+        description: "Please check your email for the verification code.",
       });
-      
-      // Switch to login tab after successful registration
-      setActiveTab("login");
       
     } catch (err) {
       console.error("Registration error:", err);
@@ -172,9 +169,6 @@ const Login = ({ defaultTab = "login" }: LoginProps) => {
 
   const onOTPSubmit = (data: z.infer<typeof otpSchema>) => {
     console.log("OTP verification:", data);
-    
-    // Here you would verify the OTP with your backend
-    // For now, we'll just simulate success
     
     toast({
       title: "Registration successful",
@@ -359,6 +353,27 @@ const Login = ({ defaultTab = "login" }: LoginProps) => {
                             <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                             <Input 
                               placeholder="your@email.com" 
+                              className="pl-10" 
+                              {...field} 
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={registerForm.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone Number</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                            <Input 
+                              placeholder="+966 5X XXX XXXX" 
                               className="pl-10" 
                               {...field} 
                             />
