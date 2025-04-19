@@ -16,6 +16,11 @@ const UsersManager = () => {
   const { user: currentUser, isAdmin } = useAuth();
   const [manualRefreshCount, setManualRefreshCount] = useState(0);
 
+  // Enhanced logging function
+  const logDebug = (message: string, data?: any) => {
+    console.log(`[Users Manager] ${message}`, data || '');
+  };
+
   const { 
     data: users = [], 
     isLoading, 
@@ -24,108 +29,72 @@ const UsersManager = () => {
   } = useQuery({
     queryKey: ['profiles', manualRefreshCount], 
     queryFn: async () => {
+      logDebug("Starting profiles fetch");
+      logDebug("Current user:", currentUser);
+      logDebug("Is admin:", isAdmin);
+      
+      // Default empty arrays for handling errors
+      let profilesData: Profile[] = [];
+      let profilesError = null;
+
       try {
-        console.log("Fetching profiles from Supabase...");
-        console.log("Current user:", currentUser);
-        console.log("Is admin:", isAdmin);
+        // Direct fetch approach - simplifying to reduce potential issues
+        logDebug("Fetching profiles directly from the profiles table");
         
-        // Default empty arrays for handling errors
-        let profilesData: Profile[] = [];
-        let profilesError = null;
+        const queryResult = isAdmin
+          ? await supabase.from('profiles').select('*')
+          : await supabase.from('profiles').select('*').eq('id', currentUser?.id || '');
+        
+        if (queryResult.error) {
+          throw queryResult.error;
+        }
+        
+        profilesData = queryResult.data || [];
+        logDebug(`Successfully fetched ${profilesData.length} profiles`, profilesData);
 
-        if (isAdmin) {
-          console.log("Attempting to fetch profiles as admin");
+        // If admin but no profiles found, double check with a more specific log
+        if (isAdmin && profilesData.length === 0) {
+          logDebug("Warning: Admin user but no profiles found. This might indicate a permission issue.");
           
-          try {
-            // First attempt: Use RPC function if available
-            // Add type assertion to fix the TypeScript error
-            const rpcResult = await supabase.rpc('get_profiles_for_admin' as any);
-            
-            if (rpcResult.error) {
-              console.error("RPC function error:", rpcResult.error);
-              
-              // Second attempt: Direct query if RPC fails
-              console.log("Falling back to direct query");
-              const queryResult = await supabase.from('profiles').select('*');
-              
-              if (queryResult.error) {
-                throw queryResult.error;
-              }
-              
-              profilesData = queryResult.data || [];
-            } else {
-              // Fix the type error by ensuring profilesData is an array
-              profilesData = Array.isArray(rpcResult.data) ? rpcResult.data : [];
-              console.log("RPC function succeeded, returned", profilesData.length, "profiles");
-            }
-          } catch (error) {
-            console.error("Failed to fetch profiles:", error);
-            profilesError = error;
-          }
-        } else {
-          // Non-admin users can only see their own profile
-          console.log("Fetching only current user's profile (non-admin)");
-          if (currentUser?.id) {
-            const { data, error } = await supabase
-              .from('profiles')
-              .select('*')
-              .eq('id', currentUser.id)
-              .single();
-              
-            if (error) {
-              console.error("Error fetching own profile:", error);
-              profilesError = error;
-            } else {
-              profilesData = data ? [data] : [];
-            }
-          }
+          // Try fetching just the current user as a fallback
+          const selfQuery = await supabase.from('profiles').select('*').eq('id', currentUser?.id || '');
+          logDebug("Self-query result:", selfQuery);
         }
-
-        if (profilesError) {
-          console.error("Error occurred while fetching profiles:", profilesError);
-          toast({
-            title: "Error fetching users",
-            description: profilesError.message || "Failed to load user profiles",
-            variant: "destructive",
-          });
-          return [];
-        }
-        
-        console.log("Profiles fetched:", profilesData?.length || 0);
-        
-        // Process profile data to ensure consistent structure
-        const processedData = (profilesData || []).map(user => ({
-          ...user,
-          id: user.id || '',
-          role: user.role || 'user',
-          status: user.status || 'active',
-          first_name: user.first_name || 'Unknown',
-          last_name: user.last_name || '',
-          email: user.email || 'No email',
-          created_at: user.created_at || new Date().toISOString()
-        }));
-        
-        return processedData;
       } catch (error) {
-        console.error("Unexpected error in profile fetch:", error);
+        console.error("Failed to fetch profiles:", error);
+        profilesError = error;
         toast({
-          title: "Error",
-          description: "An unexpected error occurred while fetching user data",
+          title: "Error fetching users",
+          description: "There was an issue loading the user data. Please try again later.",
           variant: "destructive",
         });
-        return [];
       }
+      
+      // Process profile data to ensure consistent structure
+      const processedData = (profilesData || []).map(user => ({
+        ...user,
+        id: user.id || '',
+        role: user.role || 'user',
+        status: user.status || 'active',
+        first_name: user.first_name || 'Unknown',
+        last_name: user.last_name || '',
+        email: user.email || 'No email',
+        created_at: user.created_at || new Date().toISOString()
+      }));
+      
+      logDebug(`Returning ${processedData.length} processed profiles`);
+      return processedData;
     },
     refetchOnWindowFocus: false,
     refetchOnMount: true,
-    staleTime: 30000, // 30 seconds before considering data stale
+    staleTime: 5000, // Reduced to 5 seconds for more frequent refreshes
     enabled: !!currentUser // Only run query if user is logged in
   });
 
-  // Force a refresh when component mounts or user logs in
+  // Force an immediate refresh when the component mounts
   useEffect(() => {
     if (currentUser) {
-      console.log("Initial profiles fetch triggered");
+      logDebug("Initial profiles fetch triggered on mount");
       refetch();
     }
   }, [currentUser, refetch]);
@@ -133,9 +102,9 @@ const UsersManager = () => {
   // Additional logging for empty users
   useEffect(() => {
     if (users.length === 0 && !isLoading && !error) {
-      console.warn("No users found after fetch completed");
+      logDebug("No users found after fetch completed - This might indicate a permission issue");
     } else if (users.length > 0) {
-      console.log(`Successfully loaded ${users.length} users`);
+      logDebug(`Successfully loaded ${users.length} users`, users);
     }
   }, [users, isLoading, error]);
 
@@ -155,7 +124,7 @@ const UsersManager = () => {
   };
 
   const handleRefresh = () => {
-    console.log("Manual refresh triggered");
+    logDebug("Manual refresh triggered");
     setManualRefreshCount(prev => prev + 1); // Increment to force a refresh
     toast({
       title: "Refreshing Users",
@@ -189,9 +158,21 @@ const UsersManager = () => {
       />
 
       <div className="mt-4 text-sm text-muted-foreground">
+        {isAdmin && (
+          <div className="bg-muted p-3 rounded-md text-sm mb-2">
+            <p className="font-semibold">Admin Tips:</p>
+            <ul className="list-disc list-inside mt-1 space-y-1">
+              <li>If no users appear, make sure the profiles table has entries</li>
+              <li>Click Refresh to reload user data</li>
+              <li>Check console logs for debugging information</li>
+            </ul>
+          </div>
+        )}
         {users.length > 0 ? (
           <p>Showing {filteredUsers.length} of {users.length} users</p>
-        ) : null}
+        ) : (
+          <p>No users found. Please check system configuration or create a new user.</p>
+        )}
       </div>
     </div>
   );
