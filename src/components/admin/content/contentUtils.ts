@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 
 // Types for content management
@@ -247,18 +248,17 @@ export const saveFAQ = async (faq: Partial<FAQ>) => {
   }
 };
 
-// API functions for deals
-export const fetchDeals = async () => {
-  const { data, error } = await supabase
-    .from('deals')
-    .select('*')
-    .order('created_at', { ascending: false });
+// For deals, we'll leverage the existing implementation in src/lib/supabase/api.ts
+// to avoid TypeScript errors since the types aren't yet aware of the deals table
+import { useSupabaseApi } from "@/lib/supabase/api";
 
-  if (error) throw error;
-  return data || [];
+export const fetchDeals = async () => {
+  const api = useSupabaseApi();
+  return api.getDeals();
 };
 
 export const saveDeal = async (deal: Partial<Deal>) => {
+  const api = useSupabaseApi();
   const { id, ...dealData } = deal;
   
   if (!dealData.name) {
@@ -269,40 +269,14 @@ export const saveDeal = async (deal: Partial<Deal>) => {
     throw new Error("Product is required");
   }
   
-  const dataToSave = {
-    name: dealData.name,
-    product_id: dealData.product_id,
-    discount: dealData.discount || 0,
-    start_date: dealData.start_date,
-    end_date: dealData.end_date,
-    active: dealData.active !== undefined ? dealData.active : true,
-    updated_at: new Date().toISOString()
-  };
-  
   if (id) {
-    const { data, error } = await supabase
-      .from('deals')
-      .update(dataToSave)
-      .eq('id', id)
-      .select()
-      .single();
-    if (error) throw error;
-    return data;
+    return api.updateDeal(id, dealData);
   } else {
-    const { data, error } = await supabase
-      .from('deals')
-      .insert(dataToSave)
-      .select()
-      .single();
-    if (error) throw error;
-    return data;
+    return api.createDeal(dealData);
   }
 };
 
 export const deleteDeal = async (id: string) => {
-  const { error } = await supabase
-    .from('deals')
-    .delete()
-    .eq('id', id);
-  if (error) throw error;
+  const api = useSupabaseApi();
+  return api.deleteDeal(id);
 };
