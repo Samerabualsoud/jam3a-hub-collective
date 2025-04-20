@@ -1,5 +1,6 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { Resend } from "npm:resend@2.0.0";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -22,6 +23,9 @@ serve(async (req) => {
     console.log("Email function invoked, parsing request body...");
     const { email, name = "Valued User", isTest = false }: EmailPayload = await req.json();
     
+    // Initialize Resend with the API key from environment variables
+    const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+    
     // Log comprehensive details for debugging
     console.log(`Processing ${isTest ? 'test' : 'welcome'} email request:`, {
       to: email,
@@ -30,38 +34,26 @@ serve(async (req) => {
       timestamp: new Date().toISOString()
     });
     
-    // Check for email service configuration
-    const smtpHost = Deno.env.get("SMTP_HOST");
-    const smtpPort = Deno.env.get("SMTP_PORT");
-    const smtpUser = Deno.env.get("SMTP_USER");
-    const smtpPassword = Deno.env.get("SMTP_PASSWORD");
-    const siteUrl = Deno.env.get("SITE_URL") || "https://jam3a.app";
+    // Send email using Resend
+    const emailResult = await resend.emails.send({
+      from: 'Jam3a <onboarding@jam3a.app>',
+      to: [email],
+      subject: 'Welcome to Jam3a!',
+      html: `
+        <h1>Welcome to Jam3a, ${name}!</h1>
+        <p>We're excited to have you join our community. Get ready to explore amazing group buying experiences!</p>
+        <p>Best regards,<br>The Jam3a Team</p>
+      `
+    });
     
-    // Log configuration status
-    const configStatus = {
-      hostConfigured: !!smtpHost,
-      portConfigured: !!smtpPort,
-      userConfigured: !!smtpUser,
-      passwordConfigured: !!smtpPassword,
-      siteUrlConfigured: !!siteUrl
-    };
-    console.log("SMTP configuration status:", configStatus);
+    console.log('Email send result:', emailResult);
     
-    // In free account, we can't actually send emails, so we'll log a simulation
-    console.log(`SIMULATION MODE: Email would be sent to ${email} with subject "Welcome to Jam3a"`);
-    console.log(`Email content would include a welcome message for ${name}`);
-    
-    // Log success
-    console.log(`${isTest ? 'Test email' : 'Welcome email'} simulation completed for ${email}`);
-    
-    // Return success response with detailed info
+    // Return success response with email details
     return new Response(
       JSON.stringify({ 
         success: true,
-        message: `${isTest ? 'Test email' : 'Welcome email'} processed successfully`,
-        details: "Email sending was simulated due to free tier limitations",
-        recipient: email,
-        configStatus: configStatus
+        message: `${isTest ? 'Test email' : 'Welcome email'} sent successfully`,
+        details: emailResult
       }),
       { 
         headers: { "Content-Type": "application/json", ...corsHeaders },
