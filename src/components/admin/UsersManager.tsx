@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { UserPlus, RefreshCcw } from "lucide-react";
@@ -33,62 +32,43 @@ const UsersManager = () => {
       logDebug("Current user:", currentUser);
       logDebug("Is admin:", isAdmin);
       
-      // Default empty arrays for handling errors
-      let profilesData: Profile[] = [];
-      let profilesError = null;
-
       try {
-        // Direct fetch approach - simplifying to reduce potential issues
-        logDebug("Fetching profiles directly from the profiles table");
-        
-        const queryResult = isAdmin
-          ? await supabase.from('profiles').select('*')
-          : await supabase.from('profiles').select('*').eq('id', currentUser?.id || '');
-        
-        if (queryResult.error) {
-          throw queryResult.error;
+        // Use the new get_profiles_for_admin function
+        const { data, error } = await supabase
+          .rpc('get_profiles_for_admin');
+
+        if (error) {
+          throw error;
         }
-        
-        profilesData = queryResult.data || [];
+
+        const profilesData = data || [];
         logDebug(`Successfully fetched ${profilesData.length} profiles`, profilesData);
 
-        // If admin but no profiles found, double check with a more specific log
-        if (isAdmin && profilesData.length === 0) {
-          logDebug("Warning: Admin user but no profiles found. This might indicate a permission issue.");
-          
-          // Try fetching just the current user as a fallback
-          const selfQuery = await supabase.from('profiles').select('*').eq('id', currentUser?.id || '');
-          logDebug("Self-query result:", selfQuery);
-        }
+        // Process profile data to ensure consistent structure
+        return (profilesData || []).map(user => ({
+          ...user,
+          id: user.id || '',
+          role: user.role || 'user',
+          status: user.status || 'active',
+          first_name: user.first_name || 'Unknown',
+          last_name: user.last_name || '',
+          email: user.email || 'No email',
+          created_at: user.created_at || new Date().toISOString()
+        }));
       } catch (error) {
         console.error("Failed to fetch profiles:", error);
-        profilesError = error;
         toast({
           title: "Error fetching users",
           description: "There was an issue loading the user data. Please try again later.",
           variant: "destructive",
         });
+        return [];
       }
-      
-      // Process profile data to ensure consistent structure
-      const processedData = (profilesData || []).map(user => ({
-        ...user,
-        id: user.id || '',
-        role: user.role || 'user',
-        status: user.status || 'active',
-        first_name: user.first_name || 'Unknown',
-        last_name: user.last_name || '',
-        email: user.email || 'No email',
-        created_at: user.created_at || new Date().toISOString()
-      }));
-      
-      logDebug(`Returning ${processedData.length} processed profiles`);
-      return processedData;
     },
     refetchOnWindowFocus: false,
     refetchOnMount: true,
-    staleTime: 5000, // Reduced to 5 seconds for more frequent refreshes
-    enabled: !!currentUser // Only run query if user is logged in
+    staleTime: 5000,
+    enabled: !!currentUser
   });
 
   // Force an immediate refresh when the component mounts

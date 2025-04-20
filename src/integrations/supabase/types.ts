@@ -222,6 +222,18 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      get_profiles_for_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          created_at: string | null
+          email: string | null
+          first_name: string | null
+          id: string
+          last_name: string | null
+          role: string | null
+          status: string | null
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
