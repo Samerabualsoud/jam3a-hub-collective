@@ -19,31 +19,49 @@ serve(async (req) => {
   }
 
   try {
+    console.log("Email function invoked, parsing request body...");
     const { email, name = "Valued User", isTest = false }: EmailPayload = await req.json();
     
-    // Log attempt details for debugging
-    console.log(`Attempting to send ${isTest ? 'test' : 'welcome'} email to: ${email}`);
+    // Log comprehensive details for debugging
+    console.log(`Processing ${isTest ? 'test' : 'welcome'} email request:`, {
+      to: email,
+      name: name,
+      isTest: isTest,
+      timestamp: new Date().toISOString()
+    });
     
-    // For development purposes, we'll simulate success without actually sending emails
-    // This avoids hitting email rate limits during testing
-    console.log(`DEVELOPMENT MODE: Email sending simulated for ${email}`);
-    
-    // Check SMTP config but don't actually use it
+    // Check for email service configuration
     const smtpHost = Deno.env.get("SMTP_HOST");
     const smtpPort = Deno.env.get("SMTP_PORT");
     const smtpUser = Deno.env.get("SMTP_USER");
     const smtpPassword = Deno.env.get("SMTP_PASSWORD");
     const siteUrl = Deno.env.get("SITE_URL") || "https://jam3a.app";
     
-    // Log success
-    console.log(`${isTest ? 'Test email' : 'Welcome email'} simulated successfully to ${email}`);
+    // Log configuration status
+    const configStatus = {
+      hostConfigured: !!smtpHost,
+      portConfigured: !!smtpPort,
+      userConfigured: !!smtpUser,
+      passwordConfigured: !!smtpPassword,
+      siteUrlConfigured: !!siteUrl
+    };
+    console.log("SMTP configuration status:", configStatus);
     
-    // Return success response
+    // In free account, we can't actually send emails, so we'll log a simulation
+    console.log(`SIMULATION MODE: Email would be sent to ${email} with subject "Welcome to Jam3a"`);
+    console.log(`Email content would include a welcome message for ${name}`);
+    
+    // Log success
+    console.log(`${isTest ? 'Test email' : 'Welcome email'} simulation completed for ${email}`);
+    
+    // Return success response with detailed info
     return new Response(
       JSON.stringify({ 
         success: true,
         message: `${isTest ? 'Test email' : 'Welcome email'} processed successfully`,
-        details: "Email sending was simulated for development purposes." 
+        details: "Email sending was simulated due to free tier limitations",
+        recipient: email,
+        configStatus: configStatus
       }),
       { 
         headers: { "Content-Type": "application/json", ...corsHeaders },
@@ -56,8 +74,9 @@ serve(async (req) => {
     
     return new Response(
       JSON.stringify({ 
-        error: "Failed to send email", 
-        details: error.message 
+        error: "Failed to process email", 
+        details: error.message,
+        timestamp: new Date().toISOString()
       }),
       { 
         headers: { "Content-Type": "application/json", ...corsHeaders },

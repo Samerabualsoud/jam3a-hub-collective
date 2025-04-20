@@ -64,7 +64,15 @@ const Register = () => {
       
       // Attempt to send welcome email via edge function
       try {
-        await sendWelcomeEmail(email, userData.name || 'New User');
+        const emailResult = await sendWelcomeEmail(email, userData.name || 'New User');
+        console.log("Welcome email function response:", emailResult);
+        
+        if (emailResult?.success) {
+          toast({
+            title: "Welcome email processed",
+            description: "A welcome email has been processed for your account.",
+          });
+        }
       } catch (emailErr) {
         console.warn("Welcome email could not be sent:", emailErr);
         // Non-blocking error, continue with the flow
@@ -84,6 +92,7 @@ const Register = () => {
 
   // Send welcome email using edge function
   const sendWelcomeEmail = async (email: string, name: string) => {
+    console.log(`Attempting to send welcome email to ${email}...`);
     try {
       const { data, error } = await supabase.functions.invoke('send-welcome-email', {
         body: JSON.stringify({
@@ -93,12 +102,25 @@ const Register = () => {
         })
       });
       
-      if (error) throw error;
-      console.log("Welcome email sent successfully:", data);
+      if (error) {
+        console.error("Error invoking email function:", error);
+        throw error;
+      }
+      
+      console.log("Welcome email function response:", data);
       return data;
-    } catch (emailError) {
+    } catch (emailError: any) {
       console.error("Failed to send welcome email:", emailError);
-      // Non-blocking error, still allow registration to succeed
+      
+      // Show a toast with error details but don't block registration
+      toast({
+        title: "Welcome email not sent",
+        description: "Your account was created, but we couldn't send a welcome email. This won't affect your account.",
+        variant: "default"
+      });
+      
+      // Still allow registration to succeed
+      return { success: false, error: emailError.message };
     }
   };
 
