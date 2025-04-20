@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -26,6 +25,7 @@ import SellerRegister from "./pages/SellerRegister";
 import JoinJam3a from "./pages/JoinJam3a";
 import PaymentCallback from "./pages/PaymentCallback";
 import PaymentSettings from "./pages/PaymentSettings";
+import VerifyEmail from "./pages/VerifyEmail";
 
 const App = () => {
   // Create a client
@@ -69,6 +69,7 @@ const App = () => {
       <Route path="/terms" element={<Index />} />
       <Route path="/contact" element={<Index />} />
       <Route path="/admin/*" element={<Admin />} />
+      <Route path="/verify-email" element={<VerifyEmail />} />
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
       <Route path="*" element={<NotFound />} />
     </Routes>

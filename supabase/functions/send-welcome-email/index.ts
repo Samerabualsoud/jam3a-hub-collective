@@ -29,6 +29,7 @@ serve(async (req) => {
     const smtpPort = Deno.env.get("SMTP_PORT");
     const smtpUser = Deno.env.get("SMTP_USER");
     const smtpPassword = Deno.env.get("SMTP_PASSWORD");
+    const siteUrl = Deno.env.get("SITE_URL") || "https://jam3a.app";
     
     if (!smtpHost || !smtpPort || !smtpUser || !smtpPassword) {
       console.error("Missing SMTP configuration");
@@ -48,6 +49,7 @@ serve(async (req) => {
         to: email,
         from: smtpUser,
         subject: isTest ? "Jam3a Hub - Test Email" : "Welcome to Jam3a Hub!",
+        redirectTo: `${siteUrl}/verify-email`, // Add verification redirect URL
         isTest: isTest,
       }
     });
