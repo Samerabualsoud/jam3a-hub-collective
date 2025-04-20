@@ -74,7 +74,7 @@ const Register = () => {
     }
   };
 
-  // Meanwhile, let's also use our edge function to simulate a welcome email
+  // Try to simulate a welcome email without using protected Supabase client properties
   const sendWelcomeEmail = async (email: string, name: string) => {
     try {
       // Use the correct way to access Supabase URL and anon key
