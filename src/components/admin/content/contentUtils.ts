@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 
 // Types for content management
@@ -43,6 +42,18 @@ export interface FAQ {
   updated_at: string | null;
 }
 
+export interface Deal {
+  id: string;
+  name: string;
+  product_id: number;
+  discount: number;
+  start_date: string;
+  end_date: string;
+  active: boolean;
+  created_at: string | null;
+  updated_at: string | null;
+}
+
 // API functions for content sections
 export const fetchContentSections = async () => {
   const { data, error } = await supabase
@@ -57,12 +68,10 @@ export const fetchContentSections = async () => {
 export const saveContentSection = async (section: Partial<ContentSection>) => {
   const { id, ...sectionData } = section;
   
-  // Ensure required fields are present
   if (!sectionData.name) {
     throw new Error("Section name is required");
   }
   
-  // Create a properly typed object with the required field
   const dataToSave = {
     name: sectionData.name,
     content: sectionData.content || null,
@@ -105,12 +114,10 @@ export const fetchBanners = async () => {
 export const saveBanner = async (banner: Partial<Banner>) => {
   const { id, ...bannerData } = banner;
   
-  // Ensure required fields are present
   if (!bannerData.title) {
     throw new Error("Banner title is required");
   }
   
-  // Create a properly typed object with the required field
   const dataToSave = {
     title: bannerData.title,
     image_url: bannerData.image_url || null,
@@ -153,7 +160,6 @@ export const fetchPages = async () => {
 export const savePage = async (page: Partial<Page>) => {
   const { id, ...pageData } = page;
   
-  // Ensure required fields are present
   if (!pageData.title) {
     throw new Error("Page title is required");
   }
@@ -162,7 +168,6 @@ export const savePage = async (page: Partial<Page>) => {
     throw new Error("Page slug is required");
   }
   
-  // Create a properly typed object with the required fields
   const dataToSave = {
     title: pageData.title,
     slug: pageData.slug,
@@ -206,7 +211,6 @@ export const fetchFAQs = async () => {
 export const saveFAQ = async (faq: Partial<FAQ>) => {
   const { id, ...faqData } = faq;
   
-  // Ensure required fields are present
   if (!faqData.question) {
     throw new Error("FAQ question is required");
   }
@@ -215,7 +219,6 @@ export const saveFAQ = async (faq: Partial<FAQ>) => {
     throw new Error("FAQ answer is required");
   }
   
-  // Create a properly typed object with the required fields
   const dataToSave = {
     question: faqData.question,
     answer: faqData.answer,
@@ -242,4 +245,64 @@ export const saveFAQ = async (faq: Partial<FAQ>) => {
     if (error) throw error;
     return data;
   }
+};
+
+// API functions for deals
+export const fetchDeals = async () => {
+  const { data, error } = await supabase
+    .from('deals')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data || [];
+};
+
+export const saveDeal = async (deal: Partial<Deal>) => {
+  const { id, ...dealData } = deal;
+  
+  if (!dealData.name) {
+    throw new Error("Deal name is required");
+  }
+  
+  if (!dealData.product_id) {
+    throw new Error("Product is required");
+  }
+  
+  const dataToSave = {
+    name: dealData.name,
+    product_id: dealData.product_id,
+    discount: dealData.discount || 0,
+    start_date: dealData.start_date,
+    end_date: dealData.end_date,
+    active: dealData.active !== undefined ? dealData.active : true,
+    updated_at: new Date().toISOString()
+  };
+  
+  if (id) {
+    const { data, error } = await supabase
+      .from('deals')
+      .update(dataToSave)
+      .eq('id', id)
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  } else {
+    const { data, error } = await supabase
+      .from('deals')
+      .insert(dataToSave)
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  }
+};
+
+export const deleteDeal = async (id: string) => {
+  const { error } = await supabase
+    .from('deals')
+    .delete()
+    .eq('id', id);
+  if (error) throw error;
 };

@@ -1,4 +1,3 @@
-
 import { createClient } from '@supabase/supabase-js';
 import { Order, Profile } from '@/types/admin';
 
@@ -232,7 +231,8 @@ const getDeals = async () => {
     
     const { data, error } = await supabaseClient
       .from('deals')
-      .select('*');
+      .select('*')
+      .order('created_at', { ascending: false });
 
     if (error) throw error;
     return data || mockDeals;
