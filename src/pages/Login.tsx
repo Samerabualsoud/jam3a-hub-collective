@@ -45,9 +45,15 @@ const otpSchema = z.object({
 
 interface LoginProps {
   defaultTab?: "login" | "register";
+  onRegister?: (email: string, password: string, userData: any) => Promise<void>;
+  isRegistering?: boolean;
 }
 
-const Login = ({ defaultTab = "login" }: LoginProps) => {
+const Login = ({ 
+  defaultTab = "login",
+  onRegister,
+  isRegistering = false
+}: LoginProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { login, isAuthenticated } = useAuth();
@@ -128,54 +134,58 @@ const Login = ({ defaultTab = "login" }: LoginProps) => {
 
   const onRegisterSubmit = async (data: z.infer<typeof registerSchema>) => {
     console.log("Register data:", data);
-    setIsSubmitting(true);
     
     try {
       const nameParts = data.name.trim().split(/\s+/);
       const firstName = nameParts[0] || '';
       const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
       
-      console.log("Registration metadata:", {
+      const userData = {
         name: firstName,
         last_name: lastName,
         phone: data.phone
-      });
+      };
       
-      const { data: userData, error } = await supabase.auth.signUp({
-        email: data.email,
-        password: data.password,
-        options: {
-          data: {
-            name: firstName,
-            last_name: lastName,
-            phone: data.phone
-          },
-          emailRedirectTo: `${window.location.origin}/login`
-        }
-      });
-      
-      if (error) {
-        console.error("Registration error details:", error);
-        toast({
-          title: "Registration failed",
-          description: error.message || "There was a problem creating your account.",
-          variant: "destructive",
+      if (onRegister) {
+        await onRegister(data.email, data.password, userData);
+      } else {
+        setIsSubmitting(true);
+        
+        const { data: userData, error } = await supabase.auth.signUp({
+          email: data.email,
+          password: data.password,
+          options: {
+            data: {
+              name: firstName,
+              last_name: lastName,
+              phone: data.phone
+            },
+            emailRedirectTo: `${window.location.origin}/login`
+          }
         });
-        setIsSubmitting(false);
-        return;
-      }
+        
+        if (error) {
+          console.error("Registration error details:", error);
+          toast({
+            title: "Registration failed",
+            description: error.message || "There was a problem creating your account.",
+            variant: "destructive",
+          });
+          setIsSubmitting(false);
+          return;
+        }
 
-      console.log("Registration success:", userData);
-      setUserEmail(data.email);
-      
-      toast({
-        title: "Registration successful",
-        description: "Please check your email to verify your account.",
-      });
-      
-      setShowOTPVerification(true);
-      setIsSubmitting(false);
-      
+        console.log("Registration success:", userData);
+        setUserEmail(data.email);
+        
+        toast({
+          title: "Registration successful",
+          description: "Please check your email to verify your account.",
+        });
+        
+        setShowOTPVerification(true);
+        setIsSubmitting(false);
+      }
     } catch (err: any) {
       console.error("Registration error:", err);
       toast({
@@ -183,7 +193,7 @@ const Login = ({ defaultTab = "login" }: LoginProps) => {
         description: err.message || "An unexpected error occurred",
         variant: "destructive",
       });
-      setIsSubmitting(false);
+      if (!onRegister) setIsSubmitting(false);
     }
   };
 
@@ -429,9 +439,9 @@ const Login = ({ defaultTab = "login" }: LoginProps) => {
                   <Button 
                     type="submit" 
                     className="w-full bg-jam3a-purple hover:bg-jam3a-deep-purple"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || isRegistering}
                   >
-                    {isSubmitting ? "Creating Account..." : "Create Account"} {!isSubmitting && <ArrowRight className="h-4 w-4 ml-2" />}
+                    {isSubmitting || isRegistering ? "Creating Account..." : "Create Account"} {!(isSubmitting || isRegistering) && <ArrowRight className="h-4 w-4 ml-2" />}
                   </Button>
                 </form>
               </Form>
