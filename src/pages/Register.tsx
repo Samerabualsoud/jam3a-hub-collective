@@ -77,11 +77,15 @@ const Register = () => {
   // Meanwhile, let's also use our edge function to simulate a welcome email
   const sendWelcomeEmail = async (email: string, name: string) => {
     try {
-      const response = await fetch(`${supabase.supabaseUrl}/functions/v1/send-welcome-email`, {
+      // Use the correct way to access Supabase URL and anon key
+      const SUPABASE_URL = "https://ubqnetocrsksadsbdhlz.supabase.co";
+      const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVicW5ldG9jcnNrc2Fkc2JkaGx6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDUwMjYzMTUsImV4cCI6MjA2MDYwMjMxNX0.pq9DQRwVs2ycK6AnNceXEHYsqy229dM1T8I0qBc1wNE";
+      
+      const response = await fetch(`${SUPABASE_URL}/functions/v1/send-welcome-email`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${supabase.supabaseKey}`
+          'Authorization': `Bearer ${SUPABASE_KEY}`
         },
         body: JSON.stringify({
           email,
