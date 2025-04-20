@@ -24,7 +24,12 @@ serve(async (req) => {
     const { email, name = "Valued User", isTest = false }: EmailPayload = await req.json();
     
     // Initialize Resend with the API key from environment variables
-    const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+    const resendApiKey = Deno.env.get("RESEND_API_KEY");
+    if (!resendApiKey) {
+      throw new Error("Missing RESEND_API_KEY in environment variables");
+    }
+    
+    const resend = new Resend(resendApiKey);
     
     // Log comprehensive details for debugging
     console.log(`Processing ${isTest ? 'test' : 'welcome'} email request:`, {
@@ -34,9 +39,10 @@ serve(async (req) => {
       timestamp: new Date().toISOString()
     });
     
-    // Send email using Resend
+    // Send email using Resend - use a verified domain or the default resend domain
+    // For testing, you can use onboarding@resend.dev as the from address
     const emailResult = await resend.emails.send({
-      from: 'Jam3a <onboarding@jam3a.app>',
+      from: 'onboarding@resend.dev', // Use this for testing until you verify your domain
       to: [email],
       subject: 'Welcome to Jam3a!',
       html: `

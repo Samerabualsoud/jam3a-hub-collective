@@ -64,18 +64,24 @@ const Register = () => {
       
       // Attempt to send welcome email via edge function
       try {
+        console.log(`Sending welcome email to ${email}...`);
         const emailResult = await sendWelcomeEmail(email, userData.name || 'New User');
         console.log("Welcome email function response:", emailResult);
         
         if (emailResult?.success) {
           toast({
-            title: "Welcome email processed",
-            description: "A welcome email has been processed for your account.",
+            title: "Welcome email sent",
+            description: "A welcome email has been sent to your email address.",
           });
         }
       } catch (emailErr) {
         console.warn("Welcome email could not be sent:", emailErr);
         // Non-blocking error, continue with the flow
+        toast({
+          title: "Welcome email not sent",
+          description: "Your account was created, but we couldn't send a welcome email. This won't affect your account.",
+          variant: "default"
+        });
       }
       
     } catch (error: any) {

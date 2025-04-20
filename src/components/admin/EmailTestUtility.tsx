@@ -7,6 +7,8 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Textarea } from "@/components/ui/textarea";
+import { AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const EmailTestUtility = () => {
   const { toast } = useToast();
@@ -14,6 +16,8 @@ const EmailTestUtility = () => {
   const [name, setName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [response, setResponse] = useState<any>(null);
+  const [showError, setShowError] = useState(false);
+  const [errorDetails, setErrorDetails] = useState("");
 
   const handleTestEmail = async () => {
     if (!email) {
@@ -27,6 +31,7 @@ const EmailTestUtility = () => {
     
     setIsLoading(true);
     setResponse(null);
+    setShowError(false);
     
     try {
       console.log(`Sending test email to ${email}...`);
@@ -39,7 +44,10 @@ const EmailTestUtility = () => {
         })
       });
       
-      if (error) throw error;
+      if (error) {
+        console.error("Edge function error:", error);
+        throw new Error(`Edge function error: ${error.message}`);
+      }
       
       console.log("Test email response:", data);
       setResponse(data);
@@ -50,6 +58,8 @@ const EmailTestUtility = () => {
       });
     } catch (err: any) {
       console.error("Test email error:", err);
+      setShowError(true);
+      setErrorDetails(err.message || "Unknown error");
       setResponse({ error: err.message });
       
       toast({
@@ -69,6 +79,18 @@ const EmailTestUtility = () => {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
+          {showError && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                There was an issue sending the test email. The Edge Function might be misconfigured.
+                Check the Supabase Edge Function logs for more details.
+                <br/>
+                Error: {errorDetails}
+              </AlertDescription>
+            </Alert>
+          )}
+          
           <div className="space-y-2">
             <Label htmlFor="email">Test Email Address</Label>
             <Input
@@ -111,8 +133,9 @@ const EmailTestUtility = () => {
           )}
           
           <div className="text-sm text-gray-500 mt-2">
-            <p>Note: This utility tests the edge function without affecting your account.</p>
-            <p>Free Supabase accounts have limited email functionality.</p>
+            <p>IMPORTANT: Make sure your email domain is verified in Resend.</p>
+            <p>Free Resend accounts require domain verification to send emails.</p>
+            <p>You can add a "from" address from a verified domain in the edge function.</p>
           </div>
         </div>
       </CardContent>
