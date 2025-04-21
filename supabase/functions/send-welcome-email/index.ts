@@ -80,10 +80,22 @@ serve(async (req) => {
   } catch (error) {
     console.error("Error in email function:", error);
     
+    // Check if the error is related to rate limiting or sender restrictions
+    let errorMessage = error.message || "Failed to process email";
+    let errorDetails = error.message || "";
+    
+    if (errorMessage.includes("rate limit") || errorMessage.includes("too many")) {
+      errorMessage = "Rate limit exceeded. Free tier limited to 100 emails per month and 3 per second.";
+    } else if (errorMessage.includes("sender") || errorMessage.includes("from address")) {
+      errorMessage = "Invalid sender address. Free tier only allows onboarding@resend.dev or verified domains.";
+    } else if (errorMessage.includes("credits") || errorMessage.includes("quota")) {
+      errorMessage = "Email quota exceeded. Free tier limited to 100 emails per month.";
+    }
+    
     return new Response(
       JSON.stringify({ 
-        error: "Failed to process email", 
-        details: error.message,
+        error: errorMessage, 
+        details: errorDetails,
         timestamp: new Date().toISOString()
       }),
       { 
