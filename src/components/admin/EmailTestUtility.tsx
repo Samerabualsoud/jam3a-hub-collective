@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Textarea } from "@/components/ui/textarea";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Info } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const EmailTestUtility = () => {
@@ -52,6 +52,10 @@ const EmailTestUtility = () => {
       console.log("Test email response:", data);
       setResponse(data);
       
+      if (data.error) {
+        throw new Error(data.details || data.error);
+      }
+      
       toast({
         title: "Test completed",
         description: "Email function was invoked successfully. Check the response for details."
@@ -59,12 +63,24 @@ const EmailTestUtility = () => {
     } catch (err: any) {
       console.error("Test email error:", err);
       setShowError(true);
-      setErrorDetails(err.message || "Unknown error");
-      setResponse({ error: err.message });
+      
+      let errorMsg = err.message || "Unknown error";
+      
+      // Detect common Resend issues
+      if (errorMsg.includes("rate limit") || errorMsg.includes("too many")) {
+        errorMsg = "Rate limit exceeded. With a free Resend account, you can send up to 100 emails per month and 3 per second.";
+      } else if (errorMsg.includes("domain") && errorMsg.includes("verify")) {
+        errorMsg = "Domain verification error. Your domain needs to be verified in Resend. Using onboarding@resend.dev is allowed for testing.";
+      } else if (errorMsg.includes("sender")) {
+        errorMsg = "Invalid sender address. With a free Resend account, you can only send from onboarding@resend.dev or from verified domains.";
+      }
+      
+      setErrorDetails(errorMsg);
+      setResponse({ error: errorMsg });
       
       toast({
         title: "Test failed",
-        description: err.message || "Failed to invoke email function",
+        description: errorMsg,
         variant: "destructive"
       });
     } finally {
@@ -79,14 +95,21 @@ const EmailTestUtility = () => {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
+          <Alert>
+            <Info className="h-4 w-4" />
+            <AlertDescription>
+              With a free Resend account, you can only send from <strong>onboarding@resend.dev</strong> or from a verified domain.
+              For testing, we're using onboarding@resend.dev as the sender address.
+            </AlertDescription>
+          </Alert>
+          
           {showError && (
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                There was an issue sending the test email. The Edge Function might be misconfigured.
-                Check the Supabase Edge Function logs for more details.
+                There was an issue sending the test email:
                 <br/>
-                Error: {errorDetails}
+                {errorDetails}
               </AlertDescription>
             </Alert>
           )}
@@ -133,9 +156,12 @@ const EmailTestUtility = () => {
           )}
           
           <div className="text-sm text-gray-500 mt-2">
-            <p>IMPORTANT: Make sure your email domain is verified in Resend.</p>
-            <p>Free Resend accounts require domain verification to send emails.</p>
-            <p>You can add a "from" address from a verified domain in the edge function.</p>
+            <p>Resend free tier limitations:</p>
+            <ul className="list-disc pl-5">
+              <li>You can send up to 100 emails per month and 3 per second</li>
+              <li>You can only send from onboarding@resend.dev or from verified domains</li>
+              <li>If you need more, please verify your domain in Resend or upgrade to a paid plan</li>
+            </ul>
           </div>
         </div>
       </CardContent>

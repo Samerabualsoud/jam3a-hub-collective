@@ -39,16 +39,26 @@ serve(async (req) => {
       timestamp: new Date().toISOString()
     });
     
-    // Send email using Resend - use a verified domain or the default resend domain
-    // For testing, you can use onboarding@resend.dev as the from address
+    // For free tier accounts, we can only send from onboarding@resend.dev or verified domains
+    // We're using onboarding@resend.dev which is allowed in the free tier for testing
     const emailResult = await resend.emails.send({
-      from: 'onboarding@resend.dev', // Use this for testing until you verify your domain
+      from: 'onboarding@resend.dev', // This is always permitted in free tier
       to: [email],
-      subject: 'Welcome to Jam3a!',
+      subject: isTest ? 'Jam3a Test Email' : 'Welcome to Jam3a!',
       html: `
-        <h1>Welcome to Jam3a, ${name}!</h1>
-        <p>We're excited to have you join our community. Get ready to explore amazing group buying experiences!</p>
-        <p>Best regards,<br>The Jam3a Team</p>
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #4F46E5;">${isTest ? 'Test Email' : 'Welcome to Jam3a'}, ${name}!</h1>
+          <p style="font-size: 16px; line-height: 1.5;">
+            ${isTest 
+              ? 'This is a test email from Jam3a. If you received this, email sending is working correctly!' 
+              : 'We\'re excited to have you join our community. Get ready to explore amazing group buying experiences!'}
+          </p>
+          <div style="margin-top: 30px; padding: 15px; background-color: #F3F4F6; border-radius: 5px;">
+            <p style="margin: 0; font-size: 14px; color: #6B7280;">
+              Best regards,<br>The Jam3a Team
+            </p>
+          </div>
+        </div>
       `
     });
     
