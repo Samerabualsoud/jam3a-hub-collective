@@ -6,9 +6,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Pencil, Trash2 } from "lucide-react";
 
+export type ContentType = 'sections' | 'banners' | 'pages' | 'faqs';
+
 interface ContentListProps {
   items: any[];
-  type: 'sections' | 'banners' | 'pages' | 'faqs';
+  type: ContentType;
   onEdit: (item: any) => void;
   onDelete: (item: any) => void;
 }

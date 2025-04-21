@@ -10,8 +10,11 @@ import { fetchContentSections, fetchBanners, fetchPages, fetchFAQs } from "@/com
 import ContentEditor from "./content/ContentEditor";
 import ContentList from "./content/ContentList";
 
+// Define a type for the activeTab state to match ContentList's type prop
+type ContentTabType = 'sections' | 'banners' | 'pages' | 'faqs';
+
 const ContentManager = () => {
-  const [activeTab, setActiveTab] = useState("sections");
+  const [activeTab, setActiveTab] = useState<ContentTabType>("sections");
   const [isAddingContent, setIsAddingContent] = useState(false);
   const [editingContent, setEditingContent] = useState(null);
   const [contentItems, setContentItems] = useState([]);
@@ -114,7 +117,7 @@ const ContentManager = () => {
         </Button>
       </div>
 
-      <Tabs defaultValue="sections" value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+      <Tabs defaultValue="sections" value={activeTab} onValueChange={(value) => setActiveTab(value as ContentTabType)} className="space-y-4">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="sections">Content Sections</TabsTrigger>
           <TabsTrigger value="banners">Banners</TabsTrigger>
