@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { UserPlus, RefreshCcw } from "lucide-react";
+import { UserPlus, RefreshCcw, AlertCircle } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import SearchBar from "./users/SearchBar";
@@ -8,6 +9,7 @@ import UsersTable from "./users/UsersTable";
 import { Profile } from "@/types/admin";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const UsersManager = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -33,28 +35,36 @@ const UsersManager = () => {
       logDebug("Is admin:", isAdmin);
       
       try {
-        // Use the new get_profiles_for_admin function
+        // Check if Supabase is initialized
+        if (!supabase) {
+          throw new Error("Supabase client is not initialized");
+        }
+
+        // Use the get_profiles_for_admin function
         const { data, error } = await supabase
           .rpc('get_profiles_for_admin');
 
         if (error) {
-          throw error;
+          logDebug("Error from get_profiles_for_admin:", error);
+
+          // Fallback to direct query if RPC fails
+          const { data: fallbackData, error: fallbackError } = await supabase
+            .from('profiles')
+            .select('*');
+          
+          if (fallbackError) {
+            throw fallbackError;
+          }
+          
+          logDebug("Fallback query succeeded, returning profiles:", fallbackData);
+          return (fallbackData || []).map(processProfileData);
         }
 
         const profilesData = data || [];
         logDebug(`Successfully fetched ${profilesData.length} profiles`, profilesData);
 
         // Process profile data to ensure consistent structure
-        return (profilesData || []).map(user => ({
-          ...user,
-          id: user.id || '',
-          role: user.role || 'user',
-          status: user.status || 'active',
-          first_name: user.first_name || 'Unknown',
-          last_name: user.last_name || '',
-          email: user.email || 'No email',
-          created_at: user.created_at || new Date().toISOString()
-        }));
+        return profilesData.map(processProfileData);
       } catch (error) {
         console.error("Failed to fetch profiles:", error);
         toast({
@@ -71,6 +81,17 @@ const UsersManager = () => {
     enabled: !!currentUser
   });
 
+  // Process profile data to ensure consistent structure
+  const processProfileData = (user: any): Profile => ({
+    id: user.id || '',
+    role: user.role || 'user',
+    status: user.status || 'active',
+    first_name: user.first_name || 'Unknown',
+    last_name: user.last_name || '',
+    email: user.email || 'No email',
+    created_at: user.created_at || new Date().toISOString()
+  });
+
   // Force an immediate refresh when the component mounts
   useEffect(() => {
     if (currentUser) {
@@ -84,7 +105,7 @@ const UsersManager = () => {
     if (users.length === 0 && !isLoading && !error) {
       logDebug("No users found after fetch completed - This might indicate a permission issue");
     } else if (users.length > 0) {
-      logDebug(`Successfully loaded ${users.length} users`, users);
+      logDebug(`Successfully loaded ${users.length} users`);
     }
   }, [users, isLoading, error]);
 
@@ -126,6 +147,15 @@ const UsersManager = () => {
         </div>
       </div>
 
+      {!supabase && (
+        <Alert variant="destructive" className="mb-4">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            Supabase is not properly configured. Some features may not work correctly.
+          </AlertDescription>
+        </Alert>
+      )}
+
       <SearchBar
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
@@ -135,6 +165,7 @@ const UsersManager = () => {
         users={filteredUsers}
         isLoading={isLoading}
         error={error instanceof Error ? error : null}
+        onRefresh={handleRefresh}
       />
 
       <div className="mt-4 text-sm text-muted-foreground">
@@ -145,6 +176,7 @@ const UsersManager = () => {
               <li>If no users appear, make sure the profiles table has entries</li>
               <li>Click Refresh to reload user data</li>
               <li>Check console logs for debugging information</li>
+              <li>Make sure you have admin role set in your profile</li>
             </ul>
           </div>
         )}

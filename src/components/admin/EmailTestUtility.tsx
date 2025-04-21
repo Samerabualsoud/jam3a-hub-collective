@@ -1,190 +1,210 @@
 
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { Textarea } from "@/components/ui/textarea";
-import { AlertCircle, Info, MailIcon } from "lucide-react";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Loader2, AlertCircle, Mail, Check } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const EmailTestUtility = () => {
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [sending, setSending] = useState(false);
+  const [result, setResult] = useState<null | { success: boolean; message: string; details?: any }>(null);
   const { toast } = useToast();
-  const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [response, setResponse] = useState<any>(null);
-  const [showError, setShowError] = useState(false);
-  const [errorDetails, setErrorDetails] = useState("");
-  const [showSuccess, setShowSuccess] = useState(false);
 
-  const handleTestEmail = async () => {
+  const sendTestEmail = async () => {
     if (!email) {
       toast({
-        title: "Email required",
-        description: "Please enter an email address to test",
-        variant: "destructive"
+        title: "Email Required",
+        description: "Please enter an email address.",
+        variant: "destructive",
       });
       return;
     }
-    
-    setIsLoading(true);
-    setResponse(null);
-    setShowError(false);
-    setShowSuccess(false);
-    
+
+    setSending(true);
+    setResult(null);
+
     try {
-      console.log(`Sending test email to ${email}...`);
-      
-      const { data, error } = await supabase.functions.invoke('send-welcome-email', {
-        body: JSON.stringify({
+      // Call the Edge Function to send the email
+      const { data, error } = await supabase.functions.invoke("send-welcome-email", {
+        body: {
           email,
-          name: name || 'Test User',
+          name: name || "Test User",
           isTest: true
-        })
+        },
       });
-      
+
       if (error) {
         console.error("Edge function error:", error);
-        throw new Error(`Edge function error: ${error.message}`);
-      }
-      
-      console.log("Test email response:", data);
-      setResponse(data);
-      
-      if (data.error) {
-        throw new Error(data.details || data.error);
+        setResult({
+          success: false,
+          message: `Failed to invoke email function: ${error.message}`,
+        });
+        toast({
+          title: "Email Test Failed",
+          description: `Edge function error: ${error.message}`,
+          variant: "destructive",
+        });
+        return;
       }
 
-      setShowSuccess(true);
-      toast({
-        title: "Test completed",
-        description: "Email function was invoked successfully. Check the response for details."
-      });
-    } catch (err: any) {
-      console.error("Test email error:", err);
-      setShowError(true);
+      // Handle the response from the Edge Function
+      console.log("Email function response:", data);
       
-      let errorMsg = err.message || "Unknown error";
-      
-      // Detect common Resend issues
-      if (errorMsg.includes("rate limit") || errorMsg.includes("too many")) {
-        errorMsg = "Rate limit exceeded. With a free Resend account, you can send up to 100 emails per month and 3 per second.";
-      } else if (errorMsg.includes("domain") && errorMsg.includes("verify")) {
-        errorMsg = "Domain verification error. Your domain needs to be verified in Resend. Using onboarding@resend.dev is allowed for testing.";
-      } else if (errorMsg.includes("sender")) {
-        errorMsg = "Invalid sender address. With a free Resend account, you can only send from onboarding@resend.dev or from verified domains.";
-      } else if (errorMsg.includes("credits") || errorMsg.includes("quota")) {
-        errorMsg = "You have reached your free tier limit. Free Resend accounts are limited to 100 emails per month.";
+      if (data.success) {
+        setResult({
+          success: true,
+          message: "Test email sent successfully!",
+          details: data.details
+        });
+        toast({
+          title: "Email Sent",
+          description: "Test email was sent successfully.",
+          variant: "default", // Changed from "success" to "default" to fix the type error
+        });
+      } else {
+        setResult({
+          success: false,
+          message: data.error || "Unknown error",
+          details: data.details
+        });
+        toast({
+          title: "Email Test Failed",
+          description: data.error || "Failed to send email",
+          variant: "destructive",
+        });
       }
-      
-      setErrorDetails(errorMsg);
-      setResponse({ error: errorMsg });
-      
+
+    } catch (error) {
+      console.error("Test email error:", error);
+      setResult({
+        success: false,
+        message: `Exception: ${error instanceof Error ? error.message : String(error)}`,
+      });
       toast({
-        title: "Test failed",
-        description: errorMsg,
-        variant: "destructive"
+        title: "Exception Occurred",
+        description: error instanceof Error ? error.message : "An unknown error occurred",
+        variant: "destructive",
       });
     } finally {
-      setIsLoading(false);
+      setSending(false);
+    }
+  };
+
+  const renderResultDetails = () => {
+    if (!result) return null;
+
+    if (result.success) {
+      return (
+        <Alert className="mt-4 bg-green-50 border-green-200">
+          <Check className="h-4 w-4 text-green-600" />
+          <AlertTitle className="text-green-800">Email Sent Successfully</AlertTitle>
+          <AlertDescription className="text-green-700">
+            Your test email was sent to {email}.
+            {result.details?.id && (
+              <div className="mt-2 text-xs">
+                <span className="font-semibold">Email ID:</span> {result.details.id}
+              </div>
+            )}
+          </AlertDescription>
+        </Alert>
+      );
+    } else {
+      // Extract specific error types for better user guidance
+      let errorMessage = result.message;
+      let helpText = "";
+      
+      if (errorMessage?.includes("rate limit") || errorMessage?.includes("too many")) {
+        helpText = "Resend free tier is limited to 100 emails per month and 3 per second. Please try again later.";
+      } else if (errorMessage?.includes("sender") || errorMessage?.includes("from address")) {
+        helpText = "In Resend's free tier, you can only send from onboarding@resend.dev or verified domains.";
+      } else if (errorMessage?.includes("credits") || errorMessage?.includes("quota")) {
+        helpText = "Your Resend email quota has been exceeded. Free tier allows 100 emails per month.";
+      }
+      
+      return (
+        <Alert className="mt-4 border-red-200" variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Failed to Send Email</AlertTitle>
+          <AlertDescription className="space-y-2">
+            <p>{errorMessage}</p>
+            {helpText && <p className="text-sm font-medium">{helpText}</p>}
+            {result.details && (
+              <div className="mt-2 text-xs overflow-auto max-h-32 bg-red-50 p-2 rounded">
+                <pre>{JSON.stringify(result.details, null, 2)}</pre>
+              </div>
+            )}
+          </AlertDescription>
+        </Alert>
+      );
     }
   };
 
   return (
-    <Card className="w-full max-w-lg mx-auto my-8">
+    <Card className="w-full">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <MailIcon className="h-5 w-5" />
-          Email Function Test Utility
-        </CardTitle>
+        <CardTitle>Email Testing Tool</CardTitle>
+        <CardDescription>
+          Send a test email to verify your email configuration.
+        </CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          <Alert>
-            <Info className="h-4 w-4" />
-            <AlertDescription>
-              With a free Resend account, you can only send from <strong>onboarding@resend.dev</strong> or from a verified domain.
-              For testing, we're using onboarding@resend.dev as the sender address.
-            </AlertDescription>
-          </Alert>
-          
-          {showError && (
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Email Sending Failed</AlertTitle>
-              <AlertDescription>
-                There was an issue sending the test email:
-                <br/>
-                {errorDetails}
-              </AlertDescription>
-            </Alert>
-          )}
-          
-          {showSuccess && (
-            <Alert variant="success" className="bg-green-50 border-green-400 text-green-800">
-              <Info className="h-4 w-4 text-green-500" />
-              <AlertTitle>Email Sent Successfully</AlertTitle>
-              <AlertDescription>
-                Test email was sent successfully! Check the recipient's inbox.
-              </AlertDescription>
-            </Alert>
-          )}
-          
-          <div className="space-y-2">
-            <Label htmlFor="email">Test Email Address</Label>
-            <Input
-              id="email"
-              type="email" 
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="test@example.com"
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="name">Test Name</Label>
-            <Input
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Test User"
-            />
-          </div>
-          
-          <Button 
-            onClick={handleTestEmail} 
-            disabled={isLoading}
-            className="w-full"
-          >
-            {isLoading ? "Testing..." : "Send Test Email"}
-          </Button>
-          
-          {response && (
-            <div className="mt-4 space-y-2">
-              <Label>Response</Label>
-              <Textarea
-                value={JSON.stringify(response, null, 2)}
-                readOnly
-                rows={10}
-                className="font-mono text-sm"
-              />
-            </div>
-          )}
-          
-          <div className="text-sm text-gray-500 mt-2 border-t pt-4">
-            <p className="font-medium mb-1">Resend Free Tier Limitations:</p>
-            <ul className="list-disc pl-5 space-y-1">
-              <li>You can send up to 100 emails per month and 3 per second</li>
-              <li>You can only send from onboarding@resend.dev or from verified domains</li>
-              <li>If you need more, please verify your domain in Resend or upgrade to a paid plan</li>
-              <li>When using a verified domain, you must set it as the "from" address in the edge function</li>
-            </ul>
-          </div>
+      <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="email">Email Address</Label>
+          <Input
+            id="email"
+            type="email"
+            placeholder="recipient@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
         </div>
+        <div className="space-y-2">
+          <Label htmlFor="name">Recipient Name (Optional)</Label>
+          <Input
+            id="name"
+            placeholder="Test User"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </div>
+        
+        {renderResultDetails()}
+
       </CardContent>
+      <CardFooter>
+        <Button 
+          onClick={sendTestEmail} 
+          disabled={sending}
+          className="w-full"
+        >
+          {sending ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Sending...
+            </>
+          ) : (
+            <>
+              <Mail className="mr-2 h-4 w-4" />
+              Send Test Email
+            </>
+          )}
+        </Button>
+      </CardFooter>
+      
+      <div className="px-6 pb-4 text-xs text-muted-foreground">
+        <p>Note: This tool uses the Resend service with the following limitations on free tier:</p>
+        <ul className="list-disc list-inside mt-1 space-y-1">
+          <li>100 emails per month</li>
+          <li>Maximum of 3 emails per second</li>
+          <li>Only allowed to send from onboarding@resend.dev or verified domains</li>
+        </ul>
+      </div>
     </Card>
   );
 };

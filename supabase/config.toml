@@ -76,3 +76,4 @@ port = 54321
 [functions.send-welcome-email]
 # Set to false to allow sending welcome emails without a JWT token
 verify_jwt = false
+

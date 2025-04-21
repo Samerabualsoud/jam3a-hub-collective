@@ -39,7 +39,7 @@ serve(async (req) => {
       timestamp: new Date().toISOString()
     });
     
-    // For free tier accounts, we can only send from onboarding@resend.dev or verified domains
+    // IMPORTANT: For free tier accounts, we can only send from onboarding@resend.dev or verified domains
     // We're using onboarding@resend.dev which is allowed in the free tier for testing
     const emailResult = await resend.emails.send({
       from: 'onboarding@resend.dev', // This is always permitted in free tier
@@ -80,21 +80,27 @@ serve(async (req) => {
   } catch (error) {
     console.error("Error in email function:", error);
     
-    // Check if the error is related to rate limiting or sender restrictions
+    // Enhanced error handling with specific error messages
     let errorMessage = error.message || "Failed to process email";
     let errorDetails = error.message || "";
+    let errorCode = "UNKNOWN_ERROR";
     
     if (errorMessage.includes("rate limit") || errorMessage.includes("too many")) {
       errorMessage = "Rate limit exceeded. Free tier limited to 100 emails per month and 3 per second.";
+      errorCode = "RATE_LIMIT_EXCEEDED";
     } else if (errorMessage.includes("sender") || errorMessage.includes("from address")) {
       errorMessage = "Invalid sender address. Free tier only allows onboarding@resend.dev or verified domains.";
+      errorCode = "INVALID_SENDER";
     } else if (errorMessage.includes("credits") || errorMessage.includes("quota")) {
       errorMessage = "Email quota exceeded. Free tier limited to 100 emails per month.";
+      errorCode = "QUOTA_EXCEEDED";
     }
     
     return new Response(
       JSON.stringify({ 
-        error: errorMessage, 
+        success: false,
+        error: errorMessage,
+        code: errorCode, 
         details: errorDetails,
         timestamp: new Date().toISOString()
       }),
