@@ -34,14 +34,24 @@ serve(async (req) => {
   }
 
   try {
-    const { amount, currency, description, source, callback_url, customer } = await req.json() as PaymentRequest;
+    console.log("Payment process started");
+    const requestBody = await req.json();
+    console.log("Request body:", JSON.stringify(requestBody, null, 2));
+    
+    const { amount, currency, description, source, callback_url, customer } = requestBody as PaymentRequest;
+
+    if (!amount || !currency || !source || !callback_url || !customer) {
+      throw new Error('Missing required payment parameters');
+    }
 
     // Get Moyasar API key from environment variables
     const moyasarApiKey = Deno.env.get('MOYASAR_API_KEY');
     if (!moyasarApiKey) {
       throw new Error('Moyasar API key is not set');
     }
+    console.log("Moyasar API key is configured");
 
+    console.log("Creating payment with Moyasar");
     // Create payment using Moyasar API
     const response = await fetch('https://api.moyasar.com/v1/payments', {
       method: 'POST',
@@ -64,36 +74,55 @@ serve(async (req) => {
     });
 
     const result = await response.json();
+    console.log("Moyasar API response:", JSON.stringify(result, null, 2));
 
     if (!response.ok) {
+      console.error("Payment creation failed:", result);
       throw new Error(result.message || 'Error processing payment');
     }
 
     // Create a Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    
+    if (!supabaseUrl || !supabaseKey) {
+      console.warn("Supabase credentials are missing, skipping database update");
+    } else {
+      console.log("Storing payment record in database");
+      try {
+        const supabase = createClient(supabaseUrl, supabaseKey);
+        
+        // Store payment record in Supabase
+        const { error: insertError } = await supabase.from('payments').insert({
+          payment_id: result.id,
+          amount: amount,
+          currency: currency,
+          status: result.status,
+          source_type: source.type,
+          customer_email: customer.email,
+          customer_name: customer.name,
+          description: description,
+          transaction_data: result,
+          created_at: new Date().toISOString(),
+        });
 
-    // Store payment record in Supabase
-    await supabase.from('payments').insert({
-      payment_id: result.id,
-      amount: amount,
-      currency: currency,
-      status: result.status,
-      source_type: source.type,
-      customer_email: customer.email,
-      customer_name: customer.name,
-      description: description,
-      transaction_data: result,
-      created_at: new Date().toISOString(),
-    });
+        if (insertError) {
+          console.error("Error storing payment record:", insertError);
+        } else {
+          console.log("Payment record stored successfully");
+        }
+      } catch (dbError) {
+        console.error("Database error:", dbError);
+        // Continue execution even if database operation fails
+      }
+    }
 
     return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
     });
   } catch (error) {
-    console.error('Error:', error.message);
+    console.error('Error processing payment:', error.message);
     return new Response(JSON.stringify({ error: error.message }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 500,

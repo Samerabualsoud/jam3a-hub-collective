@@ -60,27 +60,18 @@ export const useMoyasarPayment = () => {
   const [paymentData, setPaymentData] = useState<PaymentResponse | null>(null);
   const { toast } = useToast();
   
-  // Use try-catch to handle potential errors when accessing supabaseClient
-  let supabase = null;
-  let isSupabaseAvailable = false;
-  
-  try {
-    // This will throw an error if Supabase is not configured
-    supabase = useSupabaseClient();
-    isSupabaseAvailable = !!supabase;
-  } catch (error) {
-    console.warn("Supabase client not available:", error);
-    isSupabaseAvailable = false;
-  }
+  // Get Supabase client
+  const supabase = useSupabaseClient();
+  const isSupabaseAvailable = !!supabase;
 
   const processPayment = async (paymentDetails: PaymentDetails) => {
     if (!isSupabaseAvailable) {
       toast({
-        title: 'Supabase connection error',
-        description: 'Supabase is not configured. Payment processing is unavailable.',
+        title: 'Connection error',
+        description: 'Payment system is not properly configured.',
         variant: 'destructive',
       });
-      throw new Error('Supabase client is not available');
+      throw new Error('Payment system is not configured');
     }
     
     setIsLoading(true);
@@ -107,7 +98,7 @@ export const useMoyasarPayment = () => {
     } catch (error: any) {
       toast({
         title: 'Payment error',
-        description: error.message,
+        description: error.message || 'Failed to process payment',
         variant: 'destructive',
       });
       throw error;
@@ -119,11 +110,11 @@ export const useMoyasarPayment = () => {
   const verifyPayment = async (paymentId: string) => {
     if (!isSupabaseAvailable) {
       toast({
-        title: 'Supabase connection error',
-        description: 'Supabase is not configured. Payment verification is unavailable.',
+        title: 'Connection error',
+        description: 'Payment verification is not properly configured.',
         variant: 'destructive',
       });
-      throw new Error('Supabase client is not available');
+      throw new Error('Payment verification is not configured');
     }
     
     setIsLoading(true);
@@ -140,7 +131,7 @@ export const useMoyasarPayment = () => {
     } catch (error: any) {
       toast({
         title: 'Verification error',
-        description: error.message,
+        description: error.message || 'Failed to verify payment',
         variant: 'destructive',
       });
       throw error;

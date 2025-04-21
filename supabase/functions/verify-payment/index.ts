@@ -1,5 +1,6 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -14,7 +15,7 @@ serve(async (req) => {
 
   try {
     const { payment_id } = await req.json();
-    
+
     if (!payment_id) {
       throw new Error('Payment ID is required');
     }
@@ -25,21 +26,43 @@ serve(async (req) => {
       throw new Error('Moyasar API key is not set');
     }
 
-    // Verify payment status using Moyasar API
+    // Verify payment using Moyasar API
     const response = await fetch(`https://api.moyasar.com/v1/payments/${payment_id}`, {
       method: 'GET',
       headers: {
         'Authorization': `Basic ${btoa(moyasarApiKey + ':')}`,
+        'Content-Type': 'application/json',
       },
     });
 
-    const result = await response.json();
+    const paymentData = await response.json();
 
     if (!response.ok) {
-      throw new Error(result.message || 'Error verifying payment');
+      throw new Error(paymentData.message || 'Error verifying payment');
     }
 
-    return new Response(JSON.stringify(result), {
+    // Create a Supabase client
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Update payment record in Supabase
+    if (paymentData.id) {
+      const { error: updateError } = await supabase
+        .from('payments')
+        .update({
+          status: paymentData.status,
+          transaction_data: paymentData,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('payment_id', paymentData.id);
+
+      if (updateError) {
+        console.error('Error updating payment record:', updateError);
+      }
+    }
+
+    return new Response(JSON.stringify(paymentData), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
     });

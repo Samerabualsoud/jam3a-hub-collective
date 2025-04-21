@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -8,11 +9,13 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import { useSupabaseClient } from '@supabase/auth-helpers-react';
 
 const PaymentCallback = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { verifyPayment, isSupabaseAvailable } = useMoyasarPayment();
+  const { verifyPayment } = useMoyasarPayment();
+  const supabase = useSupabaseClient();
   const { toast } = useToast();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [errorMessage, setErrorMessage] = useState('');
@@ -24,17 +27,6 @@ const PaymentCallback = () => {
     if (!paymentId) {
       setStatus('error');
       setErrorMessage('No payment ID found in URL parameters.');
-      return;
-    }
-
-    if (!isSupabaseAvailable) {
-      setStatus('error');
-      setErrorMessage('Supabase is not configured. Unable to verify payment.');
-      toast({
-        title: 'Supabase Unavailable',
-        description: 'Cannot verify payment because Supabase is not configured.',
-        variant: 'destructive',
-      });
       return;
     }
 
@@ -60,8 +52,20 @@ const PaymentCallback = () => {
     // Otherwise, verify the payment
     const verifyPaymentStatus = async () => {
       try {
-        const result = await verifyPayment(paymentId);
-        if (result.status === 'paid') {
+        if (!supabase) {
+          throw new Error("Supabase client is not available");
+        }
+        
+        // Direct function call instead of using hook
+        const { data, error } = await supabase.functions.invoke('verify-payment', {
+          body: {
+            payment_id: paymentId
+          },
+        });
+        
+        if (error) throw new Error(error.message);
+        
+        if (data.status === 'paid') {
           setStatus('success');
           toast({
             title: 'Payment Verified',
@@ -69,16 +73,17 @@ const PaymentCallback = () => {
           });
         } else {
           setStatus('error');
-          setErrorMessage(`Payment status: ${result.status}`);
+          setErrorMessage(`Payment status: ${data.status}`);
         }
       } catch (error: any) {
+        console.error("Payment verification error:", error);
         setStatus('error');
         setErrorMessage(error.message || 'Failed to verify payment');
       }
     };
 
     verifyPaymentStatus();
-  }, [searchParams, verifyPayment, toast, isSupabaseAvailable]);
+  }, [searchParams, toast, supabase]);
 
   return (
     <div className="flex min-h-screen flex-col">

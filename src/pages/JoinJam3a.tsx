@@ -9,9 +9,10 @@ import { useLanguage } from '@/components/Header';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useMoyasarPayment } from '@/hooks/useMoyasarPayment';
-import { Loader2, ArrowRight, ArrowLeft, Users, Clock, ShieldCheck, CheckCircle, BadgePercent } from 'lucide-react';
+import { Loader2, ArrowRight, ArrowLeft, Users, Clock, ShieldCheck } from 'lucide-react';
 import { StepIndicator } from '@/components/ui/step-indicator';
 import Jam3aBenefits from '@/components/Jam3aBenefits';
+import { useSupabaseClient } from '@supabase/auth-helpers-react';
 
 const JoinJam3a = () => {
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ const JoinJam3a = () => {
   const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState('details');
   const { processPayment, isLoading } = useMoyasarPayment();
+  const supabase = useSupabaseClient();
   
   const productName = searchParams.get('product') || 'Jam3a Deal';
   const productPrice = searchParams.get('price') || '4999 SAR';
@@ -84,6 +86,16 @@ const JoinJam3a = () => {
     e.preventDefault();
     
     try {
+      // Check if Supabase client is available
+      if (!supabase) {
+        toast({
+          title: language === 'en' ? 'Connection Error' : 'خطأ في الاتصال',
+          description: language === 'en' ? 'Payment system is not properly configured.' : 'نظام الدفع غير مهيأ بشكل صحيح.',
+          variant: 'destructive',
+        });
+        return;
+      }
+      
       const amount = parseFloat(productPrice.replace(/[^0-9.]/g, ''));
       
       let source: any = { type: 'creditcard' };
@@ -104,29 +116,40 @@ const JoinJam3a = () => {
         source = { type: 'stcpay' };
       }
       
-      await processPayment({
-        amount,
-        currency: 'SAR',
-        description: `Payment for ${formattedTitle}`,
-        source,
-        customer: {
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone
-        }
+      // Direct invocation of the edge function
+      const { data, error } = await supabase.functions.invoke('process-payment', {
+        body: {
+          amount,
+          currency: 'SAR',
+          description: `Payment for ${formattedTitle}`,
+          callback_url: `${window.location.origin}/payment-callback`,
+          source,
+          customer: {
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone
+          }
+        },
       });
       
-      toast({
-        title: language === 'en' ? 'Success!' : 'تم بنجاح!',
-        description: language === 'en' 
-          ? `You have successfully joined the ${formattedTitle} Jam3a!` 
-          : `لقد انضممت بنجاح إلى جمعة ${formattedTitle}!`,
-        variant: 'default',
-      });
+      if (error) throw new Error(error.message);
       
-      setTimeout(() => {
-        navigate('/');
-      }, 2000);
+      if (data && data.url) {
+        // For redirect-based payment methods
+        window.location.href = data.url;
+      } else {
+        toast({
+          title: language === 'en' ? 'Success!' : 'تم بنجاح!',
+          description: language === 'en' 
+            ? `You have successfully joined the ${formattedTitle} Jam3a!` 
+            : `لقد انضممت بنجاح إلى جمعة ${formattedTitle}!`,
+          variant: 'default',
+        });
+        
+        setTimeout(() => {
+          navigate('/');
+        }, 2000);
+      }
     } catch (error) {
       console.error('Payment error:', error);
       toast({
@@ -588,9 +611,13 @@ const JoinJam3a = () => {
             {language === 'en' ? 'Join This Jam3a' : 'انضم إلى هذه الجمعة'}
           </h1>
           
-          <StepIndicator steps={steps} currentStep={getActiveIndex()} />
+          <StepIndicator currentStep={getActiveIndex()}>
+            {steps.map((step, index) => (
+              <div key={index}>{step.label}</div>
+            ))}
+          </StepIndicator>
           
-          <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
+          <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 mt-6">
             <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
               <TabsList className="hidden">
                 <TabsTrigger value="details">
