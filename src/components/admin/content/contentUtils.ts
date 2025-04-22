@@ -70,53 +70,171 @@ export const fetchContentSections = async () => {
       throw error;
     }
 
-    // If no data exists, create default sections
+    console.log("Fetched content sections:", existingData);
+    
+    // If no data exists, create default sections (will only work if user is admin)
     if (!existingData || existingData.length === 0) {
-      const defaultSections = [
-        {
-          name: "About Us Content",
-          path: "/about",
-          type: "section",
-          content: JSON.stringify({
-            title: "About Jam3a",
-            subtitle: "The Power of Buying Together",
-            intro: "Jam3a is Saudi Arabia's first group-buying platform...",
-            // Add other about content structure
-          })
-        },
-        {
-          name: "FAQ Content",
-          path: "/faq",
-          type: "section",
-          content: JSON.stringify([
-            {
-              question: "What is Jam3a?",
-              answer: "Jam3a is a social shopping platform where people team up to get better prices on products..."
-            },
-            // Add other FAQ items
-          ])
+      try {
+        console.log("No content sections found, creating default sections");
+        const defaultSections = [
+          {
+            name: "About Us Content",
+            path: "/about",
+            type: "section",
+            language: "en",
+            content: JSON.stringify({
+              title: "About Jam3a",
+              subtitle: "The Power of Buying Together",
+              intro: "Jam3a is Saudi Arabia's first group-buying platform...",
+              values: [
+                {
+                  icon: "Users",
+                  title: "Community", 
+                  desc: "Building stronger communities through collective purchasing"
+                },
+                {
+                  icon: "TrendingUp",
+                  title: "Savings", 
+                  desc: "Get better prices by buying together"
+                },
+                {
+                  icon: "ShieldCheck",
+                  title: "Trust", 
+                  desc: "Transparent and secure group buying experience"
+                },
+                {
+                  icon: "Share2",
+                  title: "Connection", 
+                  desc: "Connect with others who share your interests"
+                }
+              ],
+              story: {
+                title: "Our Story",
+                image: "",
+                part1: "Jam3a was founded with a simple idea: bring people together to save money on products they love.",
+                part2: "Since our launch, we've helped thousands of customers save on their purchases while building community connections."
+              },
+              ctaTitle: "Ready to start saving with Jam3a?",
+              ctaButton: "Join Jam3a Today"
+            })
+          },
+          {
+            name: "FAQ Content",
+            path: "/faq",
+            type: "section",
+            language: "en",
+            content: JSON.stringify([
+              {
+                question: "What is Jam3a?",
+                answer: "Jam3a is a social shopping platform where people team up to get better prices on products..."
+              },
+              {
+                question: "How does group buying work?",
+                answer: "Group buying allows multiple people to purchase a product together at a discounted price. The more people join, the bigger the discount!"
+              },
+              {
+                question: "Is it safe to use Jam3a?",
+                answer: "Absolutely! We use secure payment methods and protect your personal information."
+              },
+              {
+                question: "How do I start a group purchase?",
+                answer: "Simply select a product, click 'Start Jam3a', and share with friends or let others join your group."
+              }
+            ])
+          },
+          {
+            name: "About Us Content",
+            path: "/about",
+            type: "section",
+            language: "ar",
+            content: JSON.stringify({
+              title: "عن جمعة",
+              subtitle: "قوة الشراء الجماعي",
+              intro: "جمعة هي أول منصة للشراء الجماعي في المملكة العربية السعودية...",
+              values: [
+                {
+                  icon: "Users",
+                  title: "المجتمع", 
+                  desc: "بناء مجتمعات أقوى من خلال الشراء الجماعي"
+                },
+                {
+                  icon: "TrendingUp",
+                  title: "التوفير", 
+                  desc: "احصل على أسعار أفضل عند الشراء معًا"
+                },
+                {
+                  icon: "ShieldCheck",
+                  title: "الثقة", 
+                  desc: "تجربة شراء جماعي شفافة وآمنة"
+                },
+                {
+                  icon: "Share2",
+                  title: "التواصل", 
+                  desc: "تواصل مع الآخرين الذين يشاركونك اهتماماتك"
+                }
+              ],
+              story: {
+                title: "قصتنا",
+                image: "",
+                part1: "تأسست جمعة بفكرة بسيطة: جمع الناس معًا لتوفير المال على المنتجات التي يحبونها.",
+                part2: "منذ انطلاقنا، ساعدنا الآلاف من العملاء على التوفير في مشترياتهم مع بناء روابط مجتمعية."
+              },
+              ctaTitle: "هل أنت مستعد لبدء التوفير مع جمعة؟",
+              ctaButton: "انضم إلى جمعة اليوم"
+            })
+          },
+          {
+            name: "FAQ Content",
+            path: "/faq",
+            type: "section",
+            language: "ar",
+            content: JSON.stringify([
+              {
+                question: "ما هي جمعة؟",
+                answer: "جمعة هي منصة تسوق اجتماعية حيث يتعاون الناس للحصول على أسعار أفضل للمنتجات..."
+              },
+              {
+                question: "كيف يعمل الشراء الجماعي؟",
+                answer: "يتيح الشراء الجماعي لعدة أشخاص شراء منتج معًا بسعر مخفض. كلما زاد عدد المشاركين، زاد الخصم!"
+              },
+              {
+                question: "هل استخدام جمعة آمن؟",
+                answer: "بالتأكيد! نحن نستخدم طرق دفع آمنة ونحمي معلوماتك الشخصية."
+              },
+              {
+                question: "كيف أبدأ عملية شراء جماعي؟",
+                answer: "ما عليك سوى اختيار منتج، والنقر على 'ابدأ جمعة'، ومشاركته مع الأصدقاء أو السماح للآخرين بالانضمام إلى مجموعتك."
+              }
+            ])
+          }
+        ];
+
+        // Try to insert default sections
+        const { data: insertedData, error: insertError } = await supabase
+          .from('content_sections')
+          .insert(defaultSections)
+          .select();
+
+        if (insertError) {
+          console.error("Error inserting default sections:", insertError);
+          // Return empty array if we can't create default content
+          return [];
         }
-      ];
 
-      // Insert default sections
-      const { data: insertedData, error: insertError } = await supabase
-        .from('content_sections')
-        .insert(defaultSections)
-        .select();
-
-      if (insertError) {
-        console.error("Error inserting default sections:", insertError);
-        throw insertError;
+        console.log("Created default content sections:", insertedData);
+        return insertedData || [];
+      } catch (error) {
+        console.error("Error creating default content:", error);
+        // Return empty array if we can't create default content
+        return [];
       }
-
-      return insertedData || [];
     }
 
-    console.log("Fetched content sections:", existingData);
     return existingData;
   } catch (error) {
     console.error("Exception in fetchContentSections:", error);
-    throw error;
+    // Return empty array on error
+    return [];
   }
 };
 

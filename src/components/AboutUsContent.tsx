@@ -5,13 +5,18 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useLanguage } from './Header';
 import { supabase } from "@/integrations/supabase/client";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const AboutUsContent = () => {
   const { language } = useLanguage();
   const [content, setContent] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const loadAboutContent = async () => {
+      setLoading(true);
+      setError(null);
       try {
         const { data, error } = await supabase
           .from('content_sections')
@@ -22,19 +27,81 @@ const AboutUsContent = () => {
 
         if (error) {
           console.error("Error loading about content:", error);
+          setError("Could not load About Us content");
+          setContent(null);
           return;
         }
 
         if (data && data.content) {
-          setContent(JSON.parse(data.content));
+          try {
+            const parsedContent = JSON.parse(data.content);
+            setContent(parsedContent);
+          } catch (parseError) {
+            console.error("Error parsing about content:", parseError);
+            setError("Content format is invalid");
+            setContent(null);
+          }
+        } else {
+          setContent(null);
         }
       } catch (error) {
-        console.error("Error parsing about content:", error);
+        console.error("Error loading about content:", error);
+        setError("An unexpected error occurred");
+        setContent(null);
+      } finally {
+        setLoading(false);
       }
     };
 
     loadAboutContent();
   }, [language]);
+
+  if (loading) {
+    return (
+      <div className="py-16">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="mb-16 text-center">
+            <Skeleton className="h-12 w-3/4 mx-auto mb-4" />
+            <Skeleton className="h-6 w-full mx-auto" />
+          </div>
+          <div className="mb-16">
+            <Skeleton className="h-32 w-full mx-auto" />
+          </div>
+          <div className="mb-16">
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+              {[1, 2, 3, 4].map(i => (
+                <Card key={i}>
+                  <CardContent className="pt-6">
+                    <Skeleton className="h-16 w-16 rounded-full mb-4" />
+                    <Skeleton className="h-6 w-3/4 mb-2" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-3/4 mt-2" />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="py-16">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="mb-16 text-center">
+            <h1 className="text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl mb-6 text-red-500">
+              Error Loading About Us
+            </h1>
+            <p className="text-xl text-muted-foreground md:text-2xl max-w-3xl mx-auto">
+              {error}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!content) return null;
 
