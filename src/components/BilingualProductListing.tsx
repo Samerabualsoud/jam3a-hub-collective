@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
@@ -140,7 +139,7 @@ const BilingualProductListing: React.FC = () => {
       image: "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?auto=format&fit=crop&w=600&q=80",
       title: {
         en: "MacBook Pro 16\" M3 Max",
-        ar: "ماك بوك برو 16 بوصة M3 ماكس"
+        ar: "ماك ��وك برو 16 بوصة M3 ماكس"
       },
       category: {
         en: "Laptop",
@@ -397,9 +396,7 @@ const BilingualProductListing: React.FC = () => {
                   className={`h-2.5 rounded-full transition-all ${
                     activeIndex === index ? "w-8 bg-royal-blue" : "w-2.5 bg-gray-300"
                   }`}
-                  onClick={() => {
-                    setActiveIndex(index);
-                  }}
+                  onClick={() => setActiveIndex(index)}
                 />
               ))}
             </div>
@@ -417,7 +414,7 @@ const BilingualProductListing: React.FC = () => {
               {language === 'en' ? (
                 <>View All Deals <ChevronRight className="h-5 w-5 transition-transform group-hover:translate-x-1" /></>
               ) : (
-                <>عرض جميع الصفقات <ChevronLeft className="h-5 w-5 transition-transform group-hover:-translate-x-1" /></>
+                <>ع��ض جميع الصفقات <ChevronLeft className="h-5 w-5 transition-transform group-hover:-translate-x-1" /></>
               )}
             </Link>
           </Button>
