@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
@@ -96,7 +97,7 @@ const BilingualProductListing: React.FC = () => {
     },
     {
       id: 2,
-      image: "https://images.unsplash.com/photo-1577975882846-431adc8c2009?auto=format&fit=crop&w=1600&q=80",
+      image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81", // Updated TV image
       title: {
         en: "Samsung 75\" 4K QLED TV",
         ar: "تلفاز سامسونج 75 بوصة QLED 4K"
@@ -346,3 +347,4 @@ const BilingualProductListing: React.FC = () => {
 };
 
 export default BilingualProductListing;
+
