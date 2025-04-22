@@ -1,10 +1,10 @@
-
 import React, { useMemo } from 'react';
 import { ArrowRight, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useLanguage } from '@/components/Header';
+import { Badge } from '@/components/ui/badge';
 
 interface ProductCardProps {
   id: number;
@@ -15,6 +15,11 @@ interface ProductCardProps {
   discount: string;
   minPeople: number;
   category: string;
+  tag?: {
+    en: string;
+    ar: string;
+    color: string;
+  };
 }
 
 const ProductSelectionCard: React.FC<ProductCardProps> = ({
@@ -25,16 +30,15 @@ const ProductSelectionCard: React.FC<ProductCardProps> = ({
   discountPrice,
   discount,
   minPeople,
-  category
+  category,
+  tag
 }) => {
   const { language } = useLanguage();
   
   const formattedCategory = useMemo(() => {
-    // Format category for URL parameter
     return encodeURIComponent(category);
   }, [category]);
 
-  // Add error handling for image loading
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     const target = e.target as HTMLImageElement;
     console.log("Image failed to load:", target.src);
@@ -51,8 +55,21 @@ const ProductSelectionCard: React.FC<ProductCardProps> = ({
           className="w-full h-full object-cover"
           onError={handleImageError}
         />
-        <div className="absolute top-3 right-3 bg-royal-blue text-white text-sm font-medium px-3 py-1 rounded-full">
-          {discount} {language === 'en' ? 'OFF' : 'خصم'}
+        <div className="absolute top-3 right-3 flex gap-2">
+          <Badge 
+            className="bg-royal-blue text-white text-sm font-medium px-3 py-1 rounded-full"
+          >
+            {discount} {language === 'en' ? 'OFF' : 'خصم'}
+          </Badge>
+          
+          {tag && (
+            <Badge 
+              variant={tag.color as any} 
+              className="text-sm font-medium px-3 py-1 rounded-full"
+            >
+              {tag[language]}
+            </Badge>
+          )}
         </div>
       </div>
       <CardContent className="p-5 flex-1 flex flex-col">

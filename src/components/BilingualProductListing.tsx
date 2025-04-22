@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
@@ -90,14 +89,14 @@ const BilingualProductListing: React.FC = () => {
       totalCount: 5,
       progress: 60,
       tag: {
-        en: "HOT DEAL",
+        en: "HOT SALE",
         ar: "صفقة ساخنة",
         color: "destructive"
       }
     },
     {
       id: 2,
-      image: "https://images.unsplash.com/photo-1577975882846-431adc8c2009?auto=format&fit=crop&w=1600&q=80", // Updated TV image URL
+      image: "https://images.unsplash.com/photo-1577975882846-431adc8c2009?auto=format&fit=crop&w=1600&q=80",
       title: {
         en: "Samsung 75\" 4K QLED TV",
         ar: "تلفاز سامسونج 75 بوصة QLED 4K"
@@ -160,7 +159,7 @@ const BilingualProductListing: React.FC = () => {
     },
     {
       id: 4,
-      image: "https://images.unsplash.com/photo-1601944179066-29786cb9d32a?auto=format&fit=crop&w=1600&q=80", // Updated TV image
+      image: "https://images.unsplash.com/photo-1601944179066-29786cb9d32a?auto=format&fit=crop&w=1600&q=80",
       title: {
         en: "LG 65\" OLED TV",
         ar: "تلفاز إل جي 65 بوصة OLED"
