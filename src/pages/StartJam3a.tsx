@@ -10,7 +10,20 @@ import { Progress } from '@/components/ui/progress';
 import { StepIndicator } from '@/components/ui/step-indicator';
 import { useLanguage } from '@/components/Header';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, ArrowRight, Check, ChevronRight, Plus, RotateCw, ShoppingBag, CreditCard, ShoppingCart, Send } from 'lucide-react';
+import { 
+  ArrowLeft, 
+  ArrowRight, 
+  Check, 
+  ChevronRight, 
+  Plus, 
+  RotateCw, 
+  ShoppingBag, 
+  CreditCard, 
+  ShoppingCart, 
+  Send, 
+  Users, 
+  ShieldCheck 
+} from 'lucide-react';
 import Jam3aBenefits from '@/components/Jam3aBenefits';
 
 const StartJam3a = () => {
