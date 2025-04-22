@@ -139,7 +139,7 @@ const BilingualProductListing: React.FC = () => {
       image: "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?auto=format&fit=crop&w=600&q=80",
       title: {
         en: "MacBook Pro 16\" M3 Max",
-        ar: "ماك ����ك برو 16 بوصة M3 ماكس"
+        ar: "ماك �����ك برو 16 بوصة M3 ماكس"
       },
       category: {
         en: "Laptop",
