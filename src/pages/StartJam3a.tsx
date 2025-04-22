@@ -120,24 +120,19 @@ const StartJam3aPage = () => {
         console.log("Fetching products for category:", selectedCategory);
         
         try {
-          if (supabaseApi && supabaseApi.getProductsByCategorySlug) {
-            const result = await supabaseApi.getProductsByCategorySlug(selectedCategory);
-            console.log("Fetched products:", result);
-            
-            const formattedProducts = result.map(product => ({
-              id: product.id,
-              name: product.name,
-              image: product.image_url || "https://placehold.co/600x400?text=No+Image",
-              price: product.price,
-              categoryId: selectedCategory,
-              discounts: product.discounts || []
-            }));
-            
-            setProducts(formattedProducts);
-          } else {
-            console.error("supabaseApi or getProductsByCategorySlug method not available");
-            setProducts([]);
-          }
+          const result = await supabaseApi.getProductsByCategorySlug(selectedCategory);
+          console.log("Fetched products:", result);
+          
+          const formattedProducts = result.map(product => ({
+            id: product.id,
+            name: product.name,
+            image: product.image_url || "https://placehold.co/600x400?text=No+Image",
+            price: product.price,
+            categoryId: selectedCategory,
+            discounts: product.discounts || []
+          }));
+          
+          setProducts(formattedProducts);
         } catch (error) {
           console.error("Error fetching products:", error);
           setProducts([]);
@@ -153,7 +148,7 @@ const StartJam3aPage = () => {
     }
     
     fetchProductsByCategory();
-  }, [step, selectedCategory, supabaseApi, language]);
+  }, [step, selectedCategory, supabaseApi, language, toast]);
 
   return (
     <div className="flex flex-col min-h-screen">
