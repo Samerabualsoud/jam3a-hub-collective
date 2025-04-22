@@ -208,6 +208,11 @@ const BilingualProductListing: React.FC = () => {
     }
   ];
 
+  const handlePaginationDotClick = (index: number) => (event: React.MouseEvent) => {
+    event.preventDefault();
+    setActiveIndex(index);
+  };
+
   return (
     <section className="py-20 md:py-28 overflow-hidden bg-gradient-to-br from-white to-royal-blue-50">
       <div className="container mx-auto px-4 md:px-6">
@@ -396,7 +401,7 @@ const BilingualProductListing: React.FC = () => {
                   className={`h-2.5 rounded-full transition-all ${
                     activeIndex === index ? "w-8 bg-royal-blue" : "w-2.5 bg-gray-300"
                   }`}
-                  onClick={() => setActiveIndex(index)}
+                  onClick={handlePaginationDotClick(index)}
                 />
               ))}
             </div>
