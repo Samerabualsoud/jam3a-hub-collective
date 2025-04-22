@@ -1,8 +1,9 @@
+
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Timer, Users, ArrowRight } from 'lucide-react';
-import { useLanguage } from './Header';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useSupabaseApi } from '@/lib/supabase/api';
 import { formatDistanceToNow } from 'date-fns';
 import { ar } from 'date-fns/locale';

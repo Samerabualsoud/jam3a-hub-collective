@@ -2,7 +2,7 @@
 import React from 'react';
 import { Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useLanguage } from '@/components/Header';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { getContent } from '@/utils/jam3aContent';
 
 interface SuccessStateProps {

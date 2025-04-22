@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Users, TrendingUp, ShieldCheck, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { useLanguage } from './Header';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 

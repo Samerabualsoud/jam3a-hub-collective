@@ -1,198 +1,154 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Mail, Lock } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { useLanguage } from '@/components/Header';
-import { BlueBanner } from '@/components/BlueBanner';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { useToast } from '@/hooks/use-toast';
+import { Eye, EyeOff } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
-import AdminButton from '@/components/AdminButton';
-import { supabase } from '@/integrations/supabase/client';
-
-const loginSchema = z.object({
-  email: z.string().email({ message: "Invalid email address" }),
-  password: z.string().min(8, { message: "Password must be at least 8 characters" }),
-});
+import { Separator } from '@/components/ui/separator';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const SellerLogin = () => {
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { login } = useAuth();
   const { language } = useLanguage();
-  const { isAdmin } = useAuth();
-  const [isLoading, setIsLoading] = React.useState(false);
 
-  const form = useForm<z.infer<typeof loginSchema>>({
-    resolver: zodResolver(loginSchema),
+  const formSchema = z.object({
+    email: z.string().email({ message: language === 'en' ? "Invalid email format." : "تنسيق بريد إلكتروني غير صالح." }),
+    password: z.string().min(8, { message: language === 'en' ? "Password must be at least 8 characters." : "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل." }),
+    remember: z.boolean().default(false),
+  });
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
       password: "",
+      remember: false,
     },
   });
 
-  const onSubmit = async (data: z.infer<typeof loginSchema>) => {
-    setIsLoading(true);
-    
+  const { isLoading } = useAuth();
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      // Try to sign in with Supabase
-      const { error } = await supabase.auth.signInWithPassword({
-        email: data.email,
-        password: data.password,
-      });
-      
-      if (error) {
-        toast({
-          title: language === 'en' ? "Login failed" : "فشل تسجيل الدخول",
-          description: error.message,
-          variant: "destructive",
-        });
-        setIsLoading(false);
-        return;
-      }
-      
-      // Check if the user is a seller
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', (await supabase.auth.getSession()).data.session?.user.id)
-        .single();
-      
-      if (profileError || profile?.role !== 'seller') {
-        toast({
-          title: language === 'en' ? "Access denied" : "تم رفض الوصول",
-          description: language === 'en' 
-            ? "This account does not have seller permissions" 
-            : "هذا الحساب ليس لديه صلاحيات البائع",
-          variant: "destructive",
-        });
-        // Sign out since this is not a seller account
-        await supabase.auth.signOut();
-        setIsLoading(false);
-        return;
-      }
-      
+      await login(values.email, values.password);
       toast({
-        title: language === 'en' ? "Login successful" : "تم تسجيل الدخول بنجاح",
-        description: language === 'en' ? "Welcome to your Seller Dashboard!" : "مرحبًا بك في لوحة تحكم البائع!",
+        title: language === 'en' ? "Login Successful!" : "تم تسجيل الدخول بنجاح!",
+        description: language === 'en' ? "You are now logged in." : "أنت الآن مسجل الدخول.",
       });
-      
-      setTimeout(() => navigate("/seller-dashboard"), 1000);
-    } catch (err) {
-      console.error("Login error:", err);
+      navigate('/profile');
+    } catch (error: any) {
       toast({
-        title: language === 'en' ? "Login failed" : "فشل تسجيل الدخول",
-        description: language === 'en' ? "An unexpected error occurred" : "حدث خطأ غير متوقع",
+        title: language === 'en' ? "Login Failed." : "فشل تسجيل الدخول.",
+        description: error.message || (language === 'en' ? "Invalid credentials." : "بيانات اعتماد غير صالحة."),
         variant: "destructive",
       });
-    } finally {
-      setIsLoading(false);
     }
-  };
-
-  const bannerText = {
-    en: "Seller Login - Access Your Selling Dashboard",
-    ar: "تسجيل دخول البائع - الوصول إلى لوحة التحكم الخاصة بك"
   };
 
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
-      <main className="flex-1 container mx-auto px-4 py-12 relative">
-        {isAdmin && <AdminButton />}
-        <BlueBanner text={bannerText} />
-        
-        <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md mt-16">
-          <h1 className="text-2xl font-bold text-center mb-6">
-            {language === 'en' ? 'Seller Login' : 'تسجيل دخول البائع'}
-          </h1>
-          
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{language === 'en' ? 'Email' : 'البريد الإلكتروني'}</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input 
-                          placeholder={language === 'en' ? "your@email.com" : "بريدك@الإلكتروني.كوم"} 
-                          className="pl-10" 
-                          {...field} 
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{language === 'en' ? 'Password' : 'كلمة المرور'}</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input 
-                          type="password" 
-                          placeholder="********" 
-                          className="pl-10" 
-                          {...field} 
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <div className="flex justify-end">
-                <Button variant="link" className="text-royal-blue p-0">
-                  {language === 'en' ? 'Forgot password?' : 'نسيت كلمة المرور؟'}
-                </Button>
-              </div>
-              
-              <Button 
-                type="submit" 
-                className="w-full bg-royal-blue hover:bg-royal-blue-dark"
-                disabled={isLoading}
-              >
-                {isLoading 
-                  ? (language === 'en' ? 'Signing in...' : 'جاري تسجيل الدخول...')
-                  : (language === 'en' ? 'Sign In' : 'تسجيل الدخول')
-                }
-              </Button>
-              
-              <div className="text-center mt-4">
-                <p className="text-sm text-gray-600">
-                  {language === 'en' ? "Don't have a seller account?" : "ليس لديك حساب بائع؟"}{' '}
-                  <Link to="/seller-register" className="text-royal-blue font-medium">
-                    {language === 'en' ? 'Apply now' : 'تقدم بطلب الآن'}
+      <main className="flex-1 container mx-auto px-4 py-8">
+        <Card className="max-w-md mx-auto p-6 space-y-4">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl font-bold">{language === 'en' ? 'Seller Sign In' : 'تسجيل دخول البائع'}</CardTitle>
+            <CardDescription>{language === 'en' ? 'Enter your credentials to access your account' : 'أدخل بيانات الاعتماد الخاصة بك للوصول إلى حسابك'}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{language === 'en' ? 'Email' : 'البريد الإلكتروني'}</FormLabel>
+                      <FormControl>
+                        <Input placeholder="seller@example.com" type="email" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{language === 'en' ? 'Password' : 'كلمة المرور'}</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Input
+                            placeholder="********"
+                            type={showPassword ? "text" : "password"}
+                            {...field}
+                          />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 h-9 w-9"
+                            onClick={() => setShowPassword(!showPassword)}
+                          >
+                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            <span className="sr-only">Toggle password</span>
+                          </Button>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="flex items-center justify-between">
+                  <FormField
+                    control={form.control}
+                    name="remember"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center space-x-2 space-y-0">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            className="border-gray-400 focus:ring-2 focus:ring-royal-blue"
+                          />
+                        </FormControl>
+                        <FormLabel className="text-sm font-normal">{language === 'en' ? 'Remember me' : 'تذكرني'}</FormLabel>
+                      </FormItem>
+                    )}
+                  />
+                  <Link to="/forgot-password" className="text-sm text-royal-blue hover:underline">
+                    {language === 'en' ? 'Forgot password?' : 'هل نسيت كلمة المرور؟'}
                   </Link>
-                </p>
-              </div>
-            </form>
-          </Form>
-        </div>
+                </div>
+                <Button disabled={isLoading} type="submit" className="w-full bg-royal-blue hover:bg-royal-blue-dark text-white">
+                  {isLoading ? (language === 'en' ? 'Signing In...' : 'جاري تسجيل الدخول...') : (language === 'en' ? 'Sign In' : 'تسجيل الدخول')}
+                </Button>
+              </form>
+            </Form>
+          </CardContent>
+          <div className="px-6">
+            <Separator />
+          </div>
+          <div className="p-6 pt-3 text-center">
+            {language === 'en' ? "Don't have an account?" : "ليس لديك حساب؟"}
+            <Link to="/seller-register" className="ml-1 text-royal-blue hover:underline">
+              {language === 'en' ? 'Register' : 'تسجيل'}
+            </Link>
+          </div>
+        </Card>
       </main>
       <Footer />
     </div>

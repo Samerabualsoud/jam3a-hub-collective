@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Users, TrendingUp, CheckCircle2, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useLanguage } from '@/components/Header';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Hero = () => {
   const { language } = useLanguage();

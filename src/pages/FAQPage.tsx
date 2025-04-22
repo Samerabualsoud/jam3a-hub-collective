@@ -1,7 +1,7 @@
 import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { useLanguage } from '@/components/Header';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -126,7 +126,7 @@ const FAQ = () => {
           },
           {
             question: "كيف تختلف جمعة عن التسوق عبر الإنترنت العادي؟",
-            answer: "على عكس التجارة الإلكترونية التقليدية حيث تتسوق بشكل فردي، تتيح لك جمعة التعاون مع الآخرين للحصول على خصومات جماعية. كلما انضم المزيد من الأشخاص إلى المجموعة، كلما زاد الخصم الذي يحصل عليه الجميع. تساعدك تجربة التسوق الاجتماعية هذه على توفير المال مع التواصل مع الآخرين الذين يرغبون في نفس المنتجات."
+            answer: "على عكس التجارة الإلكترونية التقليدية حيث تتسوق بشكل فردي، تتيح لك جمعة التعاون مع الآخرين ��لحصول على خصومات جماعية. كلما انضم المزيد من الأشخاص إلى المجموعة، كلما زاد الخصم الذي يحصل عليه الجميع. تساعدك تجربة التسوق الاجتماعية هذه على توفير المال مع التواصل مع الآخرين الذين يرغبون في نفس المنتجات."
           }
         ],
         howItWorks: [

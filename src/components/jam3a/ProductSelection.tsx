@@ -1,10 +1,9 @@
-
 import React from 'react';
 import { ChevronRight, ArrowLeft, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { useLanguage } from '@/components/Header';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { getContent } from '@/utils/jam3aContent';
 import type { Product } from '@/hooks/useJam3aCreation';
 

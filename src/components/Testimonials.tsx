@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Star, Quote } from 'lucide-react';
-import { useLanguage } from './Header';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const Testimonials = () => {

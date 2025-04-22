@@ -1,9 +1,9 @@
-
 import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Card, CardContent } from '@/components/ui/card';
-import { useLanguage } from '@/components/Header';
+import { Separator } from '@/components/ui/separator';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const TermsOfService = () => {
   const { language } = useLanguage();

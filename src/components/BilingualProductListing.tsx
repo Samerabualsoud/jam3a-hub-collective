@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
@@ -21,7 +20,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { useLanguage } from './Header';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface Product {
   id: number;
@@ -347,4 +346,3 @@ const BilingualProductListing: React.FC = () => {
 };
 
 export default BilingualProductListing;
-

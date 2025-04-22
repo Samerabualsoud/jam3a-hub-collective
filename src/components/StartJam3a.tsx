@@ -5,7 +5,7 @@ import { Users, ArrowRight, PlusCircle, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { useLanguage } from './Header';
+import { useLanguage } from '@/contexts/LanguageContext';
 import Jam3aBenefits from './Jam3aBenefits';
 
 const StartJam3a: React.FC = () => {

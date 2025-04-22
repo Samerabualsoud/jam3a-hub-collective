@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useLanguage } from '@/components/Header';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { getContent } from '@/utils/jam3aContent';
 
 interface CategorySelectionProps {

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Users, Timer, Share2, ShoppingBag } from 'lucide-react';
-import { useLanguage } from './Header';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { motion } from 'framer-motion';
 
 const HowItWorks = () => {

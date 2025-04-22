@@ -1,17 +1,8 @@
-
 import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { useLanguage } from '@/components/Header';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Slider } from '@/components/ui/slider';
-import { Badge } from '@/components/ui/badge';
-import { Clock, Users, Tag, Filter } from 'lucide-react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const ShopAllDeals = () => {
   const { language } = useLanguage();
@@ -234,7 +225,6 @@ const ShopAllDeals = () => {
     });
   };
 
-  // Enhanced product card with highly visible button
   const renderProductCard = (deal, index) => (
     <Card key={index} className="overflow-hidden border border-gray-200 shadow-md flex flex-col">
       <div className="relative">
@@ -400,14 +390,12 @@ const ShopAllDeals = () => {
                     <TabsTrigger value="new">{currentContent.tabs.new}</TabsTrigger>
                   </TabsList>
                   
-                  {/* All Deals Tab */}
                   <TabsContent value="all" className="mt-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {currentContent.deals.map((deal, index) => renderProductCard(deal, index))}
                     </div>
                   </TabsContent>
                   
-                  {/* Ending Soon Tab */}
                   <TabsContent value="ending" className="mt-6">
                     {currentContent.deals.filter((deal, index) => index % 3 === 0).length > 0 ? (
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -420,7 +408,6 @@ const ShopAllDeals = () => {
                     )}
                   </TabsContent>
                   
-                  {/* Most Popular Tab */}
                   <TabsContent value="popular" className="mt-6">
                     {currentContent.deals.filter((deal, index) => index % 2 === 0).length > 0 ? (
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -433,7 +420,6 @@ const ShopAllDeals = () => {
                     )}
                   </TabsContent>
                   
-                  {/* New Arrivals Tab */}
                   <TabsContent value="new" className="mt-6">
                     {currentContent.deals.filter((deal, index) => index >= 4).length > 0 ? (
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

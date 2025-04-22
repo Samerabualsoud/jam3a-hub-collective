@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Users, Send, BadgeInfo } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -6,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { useLanguage } from './Header';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const JoinWaitlist = () => {
   const { language } = useLanguage();
