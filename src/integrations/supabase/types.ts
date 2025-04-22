@@ -15,6 +15,7 @@ export type Database = {
           created_at: string | null
           id: string
           image_url: string | null
+          language: string | null
           link: string | null
           title: string
           updated_at: string | null
@@ -24,6 +25,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           image_url?: string | null
+          language?: string | null
           link?: string | null
           title: string
           updated_at?: string | null
@@ -33,6 +35,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           image_url?: string | null
+          language?: string | null
           link?: string | null
           title?: string
           updated_at?: string | null
@@ -44,6 +47,7 @@ export type Database = {
           content: string | null
           created_at: string | null
           id: string
+          language: string | null
           name: string
           path: string | null
           type: string | null
@@ -53,6 +57,7 @@ export type Database = {
           content?: string | null
           created_at?: string | null
           id?: string
+          language?: string | null
           name: string
           path?: string | null
           type?: string | null
@@ -62,9 +67,46 @@ export type Database = {
           content?: string | null
           created_at?: string | null
           id?: string
+          language?: string | null
           name?: string
           path?: string | null
           type?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      deals: {
+        Row: {
+          active: boolean | null
+          created_at: string | null
+          discount: number
+          end_date: string | null
+          id: string
+          name: string
+          product_id: number | null
+          start_date: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          active?: boolean | null
+          created_at?: string | null
+          discount?: number
+          end_date?: string | null
+          id?: string
+          name: string
+          product_id?: number | null
+          start_date?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          active?: boolean | null
+          created_at?: string | null
+          discount?: number
+          end_date?: string | null
+          id?: string
+          name?: string
+          product_id?: number | null
+          start_date?: string | null
           updated_at?: string | null
         }
         Relationships: []
@@ -76,6 +118,7 @@ export type Database = {
           created_at: string | null
           display_order: number | null
           id: string
+          language: string | null
           question: string
           updated_at: string | null
         }
@@ -85,6 +128,7 @@ export type Database = {
           created_at?: string | null
           display_order?: number | null
           id?: string
+          language?: string | null
           question: string
           updated_at?: string | null
         }
@@ -94,6 +138,7 @@ export type Database = {
           created_at?: string | null
           display_order?: number | null
           id?: string
+          language?: string | null
           question?: string
           updated_at?: string | null
         }
@@ -134,6 +179,7 @@ export type Database = {
           content: string | null
           created_at: string | null
           id: string
+          language: string | null
           meta_description: string | null
           meta_keywords: string | null
           slug: string
@@ -144,6 +190,7 @@ export type Database = {
           content?: string | null
           created_at?: string | null
           id?: string
+          language?: string | null
           meta_description?: string | null
           meta_keywords?: string | null
           slug: string
@@ -154,6 +201,7 @@ export type Database = {
           content?: string | null
           created_at?: string | null
           id?: string
+          language?: string | null
           meta_description?: string | null
           meta_keywords?: string | null
           slug?: string

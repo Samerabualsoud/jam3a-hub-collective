@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
@@ -11,54 +10,41 @@ import {
 import { SarIcon } from "@/components/icons/SarIcon";
 import { useSupabaseApi } from "@/lib/supabase/api";
 import { useQuery } from "@tanstack/react-query";
-import { Order } from "@/types/admin";
-
-// Mock data for dashboard when database tables don't exist
-const mockOrders: Order[] = [
-  { 
-    id: 1, 
-    customer_name: "John Doe", 
-    customer_email: "john@example.com", 
-    total_amount: 299.99, 
-    status: "Delivered", 
-    created_at: new Date().toISOString(),
-    items_count: 2
-  },
-  { 
-    id: 2, 
-    customer_name: "Jane Smith", 
-    customer_email: "jane@example.com", 
-    total_amount: 149.50, 
-    status: "Processing", 
-    created_at: new Date().toISOString(),
-    items_count: 1
-  },
-];
+import { supabase } from "@/integrations/supabase/client";
 
 const Dashboard = () => {
   const api = useSupabaseApi();
 
   // Fetch products data
-  const { data: productsData, isLoading: productsLoading } = useQuery({
+  const { data: productsData = [], isLoading: productsLoading } = useQuery({
     queryKey: ['admin-products'],
     queryFn: api.getProducts,
   });
 
-  // Fetch orders data with mock data fallback
-  const { data: ordersData = mockOrders, isLoading: ordersLoading } = useQuery({
+  // Fetch orders data
+  const { data: ordersData = [], isLoading: ordersLoading } = useQuery({
     queryKey: ['admin-orders'],
     queryFn: async () => {
-      try {
-        // Only attempt to fetch from Supabase if mockOrders is not being used
-        if (api.hasSupabaseConfig) {
-          // Return mock data for now - in production this would fetch from the database
-          return mockOrders;
-        }
-        return mockOrders;
-      } catch (err) {
-        console.error("Failed to fetch orders:", err);
-        return mockOrders;
-      }
+      const { data, error } = await supabase
+        .from('orders')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data || [];
+    }
+  });
+
+  // Fetch users data
+  const { data: usersCount = 0, isLoading: usersLoading } = useQuery({
+    queryKey: ['admin-users-count'],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from('profiles')
+        .select('*', { count: 'exact', head: true });
+      
+      if (error) throw error;
+      return count || 0;
     }
   });
 
@@ -76,28 +62,28 @@ const Dashboard = () => {
     },
     {
       title: "Active Users",
-      value: "Loading...",
+      value: usersCount.toString(),
       icon: <Users className="h-8 w-8 text-muted-foreground" />,
       change: "",
       trend: <ArrowUpRight className="h-4 w-4 text-green-500" />
     },
     {
       title: "Orders",
-      value: ordersData?.length.toString() || "0",
+      value: ordersData.length.toString(),
       icon: <ShoppingCart className="h-8 w-8 text-muted-foreground" />,
       change: "",
       trend: <ArrowUpRight className="h-4 w-4 text-green-500" />
     },
     {
       title: "Products",
-      value: productsData?.length.toString() || "0",
+      value: productsData.length.toString(),
       icon: <Package className="h-8 w-8 text-muted-foreground" />,
       change: "",
       trend: <ArrowUpRight className="h-4 w-4 text-green-500" />
     },
   ];
 
-  const isLoading = productsLoading || ordersLoading;
+  const isLoading = productsLoading || ordersLoading || usersLoading;
 
   if (isLoading) {
     return (

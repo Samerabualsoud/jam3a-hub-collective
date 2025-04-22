@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 
 // Types for content management
@@ -8,6 +7,7 @@ export interface ContentSection {
   content: string | null;
   path: string | null;
   type: string | null;
+  language: string | null;
   created_at: string | null;
   updated_at: string | null;
 }
@@ -58,14 +58,20 @@ export interface Deal {
 // API functions for content sections
 export const fetchContentSections = async () => {
   try {
-    const { data, error } = await supabase
+    const { data: englishData, error: englishError } = await supabase
       .from('content_sections')
       .select('*')
+      .eq('language', 'en')
       .order('created_at', { ascending: false });
 
-    if (error) throw error;
-    console.log("Fetched content sections:", data);
-    return data || [];
+    const { data: arabicData, error: arabicError } = await supabase
+      .from('content_sections')
+      .select('*')
+      .eq('language', 'ar')
+      .order('created_at', { ascending: false });
+
+    if (englishError || arabicError) throw englishError || arabicError;
+    return [...(englishData || []), ...(arabicData || [])];
   } catch (error) {
     console.error("Error fetching content sections:", error);
     throw error;
@@ -79,11 +85,16 @@ export const saveContentSection = async (section: Partial<ContentSection>) => {
     throw new Error("Section name is required");
   }
   
+  if (!sectionData.language) {
+    throw new Error("Language is required");
+  }
+  
   const dataToSave = {
     name: sectionData.name,
     content: sectionData.content || null,
     path: sectionData.path || '/',
     type: sectionData.type || 'section',
+    language: sectionData.language,
     updated_at: new Date().toISOString()
   };
   
