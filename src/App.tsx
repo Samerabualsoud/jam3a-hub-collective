@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -17,6 +18,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import FAQ from "./pages/FAQ";
 import ShopAllDeals from "./pages/ShopAllDeals";
 import StartJam3a from "./pages/StartJam3a";
+import MyJam3as from "./pages/MyJam3as";
 import HowItWorks from "./pages/HowItWorks";
 import FAQPage from "./pages/FAQPage";
 import Sellers from "./pages/Sellers";
@@ -58,13 +60,13 @@ const App = () => {
       <Route path="/seller-register" element={<SellerRegister />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path="/my-jam3a" element={<Index />} />
+      <Route path="/my-jam3as" element={<MyJam3as />} />
       <Route path="/product/:id" element={<Index />} />
       <Route path="/about" element={<AboutUs />} />
       <Route path="/faq" element={<FAQPage />} />
       <Route path="/shop-all-deals" element={<ShopAllDeals />} />
       <Route path="/shop-deals" element={<ShopAllDeals />} />
-      <Route path="/shop" element={<ShopAllDeals />} /> {/* Added this route explicitly */}
+      <Route path="/shop" element={<ShopAllDeals />} />
       <Route path="/privacy" element={<Index />} />
       <Route path="/terms" element={<Index />} />
       <Route path="/contact" element={<Index />} />
