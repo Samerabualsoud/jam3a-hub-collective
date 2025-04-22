@@ -1,3 +1,4 @@
+
 import React, { useMemo } from 'react';
 import { ArrowRight, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -59,7 +60,7 @@ const ProductSelectionCard: React.FC<ProductCardProps> = ({
           <Badge 
             className="bg-royal-blue text-white text-sm font-medium px-3 py-1 rounded-full"
           >
-            {discount} {language === 'en' ? 'OFF' : 'خصم'}
+            {discount} {language === 'en' ? 'OFF' : 'تخفيض'}
           </Badge>
           
           {tag && (

@@ -235,7 +235,7 @@ const BilingualProductListing: React.FC = () => {
                           variant="default" 
                           className="bg-black/70 backdrop-blur-sm px-2 py-1 text-xs"
                         >
-                          {Math.round((product.originalPrice - product.groupPrices[product.groupPrices.length - 1].price) / product.originalPrice * 100)}% {language === 'en' ? 'OFF' : 'خ��م'}
+                          {Math.round((product.originalPrice - product.groupPrices[product.groupPrices.length - 1].price) / product.originalPrice * 100)}% {language === 'en' ? 'OFF' : 'تخفيض'}
                         </Badge>
                         
                         {product.tag && (
