@@ -75,7 +75,7 @@ const ProductsManager = () => {
   const handleImportProducts = async (products) => {
     try {
       // If extra.com is selected, fetch from the edge function
-      if (Array.isArray(products) && products.__fromExtraCom) {
+      if (Array.isArray(products) && products.length > 0 && showWebScraper) {
         const { fetchAndSaveExtraProducts } = await import('@/utils/fetchExtraProducts');
         await fetchAndSaveExtraProducts();
         await loadData();

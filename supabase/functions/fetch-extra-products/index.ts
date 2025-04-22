@@ -5,8 +5,8 @@
  * 
  * Note: For simplicity, the scraper will fetch limited sample products.
  */
-import { serve } from "std/server";
-import { createClient } from "@supabase/supabase-js";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.4";
 
 // CORS headers for browser calls
 const corsHeaders = {

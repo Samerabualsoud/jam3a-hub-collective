@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
-import { Check, ShoppingBag, Tag, ShieldCheck } from "lucide-react";
+import { Check, ShoppingBag, Tag, ShieldCheck, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -11,9 +11,15 @@ interface ProductSelectionProps {
   products: Product[];
   selectedProductId: number | null;
   onSelect: (product: Product) => void;
+  loading?: boolean; // Added loading prop as optional
 }
 
-const ProductSelection = ({ products, selectedProductId, onSelect }: ProductSelectionProps) => {
+const ProductSelection = ({ 
+  products, 
+  selectedProductId, 
+  onSelect,
+  loading = false // Default to false
+}: ProductSelectionProps) => {
   const { language } = useLanguage();
   
   const content = {
@@ -30,6 +36,8 @@ const ProductSelection = ({ products, selectedProductId, onSelect }: ProductSele
       specifications: "Specifications",
       warranty: "Warranty",
       premiumFeature: "Premium Feature",
+      loading: "Loading products...",
+      noProducts: "No products found for this category"
     },
     ar: {
       title: "اختر منتجًا",
@@ -44,8 +52,27 @@ const ProductSelection = ({ products, selectedProductId, onSelect }: ProductSele
       specifications: "المواصفات",
       warranty: "الضمان",
       premiumFeature: "ميزة متميزة",
+      loading: "جاري تحميل المنتجات...",
+      noProducts: "لم يتم العثور على منتجات لهذه الفئة"
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-royal-blue mb-4" />
+        <p className="text-muted-foreground">{content[language].loading}</p>
+      </div>
+    );
+  }
+
+  if (products.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12">
+        <p className="text-muted-foreground">{content[language].noProducts}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
