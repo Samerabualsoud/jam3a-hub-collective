@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
   BrowserRouter as Router,
@@ -14,14 +13,15 @@ import { LanguageProvider } from './contexts/LanguageContext';
 import PaymentCallback from './pages/PaymentCallback';
 import StartJam3a from './pages/StartJam3a';
 import FAQ from './pages/FAQ';
-
-// Import additional pages
 import Shop from './pages/ShopAllDeals';
 import ProductDetails from './pages/ProductDetails';
 import Profile from './pages/Profile';
 import ContactUs from './pages/ContactUs';
 import TermsOfService from './pages/TermsOfService';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import SellerLogin from './pages/SellerLogin';
+import SellerRegister from './pages/SellerRegister';
+import OrderTracking from './pages/OrderTracking';
 
 function App() {
   return (
@@ -41,6 +41,9 @@ function App() {
             <Route path="/payment-callback" element={<PaymentCallback />} />
             <Route path="/start-jam3a" element={<StartJam3a />} />
             <Route path="/faq" element={<FAQ />} />
+            <Route path="/seller-login" element={<SellerLogin />} />
+            <Route path="/seller-register" element={<SellerRegister />} />
+            <Route path="/order-tracking" element={<OrderTracking />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>
