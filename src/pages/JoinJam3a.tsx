@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -12,6 +13,7 @@ import { useMoyasarPayment } from '@/hooks/useMoyasarPayment';
 import { Loader2, ArrowRight, ArrowLeft, Users, Clock, ShieldCheck } from 'lucide-react';
 import { StepIndicator } from '@/components/ui/step-indicator';
 import Jam3aBenefits from '@/components/Jam3aBenefits';
+import Jam3aDetails from '@/components/Jam3aDetails';
 import { useSupabaseClient } from '@supabase/auth-helpers-react';
 
 const JoinJam3a = () => {
