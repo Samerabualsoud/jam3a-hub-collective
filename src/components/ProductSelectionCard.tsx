@@ -16,6 +16,7 @@ interface ProductCardProps {
   discount: string;
   minPeople: number;
   category: string;
+  isSelected?: boolean;
   tag?: {
     en: string;
     ar: string;
@@ -32,6 +33,7 @@ const ProductSelectionCard: React.FC<ProductCardProps> = ({
   discount,
   minPeople,
   category,
+  isSelected = false,
   tag
 }) => {
   const { language } = useLanguage();
@@ -48,7 +50,7 @@ const ProductSelectionCard: React.FC<ProductCardProps> = ({
   };
 
   return (
-    <Card className="overflow-hidden flex flex-col h-full hover:shadow-md transition-all animate-fade-in">
+    <Card className={`overflow-hidden flex flex-col h-full hover:shadow-md transition-all animate-fade-in ${isSelected ? 'bg-accent/50' : ''}`}>
       <div className="aspect-video bg-gray-100 relative">
         <img 
           src={image} 

@@ -76,7 +76,20 @@ const ProductSelection: React.FC<ProductSelectionProps> = ({
             onClick={() => onSelect(product)}
           >
             <ProductSelectionCard
-              product={product}
+              id={Number(product.id)}
+              name={product.name}
+              image={product.image || "https://placehold.co/600x400?text=No+Image"}
+              originalPrice={product.price}
+              discountPrice={product.discounts && product.discounts.length > 0 
+                ? product.discounts[0].price 
+                : product.price}
+              discount={product.discounts && product.discounts.length > 0 
+                ? product.discounts[0].savings || "5%" 
+                : "0%"}
+              minPeople={product.discounts && product.discounts.length > 0 
+                ? product.discounts[0].minCount 
+                : 3}
+              category={typeof product.categoryId === 'string' ? product.categoryId : 'general'}
               isSelected={selectedProductId === product.id}
             />
           </Card>
