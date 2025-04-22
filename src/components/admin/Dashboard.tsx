@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
@@ -18,7 +19,7 @@ const Dashboard = () => {
   // Fetch products data
   const { data: productsData = [], isLoading: productsLoading } = useQuery({
     queryKey: ['admin-products'],
-    queryFn: api.getProducts,
+    queryFn: () => api.getProducts(),
   });
 
   // Fetch orders data
@@ -76,7 +77,7 @@ const Dashboard = () => {
     },
     {
       title: "Products",
-      value: productsData.length.toString(),
+      value: (productsData as any[]).length.toString(),
       icon: <Package className="h-8 w-8 text-muted-foreground" />,
       change: "",
       trend: <ArrowUpRight className="h-4 w-4 text-green-500" />
@@ -153,8 +154,8 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {productsData && productsData.length > 0 ? (
-                productsData.slice(0, 5).map((product) => (
+              {productsData && (productsData as any[]).length > 0 ? (
+                (productsData as any[]).slice(0, 5).map((product) => (
                   <div key={product.id} className="flex items-center gap-4">
                     <div className="h-10 w-10 rounded-md overflow-hidden">
                       {product.imageUrl ? (

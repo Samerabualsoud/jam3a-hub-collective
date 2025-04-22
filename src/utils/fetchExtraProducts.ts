@@ -24,7 +24,7 @@ export async function fetchAndSaveExtraProducts() {
     
     console.log("Products fetched successfully:", data);
     return data;
-  } catch (err) {
+  } catch (err: any) {
     console.error("Exception in fetchAndSaveExtraProducts:", err);
     toast({
       title: "Error fetching products",
