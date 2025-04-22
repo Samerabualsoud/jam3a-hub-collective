@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -44,10 +43,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
 }) => {
   const { language } = useLanguage();
 
-  // Create formatted title that includes category
+  // Create formatted title for Mobile Jam3a
   const formattedTitle = {
-    en: `${category.en} Jam3a: ${title.en}`,
-    ar: `جمعة ${category.ar}: ${title.ar}`
+    en: `Mobile Jam3a: ${title.en}`,
+    ar: `جمعة الجوالات: ${title.ar}`
   };
 
   return (
@@ -149,7 +148,6 @@ const FeaturedDeals = () => {
     fetchData();
   }, []);
   
-  // Transform deals data to the format needed for ProductCard
   const featuredProducts = deals
     .filter(deal => deal.active)
     .slice(0, 4)
@@ -157,12 +155,10 @@ const FeaturedDeals = () => {
       const product = products.find(p => p.id === deal.productId) || {};
       const discountedPrice = Math.round(product.price * (1 - deal.discount / 100));
       
-      // Calculate fake progress metrics for display purposes
       const totalCount = Math.floor(Math.random() * 5) + 5; // Random between 5-10
       const joinedCount = Math.floor(Math.random() * (totalCount - 2)) + 2; // At least 2 joined
       const progress = (joinedCount / totalCount) * 100;
       
-      // Format end date as time left
       const endDate = new Date(deal.endDate);
       const timeLeftEn = formatDistanceToNow(endDate, { addSuffix: true });
       const timeLeftAr = formatDistanceToNow(endDate, { locale: ar, addSuffix: true });

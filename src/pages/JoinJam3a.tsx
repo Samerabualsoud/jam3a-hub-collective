@@ -230,7 +230,7 @@ const JoinJam3a = () => {
         <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden shadow-md">
           <img 
             src={getProductImage()} 
-            alt={productName}
+            alt="Mobile Jam3a"
             className="w-full h-full object-cover"
           />
         </div>
@@ -240,7 +240,7 @@ const JoinJam3a = () => {
       
       <div className="md:w-2/3">
         <h2 className="text-2xl font-bold mb-2 bg-gradient-to-r from-royal-blue to-royal-blue-light text-transparent bg-clip-text">
-          {formattedTitle}
+          {language === 'en' ? 'Mobile Jam3a' : 'جمعة الجوالات'}
         </h2>
         
         <div className="mb-4 flex items-center">
@@ -254,12 +254,35 @@ const JoinJam3a = () => {
               </span>
             )}
           </div>
-          {productDiscount && (
-            <div className="text-sm text-gray-500 line-through ml-4">
-              {Math.round(parseInt(productPrice) / (1 - parseInt(productDiscount) / 100))} SAR
-            </div>
-          )}
         </div>
+
+        <Jam3aDetails
+          name="Mobile Jam3a"
+          currentParticipants={3}
+          maxParticipants={5}
+          endDate="2025-05-01T00:00:00Z"
+          startDate="2025-04-01T00:00:00Z"
+          participants={[
+            {
+              user_id: "1",
+              product_name: "iPhone 16 Pro",
+              product_model: "256GB, Space Black",
+              joined_at: "2025-04-01T10:00:00Z"
+            },
+            {
+              user_id: "2",
+              product_name: "Samsung Galaxy S25",
+              product_model: "512GB, Phantom Silver",
+              joined_at: "2025-04-02T15:30:00Z"
+            },
+            {
+              user_id: "3",
+              product_name: "iPhone 16 Pro Max",
+              product_model: "512GB, Natural Titanium",
+              joined_at: "2025-04-03T09:15:00Z"
+            }
+          ]}
+        />
         
         <div className="mb-6 p-4 bg-royal-blue-50 rounded-lg">
           <h3 className="font-semibold mb-2">

@@ -79,10 +79,14 @@ export type Database = {
         Row: {
           active: boolean | null
           created_at: string | null
+          current_participants: number
+          deal_type: string
           discount: number
           end_date: string | null
           id: string
+          max_participants: number
           name: string
+          participants: Json[] | null
           product_id: number | null
           start_date: string | null
           updated_at: string | null
@@ -90,10 +94,14 @@ export type Database = {
         Insert: {
           active?: boolean | null
           created_at?: string | null
+          current_participants?: number
+          deal_type?: string
           discount?: number
           end_date?: string | null
           id?: string
+          max_participants?: number
           name: string
+          participants?: Json[] | null
           product_id?: number | null
           start_date?: string | null
           updated_at?: string | null
@@ -101,10 +109,14 @@ export type Database = {
         Update: {
           active?: boolean | null
           created_at?: string | null
+          current_participants?: number
+          deal_type?: string
           discount?: number
           end_date?: string | null
           id?: string
+          max_participants?: number
           name?: string
+          participants?: Json[] | null
           product_id?: number | null
           start_date?: string | null
           updated_at?: string | null
@@ -143,6 +155,41 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      jam3a_participants: {
+        Row: {
+          deal_id: string | null
+          id: string
+          joined_at: string | null
+          product_model: string | null
+          product_name: string
+          user_id: string | null
+        }
+        Insert: {
+          deal_id?: string | null
+          id?: string
+          joined_at?: string | null
+          product_model?: string | null
+          product_name: string
+          user_id?: string | null
+        }
+        Update: {
+          deal_id?: string | null
+          id?: string
+          joined_at?: string | null
+          product_model?: string | null
+          product_name?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jam3a_participants_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       orders: {
         Row: {
