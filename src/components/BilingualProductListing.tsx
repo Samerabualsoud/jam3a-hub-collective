@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
@@ -396,7 +397,7 @@ const BilingualProductListing: React.FC = () => {
                   className={`h-2.5 rounded-full transition-all ${
                     activeIndex === index ? "w-8 bg-royal-blue" : "w-2.5 bg-gray-300"
                   }`}
-                  onClick={() => setActiveIndex(index)} 
+                  onClick={() => setActiveIndex(index)}
                 />
               ))}
             </div>
