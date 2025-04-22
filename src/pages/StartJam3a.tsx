@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -40,6 +39,7 @@ const StartJam3aPage = () => {
       name: "iPhone 16 Pro Max 256GB",
       image: "https://images.unsplash.com/photo-1616348436168-de43ad0db179?auto=format&fit=crop&w=1600&q=80",
       price: 4999,
+      categoryId: "mobile",
       discounts: [
         { minCount: 3, price: 4599, savings: "8%" },
         { minCount: 5, price: 4399, savings: "12%" },
@@ -51,6 +51,7 @@ const StartJam3aPage = () => {
       name: "Samsung Galaxy S25 Ultra 256GB",
       image: "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?auto=format&fit=crop&w=1600&q=80",
       price: 4599,
+      categoryId: "mobile",
       discounts: [
         { minCount: 3, price: 4299, savings: "7%" },
         { minCount: 5, price: 4099, savings: "11%" },
@@ -62,6 +63,7 @@ const StartJam3aPage = () => {
       name: "Galaxy Z Fold 6",
       image: "https://images.unsplash.com/photo-1615380547903-c456276b7702?auto=format&fit=crop&w=1600&q=80",
       price: 6999,
+      categoryId: "mobile",
       discounts: [
         { minCount: 3, price: 6499, savings: "7%" },
         { minCount: 5, price: 6199, savings: "11%" },
@@ -73,6 +75,7 @@ const StartJam3aPage = () => {
       name: "MacBook Pro 16\" M3 Pro",
       image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca4?auto=format&fit=crop&w=1600&q=80",
       price: 9999,
+      categoryId: "laptop",
       discounts: [
         { minCount: 3, price: 9499, savings: "5%" },
         { minCount: 5, price: 8999, savings: "10%" },
@@ -150,7 +153,6 @@ const StartJam3aPage = () => {
     });
   };
 
-  // Animation variants
   const pageVariants = {
     initial: { opacity: 0, y: 20 },
     animate: { opacity: 1, y: 0 },
@@ -195,7 +197,9 @@ const StartJam3aPage = () => {
 
               {step === 1 && (
                 <ProductSelection
-                  products={sampleProducts}
+                  products={selectedCategory
+                    ? sampleProducts.filter(p => p.categoryId === selectedCategory)
+                    : []}
                   selectedProductId={selectedProduct?.id || null}
                   onSelect={handleProductSelect}
                 />
