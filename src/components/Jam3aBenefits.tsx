@@ -26,7 +26,7 @@ const Jam3aBenefits: React.FC<Jam3aBenefitsProps> = ({ className }) => {
       {
         icon: Shield,
         title: '100% Guaranteed',
-        description: 'Money-back guarantee if you're not satisfied'
+        description: "Money-back guarantee if you're not satisfied"
       },
       {
         icon: Clock,
