@@ -123,19 +123,31 @@ const StartJam3aPage = () => {
   };
   
   const handleShareJam3a = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: language === 'en' ? 'Join my Jam3a' : 'انضم إلى جمعتي',
-        text: language === 'en' 
-          ? `Join my Jam3a for ${selectedProduct?.name}. Let's save together!` 
-          : `انضم إلى جمعتي لـ ${selectedProduct?.name}. دعونا نوفر معاً!`,
-        url: window.location.href,
-      });
-    } else {
-      toast({
-        title: language === 'en' ? "Share using the link above" : "شارك باستخدام الرابط أعلاه",
-      });
+    try {
+      if (navigator.share) {
+        navigator.share({
+          title: language === 'en' ? 'Join my Jam3a' : 'انضم إلى جمعتي',
+          text: language === 'en' 
+            ? `Join my Jam3a for ${selectedProduct?.name}. Let's save together!` 
+            : `انضم إلى جمعتي لـ ${selectedProduct?.name}. دعونا نوفر معاً!`,
+          url: window.location.href,
+        }).catch(error => {
+          console.log('Sharing failed:', error);
+          fallbackShare();
+        });
+      } else {
+        fallbackShare();
+      }
+    } catch (error) {
+      console.log('Share error:', error);
+      fallbackShare();
     }
+  };
+  
+  const fallbackShare = () => {
+    toast({
+      title: language === 'en' ? "Share using the link above" : "شارك باستخدام الرابط أعلاه",
+    });
   };
 
   // Animation variants
@@ -174,7 +186,10 @@ const StartJam3aPage = () => {
             <CardContent className="p-6 md:p-8">
               {step === 0 && (
                 <CategorySelection
-                  onSelect={handleCategorySelect}
+                  onSelect={(categoryId) => {
+                    handleCategorySelect(categoryId);
+                    // Don't auto-advance, let the Next button handle that
+                  }}
                 />
               )}
 
