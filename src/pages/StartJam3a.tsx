@@ -38,57 +38,6 @@ const StartJam3aPage = () => {
   const [productsLoading, setProductsLoading] = useState(false);
   const supabaseApi = useSupabaseApi();
 
-  const sampleProducts = [
-    {
-      id: 1,
-      name: "iPhone 16 Pro Max 256GB",
-      image: "https://images.unsplash.com/photo-1616348436168-de43ad0db179?auto=format&fit=crop&w=1600&q=80",
-      price: 4999,
-      categoryId: "mobile",
-      discounts: [
-        { minCount: 3, price: 4599, savings: "8%" },
-        { minCount: 5, price: 4399, savings: "12%" },
-        { minCount: 8, price: 4199, savings: "16%" }
-      ]
-    },
-    {
-      id: 2,
-      name: "Samsung Galaxy S25 Ultra 256GB",
-      image: "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?auto=format&fit=crop&w=1600&q=80",
-      price: 4599,
-      categoryId: "mobile",
-      discounts: [
-        { minCount: 3, price: 4299, savings: "7%" },
-        { minCount: 5, price: 4099, savings: "11%" },
-        { minCount: 8, price: 3899, savings: "15%" }
-      ]
-    },
-    {
-      id: 3,
-      name: "Galaxy Z Fold 6",
-      image: "https://images.unsplash.com/photo-1615380547903-c456276b7702?auto=format&fit=crop&w=1600&q=80",
-      price: 6999,
-      categoryId: "mobile",
-      discounts: [
-        { minCount: 3, price: 6499, savings: "7%" },
-        { minCount: 5, price: 6199, savings: "11%" },
-        { minCount: 10, price: 5799, savings: "17%" }
-      ]
-    },
-    {
-      id: 4,
-      name: "MacBook Pro 16\" M3 Pro",
-      image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca4?auto=format&fit=crop&w=1600&q=80",
-      price: 9999,
-      categoryId: "laptop",
-      discounts: [
-        { minCount: 3, price: 9499, savings: "5%" },
-        { minCount: 5, price: 8999, savings: "10%" },
-        { minCount: 8, price: 8499, savings: "15%" }
-      ]
-    }
-  ];
-
   const content = {
     en: {
       title: "Start Your Jam3a",
@@ -165,22 +114,46 @@ const StartJam3aPage = () => {
   };
 
   useEffect(() => {
-    if (step === 1 && selectedCategory) {
-      setProductsLoading(true);
-      (async () => {
+    async function fetchProductsByCategory() {
+      if (step === 1 && selectedCategory) {
+        setProductsLoading(true);
+        console.log("Fetching products for category:", selectedCategory);
+        
         try {
-          const catalog = await supabaseApi.getProductsByCategorySlug
-            ? await supabaseApi.getProductsByCategorySlug(selectedCategory)
-            : [];
-          setProducts(catalog);
-        } catch (err) {
+          if (supabaseApi && supabaseApi.getProductsByCategorySlug) {
+            const result = await supabaseApi.getProductsByCategorySlug(selectedCategory);
+            console.log("Fetched products:", result);
+            
+            const formattedProducts = result.map(product => ({
+              id: product.id,
+              name: product.name,
+              image: product.image_url || "https://placehold.co/600x400?text=No+Image",
+              price: product.price,
+              categoryId: selectedCategory,
+              discounts: product.discounts || []
+            }));
+            
+            setProducts(formattedProducts);
+          } else {
+            console.error("supabaseApi or getProductsByCategorySlug method not available");
+            setProducts([]);
+          }
+        } catch (error) {
+          console.error("Error fetching products:", error);
           setProducts([]);
+          toast({
+            title: language === 'en' ? "Error loading products" : "خطأ في تحميل المنتجات",
+            description: error.message || "Please try again later",
+            variant: "destructive"
+          });
         } finally {
           setProductsLoading(false);
         }
-      })();
+      }
     }
-  }, [step, selectedCategory]);
+    
+    fetchProductsByCategory();
+  }, [step, selectedCategory, supabaseApi, language]);
 
   return (
     <div className="flex flex-col min-h-screen">
