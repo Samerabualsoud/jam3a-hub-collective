@@ -37,6 +37,11 @@ const Jam3aBenefits: React.FC<Jam3aBenefitsProps> = ({ className }) => {
         icon: CreditCard,
         title: 'Secure Payment',
         description: 'Trusted payment options with full encryption'
+      },
+      {
+        icon: Check,
+        title: 'Verified Quality',
+        description: 'All products are verified for authenticity and quality'
       }
     ],
     ar: [
@@ -64,6 +69,11 @@ const Jam3aBenefits: React.FC<Jam3aBenefitsProps> = ({ className }) => {
         icon: CreditCard,
         title: 'دفع آمن',
         description: 'خيارات دفع موثوقة مع تشفير كامل'
+      },
+      {
+        icon: Check,
+        title: 'جودة موثقة',
+        description: 'يتم التحقق من جميع المنتجات للتأكد من أصالتها وجودتها'
       }
     ]
   };
@@ -90,14 +100,14 @@ const Jam3aBenefits: React.FC<Jam3aBenefitsProps> = ({ className }) => {
       initial="hidden"
       animate="visible"
       variants={containerVariants}
-      className={`grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 ${className}`}
+      className={`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 ${className}`}
       dir={language === 'ar' ? 'rtl' : 'ltr'}
     >
       {benefits[language].map((benefit, index) => (
         <motion.div 
           key={index} 
           variants={itemVariants}
-          className="flex flex-col items-center text-center p-4"
+          className="flex flex-col items-center text-center p-4 hover:bg-white/10 rounded-xl transition-colors"
         >
           <div className="flex items-center justify-center w-14 h-14 bg-white/20 rounded-full mb-4">
             <benefit.icon size={24} />
