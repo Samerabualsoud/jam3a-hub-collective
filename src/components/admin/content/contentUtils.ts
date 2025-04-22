@@ -58,22 +58,23 @@ export interface Deal {
 // API functions for content sections
 export const fetchContentSections = async () => {
   try {
-    const { data: englishData, error: englishError } = await supabase
+    console.log("Starting to fetch content sections");
+    
+    // Fetch content for all languages
+    const { data, error } = await supabase
       .from('content_sections')
       .select('*')
-      .eq('language', 'en')
       .order('created_at', { ascending: false });
 
-    const { data: arabicData, error: arabicError } = await supabase
-      .from('content_sections')
-      .select('*')
-      .eq('language', 'ar')
-      .order('created_at', { ascending: false });
+    if (error) {
+      console.error("Error fetching content sections:", error);
+      throw error;
+    }
 
-    if (englishError || arabicError) throw englishError || arabicError;
-    return [...(englishData || []), ...(arabicData || [])];
+    console.log("Fetched content sections:", data);
+    return data || [];
   } catch (error) {
-    console.error("Error fetching content sections:", error);
+    console.error("Exception in fetchContentSections:", error);
     throw error;
   }
 };
@@ -131,12 +132,18 @@ export const deleteContentSection = async (id: string) => {
 // API functions for banners
 export const fetchBanners = async () => {
   try {
+    console.log("Starting to fetch banners");
+    
     const { data, error } = await supabase
       .from('banners')
       .select('*')
       .order('created_at', { ascending: false });
 
-    if (error) throw error;
+    if (error) {
+      console.error("Error fetching banners:", error);
+      throw error;
+    }
+
     console.log("Fetched banners:", data);
     return data || [];
   } catch (error) {
@@ -193,12 +200,18 @@ export const deleteBanner = async (id: string) => {
 // API functions for pages
 export const fetchPages = async () => {
   try {
+    console.log("Starting to fetch pages");
+    
     const { data, error } = await supabase
       .from('pages')
       .select('*')
       .order('created_at', { ascending: false });
 
-    if (error) throw error;
+    if (error) {
+      console.error("Error fetching pages:", error);
+      throw error;
+    }
+
     console.log("Fetched pages:", data);
     return data || [];
   } catch (error) {
@@ -260,12 +273,18 @@ export const deletePage = async (id: string) => {
 // API functions for FAQs
 export const fetchFAQs = async () => {
   try {
+    console.log("Starting to fetch FAQs");
+    
     const { data, error } = await supabase
       .from('faqs')
       .select('*')
       .order('display_order', { ascending: true });
 
-    if (error) throw error;
+    if (error) {
+      console.error("Error fetching FAQs:", error);
+      throw error;
+    }
+
     console.log("Fetched FAQs:", data);
     return data || [];
   } catch (error) {

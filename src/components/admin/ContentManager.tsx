@@ -37,6 +37,7 @@ const ContentManager = () => {
     setLoading(true);
     setError(null);
     try {
+      console.log(`Loading data for tab: ${activeTab}`);
       let data = [];
       switch (activeTab) {
         case "sections":
@@ -54,6 +55,7 @@ const ContentManager = () => {
         default:
           data = [];
       }
+      console.log(`Loaded ${data.length} items for ${activeTab}`);
       setContentItems(data);
     } catch (err: any) {
       console.error(`Error loading ${activeTab}:`, err);
@@ -207,6 +209,15 @@ const ContentManager = () => {
             <CardContent>
               <p className="text-destructive">{error}</p>
               <Button onClick={loadData} className="mt-4">Retry</Button>
+            </CardContent>
+          </Card>
+        ) : contentItems.length === 0 ? (
+          <Card>
+            <CardContent className="flex flex-col justify-center items-center p-6 space-y-4">
+              <p className="text-muted-foreground text-center">No {activeTab} found</p>
+              <Button onClick={() => setIsAddingContent(true)}>
+                <Plus className="mr-2 h-4 w-4" /> Add Your First {activeTab === 'faqs' ? 'FAQ' : activeTab.slice(0, -1)}
+              </Button>
             </CardContent>
           </Card>
         ) : (
