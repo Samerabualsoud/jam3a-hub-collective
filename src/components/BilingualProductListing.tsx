@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
@@ -70,7 +69,7 @@ const BilingualProductListing: React.FC = () => {
   const productData: Product[] = [
     {
       id: 1,
-      image: "https://images.unsplash.com/photo-1609654984575-f64878202abf?auto=format&fit=crop&w=600&q=80", // Better iPhone image
+      image: "https://images.unsplash.com/photo-1609654984575-f64878202abf?auto=format&fit=crop&w=600&q=80",
       title: {
         en: "iPhone 16 Pro Max 256GB",
         ar: "آيفون 16 برو ماكس 256 جيجابايت"
@@ -106,7 +105,7 @@ const BilingualProductListing: React.FC = () => {
     },
     {
       id: 2,
-      image: "https://images.unsplash.com/photo-1601944179066-29786cb9d32a?auto=format&fit=crop&w=600&q=80", // Better TV image
+      image: "https://images.unsplash.com/photo-1601944179066-29786cb9d32a?auto=format&fit=crop&w=600&q=80",
       title: {
         en: "Samsung 75\" 4K QLED TV",
         ar: "تلفاز سامسونج 75 بوصة QLED 4K"
@@ -137,7 +136,7 @@ const BilingualProductListing: React.FC = () => {
     },
     {
       id: 3,
-      image: "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?auto=format&fit=crop&w=600&q=80", // Better MacBook image
+      image: "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?auto=format&fit=crop&w=600&q=80",
       title: {
         en: "MacBook Pro 16\" M3 Max",
         ar: "ماك بوك برو 16 بوصة M3 ماكس"
@@ -173,7 +172,7 @@ const BilingualProductListing: React.FC = () => {
     },
     {
       id: 4,
-      image: "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?auto=format&fit=crop&w=600&q=80", // Better OLED TV image
+      image: "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?auto=format&fit=crop&w=600&q=80",
       title: {
         en: "LG 65\" OLED TV",
         ar: "تلفاز إل جي 65 بوصة OLED"
