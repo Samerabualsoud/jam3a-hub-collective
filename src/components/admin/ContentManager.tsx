@@ -6,20 +6,26 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Loader2, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { fetchContentSections, fetchBanners, fetchPages, fetchFAQs } from "@/components/admin/content/contentUtils";
+import { fetchContentSections, fetchBanners, fetchPages, fetchFAQs, saveContentSection, saveBanner, savePage, saveFAQ, deleteContentSection, deleteBanner, deletePage, deleteFAQ } from "@/components/admin/content/contentUtils";
 import ContentEditor from "./content/ContentEditor";
 import ContentList from "./content/ContentList";
 
 // Define a type for the activeTab state to match ContentList's type prop
-type ContentTabType = 'sections' | 'banners' | 'pages' | 'faqs';
+export type ContentTabType = 'sections' | 'banners' | 'pages' | 'faqs';
+
+// Define a type for the content item
+export interface ContentItem {
+  id: string;
+  [key: string]: any;
+}
 
 const ContentManager = () => {
   const [activeTab, setActiveTab] = useState<ContentTabType>("sections");
   const [isAddingContent, setIsAddingContent] = useState(false);
-  const [editingContent, setEditingContent] = useState(null);
-  const [contentItems, setContentItems] = useState([]);
+  const [editingContent, setEditingContent] = useState<ContentItem | null>(null);
+  const [contentItems, setContentItems] = useState<ContentItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
 
@@ -49,7 +55,7 @@ const ContentManager = () => {
           data = [];
       }
       setContentItems(data);
-    } catch (err) {
+    } catch (err: any) {
       console.error(`Error loading ${activeTab}:`, err);
       setError(err.message || `Failed to load ${activeTab}`);
       toast({
@@ -62,25 +68,74 @@ const ContentManager = () => {
     }
   };
 
-  const handleSaveContent = async (content) => {
-    setIsAddingContent(false);
-    setEditingContent(null);
-    await loadData();
-    toast({
-      title: "Content Saved",
-      description: "The content has been saved successfully",
-      variant: "default",
-    });
+  const handleSaveContent = async (content: ContentItem) => {
+    try {
+      switch (activeTab) {
+        case "sections":
+          await saveContentSection(content);
+          break;
+        case "banners":
+          await saveBanner(content);
+          break;
+        case "pages":
+          await savePage(content);
+          break;
+        case "faqs":
+          await saveFAQ(content);
+          break;
+      }
+      
+      setIsAddingContent(false);
+      setEditingContent(null);
+      await loadData();
+      
+      toast({
+        title: "Content Saved",
+        description: "The content has been saved successfully",
+        variant: "default",
+      });
+    } catch (err: any) {
+      console.error("Error saving content:", err);
+      toast({
+        title: "Error saving content",
+        description: err.message || "Failed to save content. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleDeleteContent = async () => {
-    // Deletion functionality would be implemented here
-    await loadData();
-    toast({
-      title: "Content Deleted",
-      description: "The content has been deleted successfully",
-      variant: "default",
-    });
+  const handleDeleteContent = async (item: ContentItem) => {
+    try {
+      switch (activeTab) {
+        case "sections":
+          await deleteContentSection(item.id);
+          break;
+        case "banners":
+          await deleteBanner(item.id);
+          break;
+        case "pages":
+          await deletePage(item.id);
+          break;
+        case "faqs":
+          await deleteFAQ(item.id);
+          break;
+      }
+      
+      await loadData();
+      
+      toast({
+        title: "Content Deleted",
+        description: "The content has been deleted successfully",
+        variant: "default",
+      });
+    } catch (err: any) {
+      console.error("Error deleting content:", err);
+      toast({
+        title: "Error deleting content",
+        description: err.message || "Failed to delete content. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const filteredContent = contentItems.filter((item) =>
@@ -92,6 +147,7 @@ const ContentManager = () => {
   if (isAddingContent) {
     return (
       <ContentEditor 
+        type={activeTab}
         onSave={handleSaveContent}
         onCancel={() => setIsAddingContent(false)}
       />
@@ -101,7 +157,8 @@ const ContentManager = () => {
   if (editingContent) {
     return (
       <ContentEditor
-        section={editingContent}
+        type={activeTab}
+        content={editingContent}
         onSave={handleSaveContent}
         onCancel={() => setEditingContent(null)}
       />

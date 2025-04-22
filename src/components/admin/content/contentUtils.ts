@@ -57,13 +57,19 @@ export interface Deal {
 
 // API functions for content sections
 export const fetchContentSections = async () => {
-  const { data, error } = await supabase
-    .from('content_sections')
-    .select('*')
-    .order('created_at', { ascending: false });
+  try {
+    const { data, error } = await supabase
+      .from('content_sections')
+      .select('*')
+      .order('created_at', { ascending: false });
 
-  if (error) throw error;
-  return data || [];
+    if (error) throw error;
+    console.log("Fetched content sections:", data);
+    return data || [];
+  } catch (error) {
+    console.error("Error fetching content sections:", error);
+    throw error;
+  }
 };
 
 export const saveContentSection = async (section: Partial<ContentSection>) => {
@@ -101,15 +107,31 @@ export const saveContentSection = async (section: Partial<ContentSection>) => {
   }
 };
 
+export const deleteContentSection = async (id: string) => {
+  const { error } = await supabase
+    .from('content_sections')
+    .delete()
+    .eq('id', id);
+  
+  if (error) throw error;
+  return true;
+};
+
 // API functions for banners
 export const fetchBanners = async () => {
-  const { data, error } = await supabase
-    .from('banners')
-    .select('*')
-    .order('created_at', { ascending: false });
+  try {
+    const { data, error } = await supabase
+      .from('banners')
+      .select('*')
+      .order('created_at', { ascending: false });
 
-  if (error) throw error;
-  return data || [];
+    if (error) throw error;
+    console.log("Fetched banners:", data);
+    return data || [];
+  } catch (error) {
+    console.error("Error fetching banners:", error);
+    throw error;
+  }
 };
 
 export const saveBanner = async (banner: Partial<Banner>) => {
@@ -147,15 +169,31 @@ export const saveBanner = async (banner: Partial<Banner>) => {
   }
 };
 
+export const deleteBanner = async (id: string) => {
+  const { error } = await supabase
+    .from('banners')
+    .delete()
+    .eq('id', id);
+  
+  if (error) throw error;
+  return true;
+};
+
 // API functions for pages
 export const fetchPages = async () => {
-  const { data, error } = await supabase
-    .from('pages')
-    .select('*')
-    .order('created_at', { ascending: false });
+  try {
+    const { data, error } = await supabase
+      .from('pages')
+      .select('*')
+      .order('created_at', { ascending: false });
 
-  if (error) throw error;
-  return data || [];
+    if (error) throw error;
+    console.log("Fetched pages:", data);
+    return data || [];
+  } catch (error) {
+    console.error("Error fetching pages:", error);
+    throw error;
+  }
 };
 
 export const savePage = async (page: Partial<Page>) => {
@@ -198,15 +236,31 @@ export const savePage = async (page: Partial<Page>) => {
   }
 };
 
+export const deletePage = async (id: string) => {
+  const { error } = await supabase
+    .from('pages')
+    .delete()
+    .eq('id', id);
+  
+  if (error) throw error;
+  return true;
+};
+
 // API functions for FAQs
 export const fetchFAQs = async () => {
-  const { data, error } = await supabase
-    .from('faqs')
-    .select('*')
-    .order('display_order', { ascending: true });
+  try {
+    const { data, error } = await supabase
+      .from('faqs')
+      .select('*')
+      .order('display_order', { ascending: true });
 
-  if (error) throw error;
-  return data || [];
+    if (error) throw error;
+    console.log("Fetched FAQs:", data);
+    return data || [];
+  } catch (error) {
+    console.error("Error fetching FAQs:", error);
+    throw error;
+  }
 };
 
 export const saveFAQ = async (faq: Partial<FAQ>) => {
@@ -246,6 +300,16 @@ export const saveFAQ = async (faq: Partial<FAQ>) => {
     if (error) throw error;
     return data;
   }
+};
+
+export const deleteFAQ = async (id: string) => {
+  const { error } = await supabase
+    .from('faqs')
+    .delete()
+    .eq('id', id);
+  
+  if (error) throw error;
+  return true;
 };
 
 // For deals, we'll leverage the existing implementation in src/lib/supabase/api.ts
