@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Users, Clock } from "lucide-react";
 import { formatDistanceToNow } from 'date-fns';
-import { useLanguage } from './Header';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface Participant {
   user_id: string;

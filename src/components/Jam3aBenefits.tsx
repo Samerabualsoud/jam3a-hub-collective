@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { BadgePercent, Users, ShieldCheck } from 'lucide-react';
-import { useLanguage } from '@/components/Header';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface Jam3aBenefitsProps {
   variant?: 'default' | 'compact';

@@ -3,7 +3,7 @@ import React from 'react';
 import { Users } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { useLanguage } from '@/components/Header';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { BlueBanner } from '@/components/BlueBanner';
 import { useAuth } from '@/contexts/AuthContext';
 import AdminButton from '@/components/AdminButton';

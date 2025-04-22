@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { BadgeInfo } from 'lucide-react';
-import { useLanguage } from './Header';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface BlueBannerProps {
   text?: {

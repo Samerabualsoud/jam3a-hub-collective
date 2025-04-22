@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { BadgePercent, ShieldCheck, Clock, CreditCard } from 'lucide-react';
-import { useLanguage } from './Header';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { motion } from 'framer-motion';
 
 const WhyChooseUs = () => {

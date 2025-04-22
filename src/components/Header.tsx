@@ -10,40 +10,19 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { useState, createContext, useContext } from 'react';
+import { useState } from 'react';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
-
-// Create a context for language
-export const LanguageContext = createContext<{
-  language: 'en' | 'ar';
-  setLanguage: React.Dispatch<React.SetStateAction<'en' | 'ar'>>;
-}>({
-  language: 'en',
-  setLanguage: () => {},
-});
-
-// Custom hook to use language context
-export const useLanguage = () => useContext(LanguageContext);
-
-export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [language, setLanguage] = useState<'en' | 'ar'>('en');
-  
-  return (
-    <LanguageContext.Provider value={{ language, setLanguage }}>
-      {children}
-    </LanguageContext.Provider>
-  );
-};
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { language, setLanguage } = useLanguage();
+  const { language, setLanguage, toggleLanguage } = useLanguage();
   const { toast } = useToast();
   const { user, isAuthenticated, logout, isAdmin } = useAuth();
 
-  const toggleLanguage = (value: string) => {
+  const handleLanguageChange = (value: string) => {
     if (value) {
       const newLang = value as 'en' | 'ar';
       setLanguage(newLang);
@@ -97,7 +76,7 @@ const Header = () => {
           <ToggleGroup 
             type="single" 
             value={language} 
-            onValueChange={toggleLanguage}
+            onValueChange={handleLanguageChange}
             className="bg-gray-50 border rounded-full shadow-sm p-1"
           >
             <ToggleGroupItem value="en" aria-label="Toggle English" className="rounded-full data-[state=on]:bg-jam3a-purple data-[state=on]:text-white">
@@ -251,7 +230,7 @@ const Header = () => {
               <ToggleGroup 
                 type="single" 
                 value={language} 
-                onValueChange={toggleLanguage}
+                onValueChange={handleLanguageChange}
                 className="w-full max-w-xs border rounded-lg shadow-sm p-1"
               >
                 <ToggleGroupItem value="en" className="flex-1 data-[state=on]:bg-jam3a-purple data-[state=on]:text-white">

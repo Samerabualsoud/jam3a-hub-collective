@@ -7,7 +7,7 @@ import { CheckCircle2 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useToast } from "@/hooks/use-toast";
-import { useLanguage } from "@/components/Header";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const VerifyEmail = () => {
   const { toast } = useToast();
