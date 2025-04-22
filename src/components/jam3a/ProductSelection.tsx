@@ -1,131 +1,127 @@
+
 import React from 'react';
-import { ChevronRight, ArrowLeft, ArrowRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from "@/components/ui/card";
+import { Check, ShoppingBag, Tag, ShieldCheck } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useLanguage } from '@/contexts/LanguageContext';
-import { getContent } from '@/utils/jam3aContent';
-import type { Product } from '@/hooks/useJam3aCreation';
+import { Product } from '@/hooks/useJam3aCreation';
 
 interface ProductSelectionProps {
-  selectedCategory: string;
-  selectedProduct: Product | null;
   products: Product[];
-  onProductSelect: (product: Product) => void;
-  onBack: () => void;
-  onNext: () => void;
+  selectedProductId: number | null;
+  onSelect: (product: Product) => void;
 }
 
-const ProductSelection: React.FC<ProductSelectionProps> = ({
-  selectedCategory,
-  selectedProduct,
-  products,
-  onProductSelect,
-  onBack,
-  onNext,
-}) => {
+const ProductSelection = ({ products, selectedProductId, onSelect }: ProductSelectionProps) => {
   const { language } = useLanguage();
-  const content = getContent(language);
+  
+  const content = {
+    en: {
+      title: "Select a Product",
+      description: "Choose the product you want to start or join a Jam3a for",
+      priceLabel: "Price",
+      savingsLabel: "Save up to",
+      selectButton: "Select",
+      selectedButton: "Selected",
+      groupSize: "Group Size",
+      originalPrice: "Original Price",
+      jam3aPrice: "Jam3a Price",
+      specifications: "Specifications",
+      warranty: "Warranty",
+      premiumFeature: "Premium Feature",
+    },
+    ar: {
+      title: "اختر منتجًا",
+      description: "اختر المنتج الذي تريد بدء أو الانضمام إلى جمعة من أجله",
+      priceLabel: "السعر",
+      savingsLabel: "وفر حتى",
+      selectButton: "اختر",
+      selectedButton: "تم الاختيار",
+      groupSize: "حجم المجموعة",
+      originalPrice: "السعر الأصلي",
+      jam3aPrice: "سعر الجمعة",
+      specifications: "المواصفات",
+      warranty: "الضمان",
+      premiumFeature: "ميزة متميزة",
+    }
+  };
 
   return (
-    <div className="space-y-6" dir={language === 'ar' ? 'rtl' : 'ltr'}>
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">{content.stepTitles[1]}</h2>
-        <Button 
-          variant="outline" 
-          size="sm"
-          onClick={onBack}
-          className="flex items-center gap-1"
-        >
-          {language === 'ar' ? (
-            <>
-              {content.categories.find(c => c.id === selectedCategory)?.name} <ChevronRight className="h-4 w-4" />
-            </>
-          ) : (
-            <>
-              <ChevronRight className="h-4 w-4 rotate-180" /> {content.categories.find(c => c.id === selectedCategory)?.name}
-            </>
-          )}
-        </Button>
+    <div className="space-y-6">
+      <div className="text-center mb-8">
+        <h2 className="text-2xl font-bold">{content[language].title}</h2>
+        <p className="text-muted-foreground mt-2">{content[language].description}</p>
       </div>
-
-      <p className="text-muted-foreground">{content.selectProductText}</p>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {products.map((product) => (
-          <Card 
-            key={product.id} 
-            className={`overflow-hidden cursor-pointer transition-all ${
-              selectedProduct?.id === product.id ? 'border-royal-blue ring-2 ring-royal-blue/30' : 'hover:border-royal-blue/50'
-            }`}
-            onClick={() => onProductSelect(product)}
-          >
-            <div className="aspect-video bg-gray-100 relative">
-              <img 
-                src={product.image} 
-                alt={product.name} 
-                className="w-full h-full object-cover"
-              />
-              <Badge className="absolute top-2 right-2 bg-royal-blue">
-                {language === 'en' ? 'Up to ' : 'يصل إلى '}
-                {product.discounts[product.discounts.length - 1].savings} {language === 'en' ? 'OFF' : 'تخفيض'}
-              </Badge>
-            </div>
-            <CardContent className="p-4">
-              <h3 className="font-semibold text-lg mb-2">{product.name}</h3>
-              <div className="flex justify-between items-center">
-                <span className="text-xl font-bold text-royal-blue">{product.price} {language === 'en' ? 'SAR' : 'ريال'}</span>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {products.map((product) => {
+          const isSelected = product.id === selectedProductId;
+          const maxDiscount = product.discounts[product.discounts.length - 1];
+          
+          return (
+            <Card 
+              key={product.id} 
+              className={`overflow-hidden transition-all duration-200 hover:shadow-lg ${isSelected ? 'border-2 border-royal-blue ring-2 ring-royal-blue/20' : 'border border-gray-200'}`}
+            >
+              <div className="relative h-48 overflow-hidden bg-gray-100">
+                <img 
+                  src={product.image} 
+                  alt={product.name} 
+                  className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                />
+                {maxDiscount && (
+                  <Badge className="absolute top-2 right-2 bg-royal-blue text-white">
+                    <Tag className="h-3 w-3 mr-1" />
+                    {content[language].savingsLabel} {maxDiscount.savings}
+                  </Badge>
+                )}
               </div>
-            </CardContent>
-            <CardFooter className="p-4 pt-0">
-              <Button 
-                variant={selectedProduct?.id === product.id ? "green" : "outline"}
-                size="wide"
-                className={selectedProduct?.id === product.id ? "text-white" : ""}
-              >
-                {selectedProduct?.id === product.id 
-                  ? (language === 'en' ? 'Selected' : 'تم الاختيار')
-                  : (language === 'en' ? 'Select This Product' : 'اختر هذا المنتج')}
-              </Button>
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
-
-      <div className="flex justify-between">
-        <Button 
-          variant="outline" 
-          onClick={onBack}
-          className="flex items-center gap-1"
-        >
-          {language === 'ar' ? (
-            <>
-              {content.backButton} <ArrowRight className="h-4 w-4" />
-            </>
-          ) : (
-            <>
-              <ArrowLeft className="h-4 w-4" /> {content.backButton}
-            </>
-          )}
-        </Button>
-        
-        {selectedProduct && (
-          <Button 
-            variant="green" 
-            onClick={onNext}
-            className="group text-white"
-          >
-            {language === 'ar' ? (
-              <>
-                {content.nextButton} <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-              </>
-            ) : (
-              <>
-                {content.nextButton} <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </>
-            )}
-          </Button>
-        )}
+              
+              <CardContent className="p-5">
+                <h3 className="font-semibold text-lg mb-2 line-clamp-2">{product.name}</h3>
+                
+                <div className="flex justify-between items-center mb-4">
+                  <div>
+                    <p className="text-xl font-bold text-royal-blue">{product.price} SAR</p>
+                    {maxDiscount && (
+                      <p className="text-sm text-muted-foreground">
+                        <span className="line-through">{product.price} SAR</span>
+                        {" → "}
+                        <span className="font-medium text-green-600">{maxDiscount.price} SAR</span>
+                      </p>
+                    )}
+                  </div>
+                  
+                  <div className="flex items-center text-sm">
+                    <ShoppingBag className="h-4 w-4 mr-1 text-royal-blue" />
+                    <span>{maxDiscount?.minCount}+ {content[language].groupSize}</span>
+                  </div>
+                </div>
+                
+                <div className="space-y-2 mb-4">
+                  <div className="flex items-center text-sm">
+                    <ShieldCheck className="h-4 w-4 mr-2 text-royal-blue" />
+                    <span>{content[language].warranty}: 1 year</span>
+                  </div>
+                </div>
+                
+                <Button 
+                  onClick={() => onSelect(product)} 
+                  variant={isSelected ? "default" : "green"}
+                  className={`w-full ${isSelected ? 'bg-royal-blue/10 text-royal-blue hover:bg-royal-blue/20' : 'text-white'}`}
+                >
+                  {isSelected ? (
+                    <span className="flex items-center">
+                      <Check className="h-4 w-4 mr-2" />
+                      {content[language].selectedButton}
+                    </span>
+                  ) : content[language].selectButton}
+                </Button>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
     </div>
   );
