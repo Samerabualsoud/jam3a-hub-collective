@@ -281,7 +281,7 @@ const JoinJam3a = () => {
                   groupSize={5}
                   duration={1}
                   isPublic={true}
-                  paymentType="completion"
+                  paymentType="upfront"
                   onShare={() => {}}
                   isStartingJam3a={false}
                 />

@@ -2,14 +2,13 @@
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormDescription } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useForm } from "react-hook-form";
-import { Clock, Lock, Calendar, Bell } from "lucide-react";
+import { Clock, Lock, Bell } from "lucide-react";
 
 interface GroupDetailsFormProps {
   initialValues: {
@@ -26,15 +25,18 @@ interface GroupDetailsFormProps {
 
 const GroupDetailsForm = ({ initialValues, onValuesChange, maxGroupSize, product }: GroupDetailsFormProps) => {
   const { language } = useLanguage();
-  
+
+  // Make sure paymentType is always 'upfront'
+  const modifiedInit = { ...initialValues, paymentType: "upfront" };
   const form = useForm({
-    defaultValues: initialValues
+    defaultValues: modifiedInit
   });
 
   const watchAllFields = form.watch();
-  
+
   React.useEffect(() => {
-    onValuesChange(watchAllFields);
+    onValuesChange({ ...watchAllFields, paymentType: "upfront" });
+    // eslint-disable-next-line
   }, [watchAllFields, onValuesChange]);
 
   const content = {
@@ -56,11 +58,6 @@ const GroupDetailsForm = ({ initialValues, onValuesChange, maxGroupSize, product
         public: "Public - Anyone can discover and join",
         private: "Private - Only people with your link can join"
       },
-      payment: {
-        label: "Payment Type",
-        upFront: "Pay upfront",
-        onCompletion: "Pay when group completes"
-      },
       notifications: {
         label: "Notifications",
         description: "Get notified about your Jam3a activity",
@@ -74,7 +71,8 @@ const GroupDetailsForm = ({ initialValues, onValuesChange, maxGroupSize, product
         discounted: "Jam3a Price:",
         savings: "Your Savings:",
         message: "The more people join, the more you save!"
-      }
+      },
+      upfrontLabel: "Pay upfront (required)"
     },
     ar: {
       title: "تكوين الجمعة الخاصة بك",
@@ -94,11 +92,6 @@ const GroupDetailsForm = ({ initialValues, onValuesChange, maxGroupSize, product
         public: "عام - يمكن لأي شخص اكتشافها والانضمام إليها",
         private: "خاص - فقط الأشخاص الذين لديهم رابطك يمكنهم الانضمام"
       },
-      payment: {
-        label: "نوع الدفع",
-        upFront: "الدفع مقدمًا",
-        onCompletion: "الدفع عند اكتمال المجموعة"
-      },
       notifications: {
         label: "الإشعارات",
         description: "الحصول على إشعارات حول نشاط الجمعة الخاصة بك",
@@ -112,19 +105,20 @@ const GroupDetailsForm = ({ initialValues, onValuesChange, maxGroupSize, product
         discounted: "سعر الجمعة:",
         savings: "توفيرك:",
         message: "كلما انضم المزيد من الأشخاص، كلما وفرت أكثر!"
-      }
+      },
+      upfrontLabel: "الدفع مقدمًا (إجباري)"
     }
   };
-  
+
   // Find current discount based on group size
   const currentDiscount = product?.discounts?.find(
     (d: any) => watchAllFields.groupSize >= d.minCount
   ) || { price: product?.price, savings: "0%" };
-  
+
   const originalPrice = product?.price || 0;
   const discountedPrice = currentDiscount.price;
   const savings = originalPrice - discountedPrice;
-  const savingsPercentage = (savings / originalPrice * 100).toFixed(0);
+  const savingsPercentage = (originalPrice > 0) ? (savings / originalPrice * 100).toFixed(0) : "0";
 
   return (
     <div className="space-y-6">
@@ -132,10 +126,10 @@ const GroupDetailsForm = ({ initialValues, onValuesChange, maxGroupSize, product
         <h2 className="text-2xl font-bold">{content[language].title}</h2>
         <p className="text-muted-foreground mt-2">{content[language].description}</p>
       </div>
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-4">
-          <Card>
+          <Card className="shadow-md border-2 border-royal-blue/10">
             <CardContent className="p-6">
               <Form {...form}>
                 <div className="space-y-6">
@@ -168,7 +162,7 @@ const GroupDetailsForm = ({ initialValues, onValuesChange, maxGroupSize, product
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={form.control}
                     name="duration"
@@ -196,7 +190,7 @@ const GroupDetailsForm = ({ initialValues, onValuesChange, maxGroupSize, product
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={form.control}
                     name="isPublic"
@@ -215,41 +209,22 @@ const GroupDetailsForm = ({ initialValues, onValuesChange, maxGroupSize, product
                           </FormControl>
                         </div>
                         <FormDescription>
-                          {field.value 
+                          {field.value
                             ? content[language].visibility.public
                             : content[language].visibility.private}
                         </FormDescription>
                       </FormItem>
                     )}
                   />
-                  
-                  <FormField
-                    control={form.control}
-                    name="paymentType"
-                    render={({ field }) => (
-                      <FormItem className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <Calendar className="h-4 w-4 text-royal-blue" />
-                          <FormLabel>{content[language].payment.label}</FormLabel>
-                        </div>
-                        <RadioGroup
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          className="grid grid-cols-2 gap-2"
-                        >
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="upfront" id="upfront" />
-                            <Label htmlFor="upfront">{content[language].payment.upFront}</Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="completion" id="completion" />
-                            <Label htmlFor="completion">{content[language].payment.onCompletion}</Label>
-                          </div>
-                        </RadioGroup>
-                      </FormItem>
-                    )}
-                  />
-                  
+
+                  {/* Remove paymentType radio/selection and just display single label */}
+                  <div className="space-y-2 flex items-center gap-2">
+                    <svg stroke="currentColor" fill="none" strokeWidth={2} viewBox="0 0 24 24" className="h-4 w-4 text-royal-blue" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="2"/><path d="M2 10h20" stroke="currentColor" strokeWidth="2"/><path d="M6 16h.01" stroke="currentColor" strokeWidth="2"/></svg>
+                    <span className="font-semibold text-royal-blue">
+                      {content[language].upfrontLabel}
+                    </span>
+                  </div>
+
                   <FormField
                     control={form.control}
                     name="notificationPreference"
@@ -288,28 +263,28 @@ const GroupDetailsForm = ({ initialValues, onValuesChange, maxGroupSize, product
             </CardContent>
           </Card>
         </div>
-        
+
         <div>
-          <Card className="bg-gradient-to-br from-royal-blue-50 to-white">
+          <Card className="bg-gradient-to-br from-royal-blue-50 to-white shadow-md border-2 border-royal-blue/10">
             <CardContent className="p-6">
               <h3 className="font-semibold text-lg mb-4">{content[language].pricePreview.title}</h3>
-              
+
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="text-muted-foreground">{content[language].pricePreview.original}</span>
                   <span>{originalPrice} SAR</span>
                 </div>
-                
+
                 <div className="flex justify-between items-center">
                   <span className="text-royal-blue font-medium">{content[language].pricePreview.discounted}</span>
                   <span className="text-royal-blue font-bold">{discountedPrice} SAR</span>
                 </div>
-                
+
                 <div className="flex justify-between items-center">
                   <span className="text-green-600">{content[language].pricePreview.savings}</span>
                   <span className="text-green-600 font-bold">{savings} SAR ({savingsPercentage}%)</span>
                 </div>
-                
+
                 <div className="mt-6 pt-4 border-t border-gray-200 text-center">
                   <p className="text-sm italic">{content[language].pricePreview.message}</p>
                 </div>

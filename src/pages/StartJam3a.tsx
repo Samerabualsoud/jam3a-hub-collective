@@ -30,7 +30,7 @@ const StartJam3aPage = () => {
     groupSize: 5,
     duration: 1, // 1 = 24 hours, 2 = 3 days, etc.
     isPublic: true,
-    paymentType: "completion",
+    paymentType: "upfront",     // Always "upfront"
     notificationPreference: "email"
   });
   
@@ -106,7 +106,7 @@ const StartJam3aPage = () => {
       });
       return;
     }
-    
+
     if (step === 1 && !selectedProduct) {
       toast({
         title: language === 'en' ? "Please select a product" : "الرجاء اختيار منتج",
@@ -149,7 +149,7 @@ const StartJam3aPage = () => {
     <div className="flex flex-col min-h-screen">
       <Header />
       <main className="flex-1 container mx-auto py-8 px-4 lg:py-12">
-        <motion.div 
+        <motion.div
           className="max-w-4xl mx-auto"
           initial="initial"
           animate="animate"
@@ -162,9 +162,9 @@ const StartJam3aPage = () => {
               {content[language].title}
             </h1>
             <div className="mb-8">
-              <StepIndicator 
-                steps={content[language].steps} 
-                currentStep={step} 
+              <StepIndicator
+                steps={content[language].steps}
+                currentStep={step}
                 className="mt-6"
               />
             </div>
@@ -173,35 +173,35 @@ const StartJam3aPage = () => {
           <Card className="border-2 border-gray-100 shadow-md">
             <CardContent className="p-6 md:p-8">
               {step === 0 && (
-                <CategorySelection 
-                  onSelect={handleCategorySelect} 
+                <CategorySelection
+                  onSelect={handleCategorySelect}
                 />
               )}
-              
+
               {step === 1 && (
-                <ProductSelection 
+                <ProductSelection
                   products={sampleProducts}
                   selectedProductId={selectedProduct?.id || null}
                   onSelect={handleProductSelect}
                 />
               )}
-              
+
               {step === 2 && selectedProduct && (
-                <GroupDetailsForm 
-                  initialValues={formValues}
-                  onValuesChange={setFormValues}
+                <GroupDetailsForm
+                  initialValues={{ ...formValues, paymentType: "upfront" }}
+                  onValuesChange={(v) => setFormValues({ ...v, paymentType: "upfront" })}
                   maxGroupSize={10}
                   product={selectedProduct}
                 />
               )}
-              
+
               {step === 3 && selectedProduct && (
                 <ConfirmationStep
                   product={selectedProduct}
                   groupSize={formValues.groupSize}
                   duration={formValues.duration}
                   isPublic={formValues.isPublic}
-                  paymentType={formValues.paymentType}
+                  paymentType="upfront"
                   onShare={handleShareJam3a}
                   isStartingJam3a={true}
                 />
@@ -211,8 +211,8 @@ const StartJam3aPage = () => {
 
           {step < 3 && (
             <div className="flex justify-between mt-8">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={handlePrevious}
                 disabled={step === 0}
                 className="gap-2"
@@ -220,7 +220,7 @@ const StartJam3aPage = () => {
                 <ArrowLeft className="h-4 w-4" />
                 {content[language].previous}
               </Button>
-              <Button 
+              <Button
                 variant="green"
                 onClick={handleNext}
                 className="gap-2"

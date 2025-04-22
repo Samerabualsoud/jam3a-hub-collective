@@ -17,19 +17,19 @@ interface ConfirmationStepProps {
   isStartingJam3a?: boolean;
 }
 
-const ConfirmationStep = ({ 
-  product, 
-  groupSize, 
-  duration, 
-  isPublic, 
-  paymentType, 
+const ConfirmationStep = ({
+  product,
+  groupSize,
+  duration,
+  isPublic,
+  paymentType,
   onShare,
   isStartingJam3a = true
 }: ConfirmationStepProps) => {
   const { language } = useLanguage();
   const { toast } = useToast();
   const [shareUrl] = React.useState(`https://jam3a.app/join/${Math.random().toString(36).substring(2, 8)}`);
-  
+
   const getDurationText = (duration: number) => {
     const options = {
       en: ["24 hours", "3 days", "7 days", "14 days"],
@@ -37,7 +37,7 @@ const ConfirmationStep = ({
     };
     return options[language][duration - 1] || options[language][0];
   };
-  
+
   const handleCopyLink = () => {
     navigator.clipboard.writeText(shareUrl);
     toast({
@@ -45,12 +45,12 @@ const ConfirmationStep = ({
       description: language === 'en' ? "Share it with your friends" : "شاركه مع أصدقائك",
     });
   };
-  
+
   const content = {
     en: {
       title: isStartingJam3a ? "Your Jam3a is Ready!" : "Confirm Joining Jam3a",
-      description: isStartingJam3a 
-        ? "Share with friends and start saving together" 
+      description: isStartingJam3a
+        ? "Share with friends and start saving together"
         : "Review the details before joining this group",
       summary: {
         title: "Summary",
@@ -61,8 +61,7 @@ const ConfirmationStep = ({
         payment: "Payment",
         public: "Public",
         private: "Private",
-        upfront: "Pay Upfront",
-        completion: "Pay on Completion"
+        upfront: "Pay Upfront"
       },
       shareTitle: "Share with Friends",
       shareDescription: "The more friends join, the more everyone saves!",
@@ -79,8 +78,8 @@ const ConfirmationStep = ({
     },
     ar: {
       title: isStartingJam3a ? "جمعتك جاهزة!" : "تأكيد الانضمام للجمعة",
-      description: isStartingJam3a 
-        ? "شارك مع الأصدقاء وابدأ التوفير معًا" 
+      description: isStartingJam3a
+        ? "شارك مع الأصدقاء وابدأ التوفير معًا"
         : "راجع التفاصيل قبل الانضمام إلى هذه المجموعة",
       summary: {
         title: "الملخص",
@@ -91,8 +90,7 @@ const ConfirmationStep = ({
         payment: "الدفع",
         public: "عام",
         private: "خاص",
-        upfront: "الدفع مقدمًا",
-        completion: "الدفع عند الاكتمال"
+        upfront: "الدفع مقدمًا"
       },
       shareTitle: "شارك مع الأصدقاء",
       shareDescription: "كلما انضم المزيد من الأصدقاء، كلما وفر الجميع أكثر!",
@@ -111,7 +109,7 @@ const ConfirmationStep = ({
 
   // Current discount based on group size
   const currentDiscount = product?.discounts?.find(d => groupSize >= d.minCount);
-  
+
   return (
     <div className="space-y-8">
       <div className="text-center">
@@ -121,12 +119,12 @@ const ConfirmationStep = ({
         <h2 className="text-2xl font-bold">{content[language].title}</h2>
         <p className="text-muted-foreground mt-2">{content[language].description}</p>
       </div>
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardContent className="p-6 space-y-4">
             <h3 className="text-lg font-semibold mb-4">{content[language].summary.title}</h3>
-            
+
             {product && (
               <div className="flex items-center gap-4 mb-4">
                 <div className="w-16 h-16 bg-gray-100 rounded-md overflow-hidden flex-shrink-0">
@@ -143,7 +141,7 @@ const ConfirmationStep = ({
                 </div>
               </div>
             )}
-            
+
             <div className="space-y-3 divide-y">
               <div className="flex justify-between py-2">
                 <span className="text-muted-foreground">{content[language].summary.groupSize}</span>
@@ -152,7 +150,7 @@ const ConfirmationStep = ({
                   {groupSize} people
                 </span>
               </div>
-              
+
               <div className="flex justify-between py-2">
                 <span className="text-muted-foreground">{content[language].summary.duration}</span>
                 <span className="font-medium flex items-center">
@@ -160,31 +158,31 @@ const ConfirmationStep = ({
                   {getDurationText(duration)}
                 </span>
               </div>
-              
+
               <div className="flex justify-between py-2">
                 <span className="text-muted-foreground">{content[language].summary.visibility}</span>
                 <span className="font-medium">
                   {isPublic ? content[language].summary.public : content[language].summary.private}
                 </span>
               </div>
-              
+
               <div className="flex justify-between py-2">
                 <span className="text-muted-foreground">{content[language].summary.payment}</span>
-                <span className="font-medium">
-                  {paymentType === "upfront" ? content[language].summary.upfront : content[language].summary.completion}
+                <span className="font-medium text-royal-blue">
+                  {content[language].summary.upfront}
                 </span>
               </div>
             </div>
           </CardContent>
         </Card>
-        
+
         {isStartingJam3a && (
-          <Card className="bg-gradient-to-br from-royal-blue-50 to-white">
+          <Card className="bg-gradient-to-br from-royal-blue-50 to-white shadow-md border-2 border-royal-blue/10">
             <CardContent className="p-6">
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">{content[language].shareTitle}</h3>
                 <p className="text-muted-foreground">{content[language].shareDescription}</p>
-                
+
                 <div className="flex items-center gap-2 bg-white rounded-md border p-2">
                   <div className="flex-1 truncate text-sm p-2">
                     {shareUrl}
@@ -194,12 +192,12 @@ const ConfirmationStep = ({
                     {content[language].copyLink}
                   </Button>
                 </div>
-                
+
                 <Button onClick={onShare} variant="green" className="w-full">
                   <Share2 className="h-4 w-4 mr-2" />
                   {content[language].shareNow}
                 </Button>
-                
+
                 <div className="mt-6 pt-4 border-t">
                   <h4 className="font-medium mb-2">Benefits:</h4>
                   <ul className="space-y-2">
@@ -216,7 +214,7 @@ const ConfirmationStep = ({
           </Card>
         )}
       </div>
-      
+
       {!isStartingJam3a && (
         <Button variant="green" className="w-full max-w-md mx-auto py-6 text-lg">
           {content[language].joinNow}
