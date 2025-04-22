@@ -60,8 +60,7 @@ export const fetchContentSections = async () => {
   try {
     console.log("Starting to fetch content sections");
     
-    // Fetch content for all languages
-    const { data, error } = await supabase
+    const { data: existingData, error } = await supabase
       .from('content_sections')
       .select('*')
       .order('created_at', { ascending: false });
@@ -71,8 +70,50 @@ export const fetchContentSections = async () => {
       throw error;
     }
 
-    console.log("Fetched content sections:", data);
-    return data || [];
+    // If no data exists, create default sections
+    if (!existingData || existingData.length === 0) {
+      const defaultSections = [
+        {
+          name: "About Us Content",
+          path: "/about",
+          type: "section",
+          content: JSON.stringify({
+            title: "About Jam3a",
+            subtitle: "The Power of Buying Together",
+            intro: "Jam3a is Saudi Arabia's first group-buying platform...",
+            // Add other about content structure
+          })
+        },
+        {
+          name: "FAQ Content",
+          path: "/faq",
+          type: "section",
+          content: JSON.stringify([
+            {
+              question: "What is Jam3a?",
+              answer: "Jam3a is a social shopping platform where people team up to get better prices on products..."
+            },
+            // Add other FAQ items
+          ])
+        }
+      ];
+
+      // Insert default sections
+      const { data: insertedData, error: insertError } = await supabase
+        .from('content_sections')
+        .insert(defaultSections)
+        .select();
+
+      if (insertError) {
+        console.error("Error inserting default sections:", insertError);
+        throw insertError;
+      }
+
+      return insertedData || [];
+    }
+
+    console.log("Fetched content sections:", existingData);
+    return existingData;
   } catch (error) {
     console.error("Exception in fetchContentSections:", error);
     throw error;
