@@ -135,23 +135,7 @@ const StartJam3a = () => {
   // Render category selection step
   const renderCategorySelection = () => {
     return (
-      <div className="space-y-6" dir={language === 'ar' ? 'rtl' : 'ltr'}>
-        <h2 className="text-2xl font-bold">{currentContent.stepTitles[0]}</h2>
-        <p className="text-muted-foreground">{currentContent.selectCategoryText}</p>
-        
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          {currentContent.categories.map((category) => (
-            <button
-              key={category.id}
-              onClick={() => handleCategorySelect(category.id)}
-              className="flex flex-col items-center justify-center p-6 border-2 rounded-lg transition-all hover:border-royal-blue hover:bg-royal-blue/5"
-            >
-              <span className="text-3xl mb-2">{category.icon}</span>
-              <span className="text-sm font-medium text-center">{category.name}</span>
-            </button>
-          ))}
-        </div>
-      </div>
+      <CategorySelection onSelect={handleCategorySelect} />
     );
   };
   
@@ -160,106 +144,13 @@ const StartJam3a = () => {
     const products = getProducts();
     
     return (
-      <div className="space-y-6" dir={language === 'ar' ? 'rtl' : 'ltr'}>
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold">{currentContent.stepTitles[1]}</h2>
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => setCurrentStep(0)}
-            className="flex items-center gap-1"
-          >
-            {language === 'ar' ? (
-              <>
-                {currentContent.categories.find(c => c.id === selectedCategory)?.name} <ChevronRight className="h-4 w-4" />
-              </>
-            ) : (
-              <>
-                <ChevronRight className="h-4 w-4 rotate-180" /> {currentContent.categories.find(c => c.id === selectedCategory)?.name}
-              </>
-            )}
-          </Button>
-        </div>
-        
-        <p className="text-muted-foreground">{currentContent.selectProductText}</p>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {products.map((product) => (
-            <Card 
-              key={product.id} 
-              className={`overflow-hidden cursor-pointer transition-all ${
-                selectedProduct?.id === product.id ? 'border-royal-blue ring-2 ring-royal-blue/30' : 'hover:border-royal-blue/50'
-              }`}
-              onClick={() => handleProductSelect(product)}
-            >
-              <div className="aspect-video bg-gray-100 relative">
-                <img 
-                  src={product.image} 
-                  alt={product.name} 
-                  className="w-full h-full object-cover"
-                />
-                <Badge className="absolute top-2 right-2 bg-royal-blue">
-                  {language === 'en' ? 'Up to ' : 'يصل إلى '}
-                  {product.discounts[product.discounts.length - 1].savings} {language === 'en' ? 'OFF' : 'تخفيض'}
-                </Badge>
-              </div>
-              <CardContent className="p-4">
-                <h3 className="font-semibold text-lg mb-2">{product.name}</h3>
-                <div className="flex justify-between items-center">
-                  <span className="text-xl font-bold text-royal-blue">{product.price} {language === 'en' ? 'SAR' : 'ريال'}</span>
-                </div>
-              </CardContent>
-              <CardFooter className="p-4 pt-0">
-                <Button 
-                  variant={selectedProduct?.id === product.id ? "green" : "outline"}
-                  size="wide"
-                  className={selectedProduct?.id === product.id ? "text-white" : ""}
-                >
-                  {selectedProduct?.id === product.id 
-                    ? (language === 'en' ? 'Selected' : 'تم الاختيار')
-                    : (language === 'en' ? 'Select This Product' : 'اختر هذا المنتج')}
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
-        
-        <div className="flex justify-between">
-          <Button 
-            variant="outline" 
-            onClick={() => setCurrentStep(0)}
-            className="flex items-center gap-1"
-          >
-            {language === 'ar' ? (
-              <>
-                {currentContent.backButton} <ArrowRight className="h-4 w-4" />
-              </>
-            ) : (
-              <>
-                <ArrowLeft className="h-4 w-4" /> {currentContent.backButton}
-              </>
-            )}
-          </Button>
-          
-          {selectedProduct && (
-            <Button 
-              variant="green" 
-              onClick={() => setCurrentStep(2)}
-              className="group text-white"
-            >
-              {language === 'ar' ? (
-                <>
-                  {currentContent.nextButton} <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-                </>
-              ) : (
-                <>
-                  {currentContent.nextButton} <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </>
-              )}
-            </Button>
-          )}
-        </div>
-      </div>
+      <ProductSelection 
+        products={products}
+        selectedProduct={selectedProduct}
+        selectedCategory={selectedCategory}
+        onSelect={handleProductSelect}
+        onBack={() => setCurrentStep(0)}
+      />
     );
   };
   
@@ -324,7 +215,7 @@ const StartJam3a = () => {
                       {[3, 5, 7, 10, 15].map((count) => (
                         <button
                           key={count}
-                          onClick={() => setGroupSize(count)}
+                          onClick={() => handleGroupSizeChange(count)}
                           className={`px-4 py-2 rounded-full text-center transition-all ${
                             groupSize === count
                               ? 'bg-royal-blue text-white font-medium'
