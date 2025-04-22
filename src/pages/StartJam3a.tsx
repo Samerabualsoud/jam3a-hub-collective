@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -24,6 +24,11 @@ import {
 } from 'lucide-react';
 import Jam3aBenefits from '@/components/Jam3aBenefits';
 import { useNavigate } from 'react-router-dom';
+import { useJam3aCreation } from '@/hooks/useJam3aCreation';
+import CategorySelection from '@/components/jam3a/CategorySelection';
+import ProductSelection from '@/components/jam3a/ProductSelection';
+import SuccessState from '@/components/jam3a/SuccessState';
+import { getContent } from '@/utils/jam3aContent';
 
 const StartJam3a = () => {
   const { language } = useLanguage();
@@ -425,14 +430,14 @@ const StartJam3a = () => {
               ) : (
                 <>
                   {currentContent.nextButton} <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </>
-              )}
-            </Button>
-          )}
-        </div>
+              </>
+            )}
+          </Button>
+        )}
       </div>
-    );
-  };
+    </div>
+  );
+};
   
   // Render group size selection step
   const renderGroupSizeSelection = () => {
@@ -623,137 +628,4 @@ const StartJam3a = () => {
                     <div>
                       <h4 className="font-medium text-blue-800 mb-1">
                         {language === 'en' 
-                          ? 'Deposit is fully refundable' 
-                          : 'مبلغ التأمين قابل للاسترداد بالكامل'}
-                      </h4>
-                      <p className="text-sm text-blue-700">
-                        {language === 'en' 
-                          ? 'The 50 SAR deposit will be deducted from your final payment when the Jam3a is complete.' 
-                          : 'سيتم خصم مبلغ التأمين البالغ 50 ريال من دفعتك النهائية عند اكتمال الجمعة.'}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                
-                <Button 
-                  variant="green" 
-                  size="lg"
-                  onClick={handlePayAndPublish}
-                  className="mt-4 w-full text-white"
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <>
-                      <RotateCw className="h-4 w-4 animate-spin mr-2" />
-                      {language === 'en' ? 'Processing...' : 'جاري المعالجة...'}
-                    </>
-                  ) : (
-                    <>
-                      {currentContent.publishButton}
-                      <Send className="h-4 w-4 ml-2" />
-                    </>
-                  )}
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <div className="flex justify-start">
-          <Button 
-            variant="outline" 
-            onClick={() => setCurrentStep(2)}
-            className="flex items-center gap-1"
-            disabled={isLoading}
-          >
-            {language === 'ar' ? (
-              <>
-                {currentContent.backButton} <ArrowRight className="h-4 w-4" />
-              </>
-            ) : (
-              <>
-                <ArrowLeft className="h-4 w-4" /> {currentContent.backButton}
-              </>
-            )}
-          </Button>
-        </div>
-      </div>
-    );
-  };
-  
-  // Render success step
-  const renderSuccess = () => {
-    return (
-      <div className="text-center space-y-6">
-        <div className="inline-flex h-24 w-24 items-center justify-center rounded-full bg-green-100 text-green-600 mx-auto mb-4">
-          <Check className="h-12 w-12" />
-        </div>
-        
-        <h2 className="text-2xl font-bold">{currentContent.successTitle}</h2>
-        <p className="text-muted-foreground max-w-lg mx-auto">{currentContent.successText}</p>
-        
-        <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-          <Button 
-            variant="green" 
-            className="text-white"
-            onClick={() => navigate('/my-jam3as')}
-          >
-            {currentContent.viewJam3a}
-          </Button>
-          
-          <Button 
-            variant="outline" 
-            onClick={resetForm}
-          >
-            {currentContent.createAnother}
-          </Button>
-        </div>
-      </div>
-    );
-  };
-  
-  return (
-    <>
-      <Header />
-      <main className="flex-1">
-        <section className="py-12 px-4 bg-gradient-to-r from-royal-blue to-royal-blue-dark text-white">
-          <div className="container mx-auto text-center">
-            <h1 className="text-3xl md:text-4xl font-bold mb-4">{currentContent.title}</h1>
-            <p className="text-lg text-white/80 max-w-2xl mx-auto">{currentContent.subtitle}</p>
-          </div>
-        </section>
-        
-        <section className="py-12 px-4">
-          <div className="container mx-auto max-w-4xl">
-            {currentStep <= 3 && (
-              <div className="mb-10">
-                <StepIndicator currentStep={currentStep}>
-                  {currentContent.stepTitles.map((title, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      {getStepIcon(index)}
-                      <span>{title}</span>
-                    </div>
-                  ))}
-                </StepIndicator>
-              </div>
-            )}
-            
-            {renderStepContent()}
-            
-            {currentStep < 3 && (
-              <div className="mt-16">
-                <h3 className="text-xl font-semibold mb-6 text-center">
-                  {language === 'en' ? 'Why Start a Jam3a?' : 'لماذا تبدأ جمعة؟'}
-                </h3>
-                <Jam3aBenefits />
-              </div>
-            )}
-          </div>
-        </section>
-      </main>
-      <Footer />
-    </>
-  );
-};
-
-export default StartJam3a;
+                          ? 'Deposit is fully refundable

@@ -1,3 +1,4 @@
+
 export const getContent = (language: string) => ({
   en: {
     title: "Start Your Own Jam3a",
@@ -78,6 +79,8 @@ export const getContent = (language: string) => ({
     serviceFeesText: "Service fee (refundable): SAR 50",
     totalText: "Total to pay now: SAR 50",
     publishButton: "Pay & Publish Jam3a",
+    nextButton: "Continue",
+    backButton: "Back"
   },
   ar: {
     title: "ابدأ جمعتك الخاصة",
@@ -158,5 +161,7 @@ export const getContent = (language: string) => ({
     serviceFeesText: "رسوم الخدمة (قابلة للاسترداد): 50 ريال",
     totalText: "المجموع للدفع الآن: 50 ريال",
     publishButton: "دفع ونشر الجمعة",
+    nextButton: "متابعة",
+    backButton: "رجوع"
   }
 })[language];
