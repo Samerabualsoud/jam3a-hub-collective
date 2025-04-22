@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
@@ -62,7 +63,7 @@ const BilingualProductListing: React.FC = () => {
   const productData: Product[] = [
     {
       id: 1,
-      image: "https://images.unsplash.com/photo-1616348436168-de43ad0db179?auto=format&fit=crop&w=1600&q=80",
+      image: "https://images.unsplash.com/photo-1616348436168-de43ad0db179?auto=format&fit=crop&w=600&q=80", // iPhone relevant
       title: {
         en: "iPhone 16 Pro Max 256GB",
         ar: "آيفون 16 برو ماكس 256 جيجابايت"
@@ -72,8 +73,8 @@ const BilingualProductListing: React.FC = () => {
         ar: "جوال"
       },
       description: {
-        en: "Experience the latest innovation with revolutionary camera and A18 Pro chip",
-        ar: "استمتع بأحدث الابتكارات مع كاميرا ثورية وشريحة A18 برو"
+        en: "Experience the latest innovation with revolutionary camera and A18 Pro chip.",
+        ar: "استمتع بأحدث الابتكارات مع كاميرا ثورية وشريحة A18 برو."
       },
       originalPrice: 4999,
       groupPrices: [
@@ -96,7 +97,7 @@ const BilingualProductListing: React.FC = () => {
     },
     {
       id: 2,
-      image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81", // Updated TV image
+      image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?auto=format&fit=crop&w=600&q=80", // TV relevant
       title: {
         en: "Samsung 75\" 4K QLED TV",
         ar: "تلفاز سامسونج 75 بوصة QLED 4K"
@@ -106,8 +107,8 @@ const BilingualProductListing: React.FC = () => {
         ar: "تلفاز"
       },
       description: {
-        en: "Immersive viewing experience with Quantum Processor and Object Tracking Sound",
-        ar: "تجربة مشاهدة غامرة مع معالج كوانتم وتتبع الصوت للأجسام"
+        en: "Immersive viewing experience with Quantum Processor and Object Tracking Sound.",
+        ar: "تجربة مشاهدة غامرة مع معالج كوانتم وتتبع الصوت للأجسام."
       },
       originalPrice: 7999,
       groupPrices: [
@@ -125,7 +126,7 @@ const BilingualProductListing: React.FC = () => {
     },
     {
       id: 3,
-      image: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=1600&q=80",
+      image: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=600&q=80", // Laptop relevant
       title: {
         en: "MacBook Pro 16\" M3 Max",
         ar: "ماك بوك برو 16 بوصة M3 ماكس"
@@ -135,8 +136,8 @@ const BilingualProductListing: React.FC = () => {
         ar: "لابتوب"
       },
       description: {
-        en: "Revolutionary performance with M3 Max chip and stunning Liquid Retina XDR display",
-        ar: "أداء ثوري مع شريحة M3 ماكس وشاشة ليكويد ريتينا XDR المذهلة"
+        en: "Revolutionary performance with M3 Max chip and stunning Liquid Retina XDR display.",
+        ar: "أداء ثوري مع شريحة M3 ماكس وشاشة ليكويد ريتينا XDR المذهلة."
       },
       originalPrice: 11999,
       groupPrices: [
@@ -159,7 +160,7 @@ const BilingualProductListing: React.FC = () => {
     },
     {
       id: 4,
-      image: "https://images.unsplash.com/photo-1601944179066-29786cb9d32a?auto=format&fit=crop&w=1600&q=80",
+      image: "https://images.unsplash.com/photo-1601944179066-29786cb9d32a?auto=format&fit=crop&w=600&q=80", // OLED TV relevant
       title: {
         en: "LG 65\" OLED TV",
         ar: "تلفاز إل جي 65 بوصة OLED"
@@ -169,8 +170,8 @@ const BilingualProductListing: React.FC = () => {
         ar: "تلفاز"
       },
       description: {
-        en: "Perfect blacks and infinite contrast with self-lit pixels technology",
-        ar: "أسود مثالي وتباين لا نهائي مع تقنية البكسلات ذاتية الإضاءة"
+        en: "Perfect blacks and infinite contrast with self-lit pixels technology.",
+        ar: "أسود مثالي وتباين لا نهائي مع تقنية البكسلات ذاتية الإضاءة."
       },
       originalPrice: 6999,
       groupPrices: [
@@ -194,7 +195,7 @@ const BilingualProductListing: React.FC = () => {
   ];
 
   return (
-    <section className="py-16 md:py-24 bg-gradient-to-br from-white to-purple-50 overflow-hidden">
+    <section className="py-16 md:py-24 bg-gradient-to-br from-white to-royal-blue-50 overflow-hidden">
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex flex-col items-center space-y-4 text-center mb-10">
           <h2 className="text-3xl font-bold tracking-tight md:text-4xl" dir={language === 'ar' ? 'rtl' : 'ltr'}>
@@ -223,14 +224,14 @@ const BilingualProductListing: React.FC = () => {
               
               return (
                 <CarouselItem key={product.id} className="md:basis-1/2 lg:basis-1/3">
-                  <Card className="overflow-hidden border border-gray-200 h-full transition-all duration-300 hover:shadow-lg">
+                  <Card className="overflow-hidden border border-royal-blue-50 h-full transition-all duration-300 shadow-jam3a hover:shadow-jam3a-lg bg-gradient-to-br from-white via-royal-blue-50 to-white">
                     <div className="relative overflow-hidden">
                       <img
                         src={product.image}
                         alt={product.title[language]}
                         className="h-48 w-full object-cover transition-transform duration-300 hover:scale-105"
                       />
-                      <div className="absolute top-2 right-2 flex flex-col gap-2">
+                      <div className="absolute top-2 right-2 flex flex-col gap-2 z-10">
                         <Badge 
                           variant="default" 
                           className="bg-black/70 backdrop-blur-sm px-2 py-1 text-xs"
@@ -252,7 +253,7 @@ const BilingualProductListing: React.FC = () => {
                     <CardContent className="p-4">
                       <div dir={language === 'ar' ? 'rtl' : 'ltr'} className="space-y-3">
                         <div className="mb-1">
-                          <span className="text-xs text-muted-foreground">
+                          <span className="text-xs text-muted-foreground font-semibold">
                             {product.category[language]} {language === 'en' ? 'Jam3a' : 'جمعة'}
                           </span>
                         </div>
@@ -285,13 +286,13 @@ const BilingualProductListing: React.FC = () => {
 
                         <div className="mt-4 space-y-2">
                           <div className="flex items-center justify-between text-xs">
-                            <div className="flex items-center gap-1 text-muted-foreground">
+                            <div className="flex items-center gap-1 text-muted-foreground font-semibold">
                               <Users className="h-3.5 w-3.5" />
                               <span>
                                 {product.joinedCount} / {product.totalCount} {language === 'en' ? 'joined' : 'انضموا'}
                               </span>
                             </div>
-                            <div className="flex items-center gap-1 text-muted-foreground">
+                            <div className="flex items-center gap-1 text-muted-foreground font-semibold">
                               <Timer className="h-3.5 w-3.5" />
                               <span>{product.timeLeft[language]}</span>
                             </div>
@@ -303,7 +304,7 @@ const BilingualProductListing: React.FC = () => {
                     
                     <CardFooter className="p-4 pt-0" dir={language === 'ar' ? 'rtl' : 'ltr'}>
                       <div className="w-full space-y-2">
-                        <Button className="w-full bg-jam3a-purple hover:bg-jam3a-deep-purple">
+                        <Button className="w-full bg-jam3a-purple hover:bg-jam3a-deep-purple transition-all rounded-xl">
                           <Link to={`/join-jam3a?product=${encodeURIComponent(product.title[language])}&price=${product.groupPrices[product.groupPrices.length - 1].price} SAR&discount=${Math.round((product.originalPrice - product.groupPrices[product.groupPrices.length - 1].price) / product.originalPrice * 100)}%&category=${encodeURIComponent(product.category[language])}`}>
                             {language === 'en' ? 'Join Jam3a' : 'انضم للجمعة'}
                           </Link>
