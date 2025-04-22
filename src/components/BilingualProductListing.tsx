@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
@@ -208,14 +209,16 @@ const BilingualProductListing: React.FC = () => {
     }
   ];
 
+  // Carousel dot click
   const handlePaginationDotClick = (index: number) => (e: React.MouseEvent) => {
     e.preventDefault();
     setActiveIndex(index);
+    // If carousel ref available, also scroll carousel programmatically (not available here, simple UI only)
   };
 
   return (
-    <section className="py-20 md:py-28 overflow-hidden bg-gradient-to-br from-white to-royal-blue-50">
-      <div className="container mx-auto px-4 md:px-6">
+    <section className="py-20 md:py-28 overflow-x-hidden bg-gradient-to-br from-white to-royal-blue-50">
+      <div className="container mx-auto px-2 max-w-[100vw] md:px-6">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -240,8 +243,9 @@ const BilingualProductListing: React.FC = () => {
             align: "start",
             loop: true,
           }}
-          className="w-full max-w-6xl mx-auto"
-          onSelect={(index) => setActiveIndex(index)}
+          className="w-full max-w-6xl mx-auto min-h-[560px] md:min-h-[500px] overflow-visible"
+          // Remove onSelect, it's causing the error:
+          // onSelect={(index) => setActiveIndex(index)}
         >
           <CarouselContent>
             {productData.map((product, index) => {
@@ -257,12 +261,14 @@ const BilingualProductListing: React.FC = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: index * 0.1 }}
                   >
-                    <Card className="overflow-hidden border border-royal-blue-50 h-full transition-all duration-300 shadow-jam3a hover:shadow-jam3a-lg bg-gradient-to-br from-white via-royal-blue-50/30 to-white group">
-                      <div className="relative overflow-hidden">
+                    <Card className="flex flex-col h-full overflow-hidden border border-royal-blue-50 transition-all duration-300 shadow-jam3a hover:shadow-jam3a-lg bg-gradient-to-br from-white via-royal-blue-50/30 to-white group min-h-[580px] md:min-h-[540px]">
+                      {/* Responsive image with fixed aspect and overflow hidden to contain scale on hover */}
+                      <div className="relative overflow-hidden min-h-[208px] max-h-[230px] sm:max-h-[210px] md:max-h-[220px] flex">
                         <img
                           src={product.image}
                           alt={product.title[language]}
-                          className="h-52 w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                          className="w-full object-cover object-center h-full min-h-[208px] max-h-[230px] rounded-xl transition-transform duration-500 group-hover:scale-105"
+                          style={{ minHeight: 208, maxHeight: 230, width: '100%' }}
                         />
                         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                         <div className="absolute top-2 right-2 flex flex-col gap-2 z-10">
@@ -272,7 +278,6 @@ const BilingualProductListing: React.FC = () => {
                           >
                             {Math.round((product.originalPrice - product.groupPrices[product.groupPrices.length - 1].price) / product.originalPrice * 100)}% {language === 'en' ? 'OFF' : 'تخفيض'}
                           </Badge>
-                          
                           {product.tag && (
                             <Badge 
                               variant={product.tag.color as any} 
@@ -282,7 +287,6 @@ const BilingualProductListing: React.FC = () => {
                             </Badge>
                           )}
                         </div>
-                        
                         {product.rating && (
                           <div className="absolute bottom-2 left-2 flex items-center gap-1 bg-black/70 text-white px-2 py-1 rounded-full backdrop-blur-sm">
                             <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
@@ -290,8 +294,7 @@ const BilingualProductListing: React.FC = () => {
                           </div>
                         )}
                       </div>
-                      
-                      <CardContent className="p-5">
+                      <CardContent className="p-5 flex flex-col flex-1">
                         <div dir={language === 'ar' ? 'rtl' : 'ltr'} className="space-y-3">
                           <div className="mb-1">
                             <span className="text-xs text-royal-blue font-semibold flex items-center gap-1">
@@ -310,7 +313,6 @@ const BilingualProductListing: React.FC = () => {
                               {product.originalPrice} {language === 'en' ? 'SAR' : 'ريال'}
                             </span>
                           </div>
-
                           <div className="mt-3 space-y-3 bg-gray-50/80 p-4 rounded-lg border border-royal-blue-50">
                             <h4 className="text-sm font-medium flex items-center text-royal-blue-dark">
                               <BadgePercent className="h-4 w-4 mr-1" />
@@ -328,7 +330,6 @@ const BilingualProductListing: React.FC = () => {
                               ))}
                             </div>
                           </div>
-
                           {product.features && (
                             <div className="mt-2 flex flex-wrap gap-2">
                               {product.features.slice(0, 3).map((feature, idx) => (
@@ -343,7 +344,6 @@ const BilingualProductListing: React.FC = () => {
                               )}
                             </div>
                           )}
-
                           <div className="mt-4 space-y-2">
                             <div className="flex items-center justify-between text-xs">
                               <div className="flex items-center gap-1 text-muted-foreground font-semibold">
@@ -361,7 +361,6 @@ const BilingualProductListing: React.FC = () => {
                           </div>
                         </div>
                       </CardContent>
-                      
                       <CardFooter className="p-5 pt-0" dir={language === 'ar' ? 'rtl' : 'ltr'}>
                         <div className="w-full space-y-2">
                           <Button 
@@ -402,6 +401,8 @@ const BilingualProductListing: React.FC = () => {
                     activeIndex === index ? "w-8 bg-royal-blue" : "w-2.5 bg-gray-300"
                   }`}
                   onClick={handlePaginationDotClick(index)}
+                  aria-current={activeIndex === index ? "true" : "false"}
+                  aria-label={`Go to slide ${index + 1}`}
                 />
               ))}
             </div>
