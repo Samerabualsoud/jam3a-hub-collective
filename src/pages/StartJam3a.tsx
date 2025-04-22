@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -149,7 +150,7 @@ const StartJam3a = () => {
         selectedCategory={selectedCategory}
         onProductSelect={handleProductSelect}
         onBack={() => setCurrentStep(0)}
-        onNext={() => setCurrentStep(2)}
+        onNext={() => selectedProduct && setCurrentStep(2)}
       />
     );
   };
