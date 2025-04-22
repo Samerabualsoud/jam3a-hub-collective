@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
@@ -208,6 +209,7 @@ const BilingualProductListing: React.FC = () => {
     }
   ];
 
+  // Fix: Create a proper event handler function that returns another function
   const handlePaginationDotClick = (index: number) => (event: React.MouseEvent) => {
     event.preventDefault();
     setActiveIndex(index);
@@ -419,7 +421,7 @@ const BilingualProductListing: React.FC = () => {
               {language === 'en' ? (
                 <>View All Deals <ChevronRight className="h-5 w-5 transition-transform group-hover:translate-x-1" /></>
               ) : (
-                <>ع��ض جميع الصفقات <ChevronLeft className="h-5 w-5 transition-transform group-hover:-translate-x-1" /></>
+                <>عرض جميع الصفقات <ChevronLeft className="h-5 w-5 transition-transform group-hover:-translate-x-1" /></>
               )}
             </Link>
           </Button>
