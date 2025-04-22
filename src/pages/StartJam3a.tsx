@@ -1,6 +1,4 @@
-
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -25,6 +23,7 @@ import {
   ShieldCheck 
 } from 'lucide-react';
 import Jam3aBenefits from '@/components/Jam3aBenefits';
+import { useNavigate } from 'react-router-dom';
 
 const StartJam3a = () => {
   const { language } = useLanguage();
