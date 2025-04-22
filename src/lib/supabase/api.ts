@@ -307,11 +307,54 @@ const deleteDeal = async (id) => {
   }
 };
 
+// Add a method to get products by category slug
+const getProductsByCategorySlug = async (categorySlug: string) => {
+  try {
+    // Get the category ID from slug
+    const { data: categories, error: catErr } = await supabaseClient
+      .from('product_categories')
+      .select('id,slug')
+      .eq('slug', categorySlug);
+
+    if (catErr || !categories?.[0]) return [];
+
+    const categoryId = categories[0].id;
+
+    // Fetch products in that category
+    const { data: products, error: prodErr } = await supabaseClient
+      .from('products_catalog')
+      .select(`
+        id, name, slug, description, price, image_url,
+        discounts:product_discounts(id, min_count, price, savings)
+      `)
+      .eq('category_id', categoryId);
+
+    if (prodErr || !products) return [];
+
+    // Map to Product format expected by ProductSelection
+    return products.map((p: any) => ({
+      id: p.id,
+      name: p.name,
+      image: p.image_url,
+      price: Number(p.price),
+      discounts: (p.discounts || []).map((d: any) => ({
+        minCount: d.min_count,
+        price: Number(d.price),
+        savings: d.savings
+      }))
+    }));
+  } catch (err) {
+    console.error("Error fetching live products by category:", err);
+    return [];
+  }
+};
+
 // Hook to provide access to the API functions
 export const useSupabaseApi = () => {
   return {
     hasSupabaseConfig,
     getProducts,
+    getProductsByCategorySlug,
     getOrders,
     updateOrderStatus,
     getProfiles,

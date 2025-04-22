@@ -74,6 +74,19 @@ const ProductsManager = () => {
 
   const handleImportProducts = async (products) => {
     try {
+      // If extra.com is selected, fetch from the edge function
+      if (Array.isArray(products) && products.__fromExtraCom) {
+        const { fetchAndSaveExtraProducts } = await import('@/utils/fetchExtraProducts');
+        await fetchAndSaveExtraProducts();
+        await loadData();
+        setShowWebScraper(false);
+        toast({
+          title: "Success",
+          description: "Products imported live from extra.com!",
+        });
+        return;
+      }
+
       // Check if we're in demo mode without Supabase
       const hasSupabaseConfig = import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY;
       

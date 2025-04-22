@@ -13,6 +13,7 @@ import GroupDetailsForm from '@/components/jam3a/GroupDetailsForm';
 import ConfirmationStep from '@/components/jam3a/ConfirmationStep';
 import { StepIndicator } from '@/components/ui/step-indicator';
 import { motion } from 'framer-motion';
+import { useSupabaseApi } from '@/lib/supabase/api';
 
 const StartJam3aPage = () => {
   const { language } = useLanguage();
@@ -32,7 +33,11 @@ const StartJam3aPage = () => {
     paymentType: "upfront",     // Always "upfront"
     notificationPreference: "email"
   });
-  
+
+  const [products, setProducts] = useState([]);
+  const [productsLoading, setProductsLoading] = useState(false);
+  const supabaseApi = useSupabaseApi();
+
   const sampleProducts = [
     {
       id: 1,
@@ -159,6 +164,24 @@ const StartJam3aPage = () => {
     exit: { opacity: 0, y: -20 }
   };
 
+  useEffect(() => {
+    if (step === 1 && selectedCategory) {
+      setProductsLoading(true);
+      (async () => {
+        try {
+          const catalog = await supabaseApi.getProductsByCategorySlug
+            ? await supabaseApi.getProductsByCategorySlug(selectedCategory)
+            : [];
+          setProducts(catalog);
+        } catch (err) {
+          setProducts([]);
+        } finally {
+          setProductsLoading(false);
+        }
+      })();
+    }
+  }, [step, selectedCategory]);
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -197,11 +220,10 @@ const StartJam3aPage = () => {
 
               {step === 1 && (
                 <ProductSelection
-                  products={selectedCategory
-                    ? sampleProducts.filter(p => p.categoryId === selectedCategory)
-                    : []}
+                  products={products}
                   selectedProductId={selectedProduct?.id || null}
                   onSelect={handleProductSelect}
+                  loading={productsLoading}
                 />
               )}
 
