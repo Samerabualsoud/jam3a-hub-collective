@@ -7,7 +7,7 @@ import { Plus, Loader2, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { fetchContentSections, fetchBanners, fetchPages, fetchFAQs, saveContentSection, saveBanner, savePage, saveFAQ, deleteContentSection, deleteBanner, deletePage, deleteFAQ } from "@/components/admin/content/contentUtils";
-import ContentEditor from "./content/ContentEditor";
+import ContentEditor, { ContentItemProps } from "./content/ContentEditor";
 import ContentList from "./content/ContentList";
 
 // Define a type for the activeTab state to match ContentList's type prop
@@ -148,6 +148,7 @@ const ContentManager = () => {
     return (
       <ContentEditor 
         type={activeTab}
+        content={null} // Pass null explicitly for new content
         onSave={handleSaveContent}
         onCancel={() => setIsAddingContent(false)}
       />

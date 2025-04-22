@@ -22,6 +22,24 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+// Define the content interface to match our expected props
+export interface ContentItemProps {
+  id?: string;
+  name?: string;
+  content?: string;
+  path?: string;
+  type?: string;
+  language?: string;
+  title?: string;
+  question?: string;
+  answer?: string;
+  category?: string;
+  slug?: string;
+  active?: boolean;
+  link?: string;
+  [key: string]: any;
+}
+
 const contentSchema = z.object({
   name: z.string().min(1, "Name is required"),
   content: z.string().optional(),
@@ -31,7 +49,17 @@ const contentSchema = z.object({
   // Add other fields based on content type
 });
 
-const ContentEditor = ({ type, content, onSave, onCancel }) => {
+const ContentEditor = ({ 
+  type, 
+  content = null, // Make content optional with default value
+  onSave, 
+  onCancel 
+}: { 
+  type: string;
+  content?: ContentItemProps | null; // Make it optional
+  onSave: (data: any) => void;
+  onCancel: () => void;
+}) => {
   const form = useForm({
     resolver: zodResolver(contentSchema),
     defaultValues: {
