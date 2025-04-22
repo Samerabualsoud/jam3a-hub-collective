@@ -80,7 +80,13 @@ export const getContent = (language: string) => ({
     totalText: "Total to pay now: SAR 50",
     publishButton: "Pay & Publish Jam3a",
     nextButton: "Continue",
-    backButton: "Back"
+    backButton: "Back",
+    groupSizeTitle: "Set Your Group Size",
+    groupSizeText: "Select how many people need to join for the deal to activate. Larger groups lead to better discounts!",
+    originalPriceText: "Original price:",
+    savingsText: "Group discount:",
+    finalPriceText: "Your final price:",
+    minPeopleText: "Minimum people:"
   },
   ar: {
     title: "ابدأ جمعتك الخاصة",
@@ -162,6 +168,12 @@ export const getContent = (language: string) => ({
     totalText: "المجموع للدفع الآن: 50 ريال",
     publishButton: "دفع ونشر الجمعة",
     nextButton: "متابعة",
-    backButton: "رجوع"
+    backButton: "رجوع",
+    groupSizeTitle: "حدد حجم مجموعتك",
+    groupSizeText: "حدد عدد الأشخاص المطلوب انضمامهم لتفعيل الصفقة. المجموعات الأكبر تؤدي إلى خصومات أفضل!",
+    originalPriceText: "السعر الأصلي:",
+    savingsText: "خصم المجموعة:",
+    finalPriceText: "السعر النهائي لك:",
+    minPeopleText: "الحد الأدنى للأشخاص:"
   }
 })[language];

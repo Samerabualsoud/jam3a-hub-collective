@@ -69,8 +69,11 @@ const StartJam3a = () => {
   const handleGroupSizeChange = (size) => {
     setGroupSize(size);
     // Find the appropriate discount tier based on group size
+    if (!selectedProduct) return;
+    
     const discountIndex = selectedProduct.discounts.findIndex(
-      d => size >= d.minCount && (size < selectedProduct.discounts[discountIndex + 1]?.minCount || discountIndex === selectedProduct.discounts.length - 1)
+      d => size >= d.minCount && (d === selectedProduct.discounts[selectedProduct.discounts.length - 1] || 
+        size < selectedProduct.discounts[selectedProduct.discounts.findIndex(x => x === d) + 1]?.minCount)
     );
     
     setDiscountTier(Math.max(0, discountIndex));
@@ -531,9 +534,8 @@ const StartJam3a = () => {
             <div className="mb-8">
               <StepIndicator
                 currentStep={currentStep}
-                steps={currentContent.stepTitles.map((title, index) => ({
-                  title,
-                  icon: getStepIcon(index)
+                steps={currentContent.stepTitles.map((title) => ({
+                  label: title
                 }))}
               />
             </div>
