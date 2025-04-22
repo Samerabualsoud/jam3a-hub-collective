@@ -1,69 +1,112 @@
 
 import React from 'react';
-import { BadgePercent, Users, ShieldCheck } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { BadgePercent, Clock, CreditCard, Shield, Users, Check } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface Jam3aBenefitsProps {
-  variant?: 'default' | 'compact';
   className?: string;
 }
 
-const Jam3aBenefits: React.FC<Jam3aBenefitsProps> = ({ 
-  variant = 'default',
-  className = ''
-}) => {
+const Jam3aBenefits: React.FC<Jam3aBenefitsProps> = ({ className }) => {
   const { language } = useLanguage();
+  
+  const benefits = {
+    en: [
+      {
+        icon: BadgePercent,
+        title: 'Better Prices',
+        description: 'Save up to 25% on retail prices with group buying power'
+      },
+      {
+        icon: Users,
+        title: 'Social Shopping',
+        description: 'Connect with friends and family to shop together'
+      },
+      {
+        icon: Shield,
+        title: '100% Guaranteed',
+        description: 'Money-back guarantee if you're not satisfied'
+      },
+      {
+        icon: Clock,
+        title: 'Time-Limited',
+        description: 'Dynamic pricing that rewards quick group formation'
+      },
+      {
+        icon: CreditCard,
+        title: 'Secure Payment',
+        description: 'Trusted payment options with full encryption'
+      }
+    ],
+    ar: [
+      {
+        icon: BadgePercent,
+        title: 'أسعار أفضل',
+        description: 'وفر حتى 25% من أسعار التجزئة مع قوة الشراء الجماعي'
+      },
+      {
+        icon: Users,
+        title: 'تسوق اجتماعي',
+        description: 'تواصل مع الأصدقاء والعائلة للتسوق معًا'
+      },
+      {
+        icon: Shield,
+        title: 'مضمون 100%',
+        description: 'ضمان استرداد الأموال إذا لم تكن راضيًا'
+      },
+      {
+        icon: Clock,
+        title: 'محدود الوقت',
+        description: 'تسعير ديناميكي يكافئ تشكيل المجموعة السريع'
+      },
+      {
+        icon: CreditCard,
+        title: 'دفع آمن',
+        description: 'خيارات دفع موثوقة مع تشفير كامل'
+      }
+    ]
+  };
 
-  const benefits = [
-    {
-      icon: BadgePercent,
-      title: language === 'en' ? 'Group Discount' : 'خصم جماعي',
-      description: language === 'en' ? 'Save by purchasing as a group' : 'وفر عن طريق الشراء كمجموعة'
-    },
-    {
-      icon: Users,
-      title: language === 'en' ? 'Safe & Secure' : 'آمن ومضمون',
-      description: language === 'en' ? 'Protected payment process' : 'عملية دفع محمية'
-    },
-    {
-      icon: ShieldCheck,
-      title: language === 'en' ? 'Money-Back Guarantee' : 'ضمان استرداد الأموال',
-      description: language === 'en' ? 'Full refund if group doesn\'t fill' : 'استرداد كامل إذا لم تمتلئ المجموعة'
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: { 
+        staggerChildren: 0.1,
+        delayChildren: 0.2
+      }
     }
-  ];
+  };
 
-  if (variant === 'compact') {
-    return (
-      <div className={`flex flex-wrap gap-2 ${className}`}>
-        {benefits.map((benefit, idx) => (
-          <div key={idx} className="flex items-center gap-1 text-sm text-royal-blue bg-royal-blue-50 px-2 py-1 rounded-full">
-            {React.createElement(benefit.icon, { size: 14 })}
-            <span>{benefit.title}</span>
-          </div>
-        ))}
-      </div>
-    );
-  }
+  const itemVariants = {
+    hidden: { y: 10, opacity: 0 },
+    visible: { y: 0, opacity: 1 }
+  };
 
   return (
-    <div className={`mt-8 ${className}`}>
-      <h3 className="font-semibold mb-4 text-lg">
-        {language === 'en' ? 'Jam3a Benefits' : 'مميزات الجمعة'}
-      </h3>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {benefits.map((benefit, idx) => (
-          <div key={idx} className="flex items-start p-3 bg-royal-blue-50 rounded-lg hover:bg-royal-blue-100 transition-colors">
-            <div className="mr-3 text-royal-blue">
-              {React.createElement(benefit.icon, { size: 20 })}
-            </div>
-            <div>
-              <h4 className="font-medium">{benefit.title}</h4>
-              <p className="text-sm text-muted-foreground">{benefit.description}</p>
-            </div>
+    <motion.div 
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className={`grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 ${className}`}
+      dir={language === 'ar' ? 'rtl' : 'ltr'}
+    >
+      {benefits[language].map((benefit, index) => (
+        <motion.div 
+          key={index} 
+          variants={itemVariants}
+          className="flex flex-col items-center text-center p-4"
+        >
+          <div className="flex items-center justify-center w-14 h-14 bg-white/20 rounded-full mb-4">
+            <benefit.icon size={24} />
           </div>
-        ))}
-      </div>
-    </div>
+          <h4 className="text-lg font-semibold mb-2">{benefit.title}</h4>
+          <p className="text-sm opacity-85">{benefit.description}</p>
+        </motion.div>
+      ))}
+    </motion.div>
   );
 };
 
