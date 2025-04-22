@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -8,7 +9,8 @@ import { Separator } from '@/components/ui/separator';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
-import Jam3aBenefits from './Jam3aBenefits';
+import Jam3aBenefits from '@/components/Jam3aBenefits';
+import CategorySelection from '@/components/jam3a/CategorySelection';
 
 const StartJam3aPage = () => {
   const [activeTab, setActiveTab] = React.useState("category");
@@ -17,6 +19,22 @@ const StartJam3aPage = () => {
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
+  };
+
+  const handleNext = () => {
+    if (activeTab === "category") {
+      setActiveTab("product");
+    } else if (activeTab === "product") {
+      setActiveTab("details");
+    }
+  };
+
+  const handlePrevious = () => {
+    if (activeTab === "product") {
+      setActiveTab("category");
+    } else if (activeTab === "details") {
+      setActiveTab("product");
+    }
   };
 
   return (
@@ -43,21 +61,24 @@ const StartJam3aPage = () => {
             <Separator className="my-4" />
             <TabsContent value="category">
               <Card>
-                <CardContent>
-                  {language === 'en' ? 'Category Content' : 'محتوى الفئة'}
+                <CardContent className="py-6">
+                  <CategorySelection onSelect={(categoryId) => {
+                    console.log("Selected category:", categoryId);
+                    handleNext();
+                  }} />
                 </CardContent>
               </Card>
             </TabsContent>
             <TabsContent value="product">
               <Card>
-                <CardContent>
+                <CardContent className="py-6">
                   {language === 'en' ? 'Product Content' : 'محتوى المنتج'}
                 </CardContent>
               </Card>
             </TabsContent>
             <TabsContent value="details">
               <Card>
-                <CardContent>
+                <CardContent className="py-6">
                   {language === 'en' ? 'Details Content' : 'محتوى التفاصيل'}
                 </CardContent>
               </Card>
@@ -65,11 +86,19 @@ const StartJam3aPage = () => {
           </Tabs>
 
           <div className="flex justify-between mt-8">
-            <Button variant="outline" disabled={activeTab === "category"}>
+            <Button 
+              variant="outline" 
+              onClick={handlePrevious}
+              disabled={activeTab === "category"}
+            >
               <ArrowLeft className="mr-2 h-4 w-4" />
               {language === 'en' ? 'Previous' : 'السابق'}
             </Button>
-            <Button variant="green" disabled={activeTab === "details"}>
+            <Button 
+              variant="green" 
+              onClick={handleNext}
+              disabled={activeTab === "details"}
+            >
               {language === 'en' ? 'Next' : 'التالي'}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>

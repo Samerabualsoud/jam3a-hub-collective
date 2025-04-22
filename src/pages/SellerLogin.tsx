@@ -39,9 +39,10 @@ const SellerLogin = () => {
     },
   });
 
-  const { isLoading } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setIsSubmitting(true);
     try {
       await login(values.email, values.password);
       toast({
@@ -55,6 +56,8 @@ const SellerLogin = () => {
         description: error.message || (language === 'en' ? "Invalid credentials." : "بيانات اعتماد غير صالحة."),
         variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -133,8 +136,8 @@ const SellerLogin = () => {
                     {language === 'en' ? 'Forgot password?' : 'هل نسيت كلمة المرور؟'}
                   </Link>
                 </div>
-                <Button disabled={isLoading} type="submit" className="w-full bg-royal-blue hover:bg-royal-blue-dark text-white">
-                  {isLoading ? (language === 'en' ? 'Signing In...' : 'جاري تسجيل الدخول...') : (language === 'en' ? 'Sign In' : 'تسجيل الدخول')}
+                <Button disabled={isSubmitting} type="submit" className="w-full bg-royal-blue hover:bg-royal-blue-dark text-white">
+                  {isSubmitting ? (language === 'en' ? 'Signing In...' : 'جاري تسجيل الدخول...') : (language === 'en' ? 'Sign In' : 'تسجيل الدخول')}
                 </Button>
               </form>
             </Form>
