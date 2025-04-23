@@ -64,11 +64,11 @@ const ProductSelection: React.FC<ProductSelectionProps> = ({
       <h3 className="text-lg font-medium">
         {language === 'en' ? 'Select a Product' : 'اختر منتج'}
       </h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {products.map((product) => (
           <Card 
             key={product.id}
-            className={`cursor-pointer transition-colors ${
+            className={`cursor-pointer transition-colors h-full ${
               selectedProductId === product.id
                 ? 'ring-2 ring-primary ring-offset-2'
                 : 'hover:bg-accent'
