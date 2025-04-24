@@ -1,8 +1,6 @@
 
 import React, { useMemo } from 'react';
-import { ArrowRight, Users } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
+import { Users } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Badge } from '@/components/ui/badge';
@@ -86,23 +84,6 @@ const ProductSelectionCard: React.FC<ProductCardProps> = ({
             <Users className="h-3.5 w-3.5 mr-1" />
             {language === 'en' ? `Min ${minPeople}` : `الحد الأدنى ${minPeople}`}
           </div>
-        </div>
-        <div className="mt-auto">
-          <Button 
-            variant="green"
-            size="wide" 
-            className="group shadow-sm hover:shadow-md w-full"
-            asChild
-          >
-            <Link 
-              to={`/join-jam3a?product=${encodeURIComponent(name)}&price=${discountPrice} SAR&discount=${discount}&category=${formattedCategory}`} 
-              className="flex items-center justify-center"
-              onClick={() => console.log(`Product selected: ${name}, price: ${discountPrice}, category: ${category}`)}
-            >
-              {language === 'en' ? 'Start Jam3a' : 'ابدأ جمعة'}
-              <ArrowRight className="ml-1.5 h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Link>
-          </Button>
         </div>
       </CardContent>
     </Card>

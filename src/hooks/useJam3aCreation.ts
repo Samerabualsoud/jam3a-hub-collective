@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
@@ -61,17 +60,14 @@ export const useJam3aCreation = () => {
   const handlePayAndPublish = () => {
     setIsLoading(true);
     
-    // Simulate payment process
-    setTimeout(() => {
-      setIsLoading(false);
-      setCurrentStep(4);
-      
-      toast({
-        title: 'Success',
-        description: 'Your Jam3a has been created successfully!',
-        duration: 5000,
-      });
-    }, 2000);
+    // Navigate to payment page with product and group details
+    navigate('/payment', {
+      state: {
+        product: selectedProduct,
+        groupSize,
+        discountTier
+      }
+    });
   };
 
   const resetForm = () => {
