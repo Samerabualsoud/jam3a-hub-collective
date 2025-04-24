@@ -67,35 +67,40 @@ const ProductSelection: React.FC<ProductSelectionProps> = ({
         {language === 'en' ? 'Select a Product' : 'اختر منتج'}
       </h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {products.map((product) => (
-          <Card 
-            key={product.id}
-            className={`cursor-pointer transition-colors h-full ${
-              selectedProductId === product.id
-                ? 'ring-2 ring-primary ring-offset-2'
-                : 'hover:bg-accent'
-            }`}
-            onClick={() => onSelect(product)}
-          >
-            <ProductSelectionCard
-              id={Number(product.id)}
-              name={product.name}
-              image={product.image || "https://placehold.co/600x400?text=No+Image"}
-              originalPrice={product.price}
-              discountPrice={product.discounts && product.discounts.length > 0 
-                ? product.discounts[0].price 
-                : product.price}
-              discount={product.discounts && product.discounts.length > 0 
-                ? product.discounts[0].savings || "5%" 
-                : "0%"}
-              minPeople={product.discounts && product.discounts.length > 0 
-                ? product.discounts[0].minCount 
-                : 3}
-              category={typeof product.categoryId === 'string' ? product.categoryId : 'general'}
-              isSelected={selectedProductId === product.id}
-            />
-          </Card>
-        ))}
+        {products.map((product) => {
+          console.log("Processing product:", product.id, product.name);
+          
+          // Ensure we have valid discount data
+          const discounts = product.discounts && product.discounts.length > 0 
+            ? product.discounts
+            : [{ minCount: 3, price: Math.round(product.price * 0.95), savings: "5%" }];
+          
+          const firstDiscount = discounts[0];
+          
+          return (
+            <Card 
+              key={product.id}
+              className={`cursor-pointer transition-colors h-full ${
+                selectedProductId === product.id
+                  ? 'ring-2 ring-primary ring-offset-2'
+                  : 'hover:bg-accent'
+              }`}
+              onClick={() => onSelect(product)}
+            >
+              <ProductSelectionCard
+                id={typeof product.id === 'number' ? product.id : 0}
+                name={product.name}
+                image={product.image || "https://placehold.co/600x400?text=No+Image"}
+                originalPrice={product.price}
+                discountPrice={firstDiscount.price}
+                discount={firstDiscount.savings || "5%"}
+                minPeople={firstDiscount.minCount}
+                category={typeof product.categoryId === 'string' ? product.categoryId : 'general'}
+                isSelected={selectedProductId === product.id}
+              />
+            </Card>
+          );
+        })}
       </div>
     </div>
   );

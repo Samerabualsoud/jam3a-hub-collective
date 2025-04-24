@@ -18,7 +18,7 @@ export class ProductsApi extends BaseApi {
       
       if (!categoryData) {
         console.log('No category found for slug:', slug);
-        return [];
+        return this.getFallbackProducts(slug);
       }
       
       console.log('Found category ID:', categoryData.id);
@@ -33,43 +33,18 @@ export class ProductsApi extends BaseApi {
         
       if (productsError) {
         console.error('Error fetching products:', productsError);
-        throw productsError;
+        return this.getFallbackProducts(slug);
       }
       
       console.log('Raw products data:', products);
       
-      // If no products found, return an empty array
+      // If no products found, return fallback products
       if (!products || products.length === 0) {
         console.log('No products found for category ID:', categoryData.id);
-        
-        // For testing purposes, return some dummy products
-        return [
-          {
-            id: "dummy-1",
-            name: "Example Product 1",
-            image_url: "https://placehold.co/600x400?text=Example+Product+1",
-            price: 1999,
-            category_id: categoryData.id,
-            discounts: [
-              { min_count: 3, price: 1899, savings: "5%" },
-              { minCount: 5, price: 1799, savings: "10%" }
-            ]
-          },
-          {
-            id: "dummy-2",
-            name: "Example Product 2",
-            image_url: "https://placehold.co/600x400?text=Example+Product+2",
-            price: 2999,
-            category_id: categoryData.id,
-            discounts: [
-              { min_count: 3, price: 2899, savings: "3%" },
-              { minCount: 5, price: 2799, savings: "7%" }
-            ]
-          }
-        ];
+        return this.getFallbackProducts(slug);
       }
       
-      // Add fallback discount data if none exists
+      // Normalize the product data structure
       return products.map(product => {
         let discounts = [];
         
@@ -83,34 +58,54 @@ export class ProductsApi extends BaseApi {
           // Create default discounts if none exist
           const price = product.price;
           discounts = [
-            { minCount: 3, price: price * 0.95, savings: "5%" },
-            { minCount: 5, price: price * 0.9, savings: "10%" },
-            { minCount: 8, price: price * 0.85, savings: "15%" }
+            { minCount: 3, price: Math.round(price * 0.95), savings: "5%" },
+            { minCount: 5, price: Math.round(price * 0.9), savings: "10%" },
+            { minCount: 8, price: Math.round(price * 0.85), savings: "15%" }
           ];
         }
         
         return {
-          ...product,
-          discounts
+          id: product.id,
+          name: product.name,
+          image_url: product.image_url,
+          price: product.price,
+          category_id: product.category_id,
+          discounts: discounts
         };
       });
     } catch (error) {
       console.error('Error in getProductsByCategorySlug:', error);
-      
-      // Return dummy products in case of error for better user experience
-      return [
-        {
-          id: "fallback-1",
-          name: "Fallback Product",
-          image_url: "https://placehold.co/600x400?text=Fallback+Product",
-          price: 1599,
-          discounts: [
-            { minCount: 3, price: 1499, savings: "6%" },
-            { minCount: 5, price: 1399, savings: "12%" }
-          ]
-        }
-      ];
+      return this.getFallbackProducts(slug);
     }
+  }
+
+  private getFallbackProducts(categorySlug: string) {
+    console.log(`Generating fallback products for category: ${categorySlug}`);
+    
+    return [
+      {
+        id: `fallback-1-${categorySlug}`,
+        name: `${categorySlug.charAt(0).toUpperCase() + categorySlug.slice(1)} Product 1`,
+        image_url: `https://placehold.co/600x400?text=${categorySlug}+Product+1`,
+        price: 1599,
+        category_id: categorySlug,
+        discounts: [
+          { minCount: 3, price: 1499, savings: "6%" },
+          { minCount: 5, price: 1399, savings: "12%" }
+        ]
+      },
+      {
+        id: `fallback-2-${categorySlug}`,
+        name: `${categorySlug.charAt(0).toUpperCase() + categorySlug.slice(1)} Product 2`,
+        image_url: `https://placehold.co/600x400?text=${categorySlug}+Product+2`,
+        price: 2599,
+        category_id: categorySlug,
+        discounts: [
+          { minCount: 3, price: 2399, savings: "8%" },
+          { minCount: 5, price: 2299, savings: "12%" }
+        ]
+      }
+    ];
   }
 
   async getProducts() {

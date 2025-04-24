@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -128,60 +127,18 @@ const StartJam3aPage = () => {
           
           if (!result || result.length === 0) {
             console.log("No products found for category:", selectedCategory);
-            // Create a few dummy products for testing if needed
-            const dummyProducts = [
-              {
-                id: "dummy-1",
-                name: "Example Product",
-                image_url: "https://placehold.co/600x400?text=Example+Product",
-                price: 1999,
-                category_id: selectedCategory,
-                discounts: [
-                  { min_count: 3, price: 1899, savings: "5%" },
-                  { min_count: 5, price: 1799, savings: "10%" }
-                ]
-              },
-              {
-                id: "dummy-2",
-                name: "Another Product",
-                image_url: "https://placehold.co/600x400?text=Another+Product",
-                price: 2999,
-                category_id: selectedCategory,
-                discounts: [
-                  { min_count: 3, price: 2899, savings: "3%" },
-                  { min_count: 5, price: 2799, savings: "7%" }
-                ]
-              }
-            ];
-            
-            const formattedDummyProducts = dummyProducts.map(product => ({
-              id: product.id,
-              name: product.name,
-              image: product.image_url || "https://placehold.co/600x400?text=No+Image",
-              price: product.price,
-              categoryId: selectedCategory,
-              discounts: (product.discounts || []).map(d => ({
-                minCount: d.min_count,
-                price: d.price,
-                savings: d.savings
-              }))
-            }));
-            
-            setProducts(formattedDummyProducts);
+            setProducts([]);
           } else {
             const formattedProducts = result.map(product => ({
               id: product.id,
               name: product.name,
               image: product.image_url || "https://placehold.co/600x400?text=No+Image",
               price: product.price,
-              categoryId: selectedCategory,
-              discounts: (product.discounts || []).map(d => ({
-                minCount: d.minCount, // Note: This was using minCount (camelCase) from the API
-                price: d.price,
-                savings: d.savings
-              }))
+              categoryId: product.category_id || selectedCategory,
+              discounts: Array.isArray(product.discounts) ? product.discounts : []
             }));
             
+            console.log("Formatted products:", formattedProducts);
             setProducts(formattedProducts);
           }
         } catch (error) {

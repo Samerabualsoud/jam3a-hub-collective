@@ -35,6 +35,7 @@ export const useJam3aCreation = () => {
 
   const handleProductSelect = (product: Product) => {
     console.log(`Product selected: ${product.name} (${product.id})`);
+    console.log("Full product data:", JSON.stringify(product, null, 2));
     setSelectedProduct(product);
     setCurrentStep(2);
   };
