@@ -29,6 +29,8 @@ import Register from './pages/Register';
 import Admin from './pages/Admin';
 import PaymentSettings from './pages/PaymentSettings';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import HowItWorks from './pages/HowItWorks';
+import Sellers from './pages/Sellers';
 
 // Create a client
 const queryClient = new QueryClient();
@@ -46,6 +48,8 @@ function App() {
               <Route path="/my-jam3as" element={<MyJam3as />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/about-us" element={<AboutUs />} />
+              <Route path="/how-it-works" element={<HowItWorks />} />
+              <Route path="/sellers" element={<Sellers />} />
               <Route path="/contact-us" element={<ContactUs />} />
               <Route path="/terms-of-service" element={<TermsOfService />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />

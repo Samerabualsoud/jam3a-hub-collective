@@ -57,7 +57,7 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/how-it-works" className="text-gray-400 hover:text-white transition-colors">
+                <Link to="/about-us" className="text-gray-400 hover:text-white transition-colors">
                   {language === 'en' ? 'How It Works' : 'كيف تعمل'}
                 </Link>
               </li>
@@ -74,22 +74,22 @@ const Footer = () => {
             </h3>
             <ul className="mt-4 space-y-2">
               <li>
-                <Link to="/my-jam3a" className="text-gray-400 hover:text-white transition-colors">
+                <Link to="/my-jam3as" className="text-gray-400 hover:text-white transition-colors">
                   {language === 'en' ? 'My Jam3a Deals' : 'صفقات جمعتي'}
                 </Link>
               </li>
               <li>
-                <Link to="/track-order" className="text-gray-400 hover:text-white transition-colors">
+                <Link to="/order-tracking" className="text-gray-400 hover:text-white transition-colors">
                   {language === 'en' ? 'Track Order' : 'تتبع الطلب'}
                 </Link>
               </li>
               <li>
-                <Link to="/returns" className="text-gray-400 hover:text-white transition-colors">
+                <Link to="/privacy-policy" className="text-gray-400 hover:text-white transition-colors">
                   {language === 'en' ? 'Returns Policy' : 'سياسة الإرجاع'}
                 </Link>
               </li>
               <li>
-                <Link to="/support" className="text-gray-400 hover:text-white transition-colors">
+                <Link to="/contact-us" className="text-gray-400 hover:text-white transition-colors">
                   {language === 'en' ? 'Customer Support' : 'دعم العملاء'}
                 </Link>
               </li>
@@ -111,12 +111,12 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/seller-guidelines" className="text-gray-400 hover:text-white transition-colors">
+                <Link to="/terms-of-service" className="text-gray-400 hover:text-white transition-colors">
                   {language === 'en' ? 'Seller Guidelines' : 'إرشادات البائع'}
                 </Link>
               </li>
               <li>
-                <Link to="/seller-support" className="text-gray-400 hover:text-white transition-colors">
+                <Link to="/contact-us" className="text-gray-400 hover:text-white transition-colors">
                   {language === 'en' ? 'Seller Support' : 'دعم البائع'}
                 </Link>
               </li>
@@ -129,13 +129,13 @@ const Footer = () => {
               &copy; {new Date().getFullYear()} Jam3a. {language === 'en' ? 'All rights reserved.' : 'جميع الحقوق محفوظة.'}
             </p>
             <div className="flex flex-wrap gap-4">
-              <Link to="/privacy" className="text-sm text-gray-400 hover:text-white transition-colors">
+              <Link to="/privacy-policy" className="text-sm text-gray-400 hover:text-white transition-colors">
                 {language === 'en' ? 'Privacy Policy' : 'سياسة الخصوصية'}
               </Link>
-              <Link to="/terms" className="text-sm text-gray-400 hover:text-white transition-colors">
+              <Link to="/terms-of-service" className="text-sm text-gray-400 hover:text-white transition-colors">
                 {language === 'en' ? 'Terms of Service' : 'شروط الخدمة'}
               </Link>
-              <Link to="/contact" className="text-sm text-gray-400 hover:text-white transition-colors">
+              <Link to="/contact-us" className="text-sm text-gray-400 hover:text-white transition-colors">
                 {language === 'en' ? 'Contact Us' : 'اتصل بنا'}
               </Link>
             </div>

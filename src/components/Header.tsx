@@ -58,10 +58,10 @@ const Header = () => {
           <Link to="/" className="text-sm font-medium text-foreground hover:text-jam3a-purple transition-colors">
             {language === 'en' ? 'Home' : 'الرئيسية'}
           </Link>
-          <Link to="/about" className="text-sm font-medium text-foreground hover:text-jam3a-purple transition-colors">
+          <Link to="/about-us" className="text-sm font-medium text-foreground hover:text-jam3a-purple transition-colors">
             {language === 'en' ? 'About Us' : 'من نحن'}
           </Link>
-          <Link to="/how-it-works" className="text-sm font-medium text-foreground hover:text-jam3a-purple transition-colors">
+          <Link to="/about-us" className="text-sm font-medium text-foreground hover:text-jam3a-purple transition-colors">
             {language === 'en' ? 'How It Works' : 'كيف تعمل'}
           </Link>
           <Link to="/sellers" className="text-sm font-medium text-foreground hover:text-jam3a-purple transition-colors">
@@ -105,7 +105,7 @@ const Header = () => {
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem className="hover:bg-jam3a-purple-50">
-                    <Link to="/my-jam3a" className="w-full flex items-center">
+                    <Link to="/my-jam3as" className="w-full flex items-center">
                       {language === 'en' ? 'My Jam3a Deals' : 'صفقات جمعتي'}
                     </Link>
                   </DropdownMenuItem>
@@ -170,14 +170,14 @@ const Header = () => {
               {language === 'en' ? 'Home' : 'الرئيسية'}
             </Link>
             <Link 
-              to="/about" 
+              to="/about-us" 
               className="text-lg font-medium p-2 hover:bg-jam3a-purple-50 rounded transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               {language === 'en' ? 'About Us' : 'من نحن'}
             </Link>
             <Link 
-              to="/how-it-works" 
+              to="/about-us" 
               className="text-lg font-medium p-2 hover:bg-jam3a-purple-50 rounded transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
