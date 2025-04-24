@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -25,8 +25,17 @@ const StartJam3a: React.FC = () => {
     handleGroupSizeChange,
     handlePayAndPublish,
     goToNextStep,
-    goToPreviousStep
+    goToPreviousStep,
+    setCurrentStep
   } = useJam3aCreation();
+
+  // Ensure we're always at step 1 when the component is mounted
+  useEffect(() => {
+    // Only set to step 1 if we're at step 0 (uninitialized)
+    if (currentStep === 0) {
+      setCurrentStep(1);
+    }
+  }, [currentStep, setCurrentStep]);
 
   // Sample products data - would come from API in production
   const sampleProducts = [

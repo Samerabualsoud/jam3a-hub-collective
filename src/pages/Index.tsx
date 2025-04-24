@@ -8,7 +8,7 @@ import WhyChooseUs from '@/components/WhyChooseUs';
 import JoinWaitlist from '@/components/JoinWaitlist';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
-import StartJam3a from '@/components/StartJam3a';
+import StartJam3aCTA from '@/components/jam3a/StartJam3aCTA'; // Update the import to use the CTA component
 import { useAuth } from '@/contexts/AuthContext';
 import AdminButton from '@/components/AdminButton';
 
@@ -24,7 +24,9 @@ const Index = () => {
         <HowItWorks />
         <FeaturedDeals />
         <BilingualProductListing />
-        <StartJam3a />
+        <section className="container mx-auto py-16 px-4">
+          <StartJam3aCTA />
+        </section>
         <WhyChooseUs />
         <JoinWaitlist />
       </main>

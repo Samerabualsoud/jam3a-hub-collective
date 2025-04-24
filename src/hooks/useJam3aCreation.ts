@@ -1,7 +1,7 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export interface Product {
   id: number | string;
@@ -17,7 +17,7 @@ export interface Product {
 }
 
 export const useJam3aCreation = () => {
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(1); // Default to step 1 instead of 0
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [groupSize, setGroupSize] = useState(5);
@@ -25,6 +25,14 @@ export const useJam3aCreation = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Initialize the step on page load
+  useEffect(() => {
+    if (location.pathname === '/start-jam3a') {
+      setCurrentStep(1);
+    }
+  }, [location.pathname]);
 
   const handleCategorySelect = (categoryId: string) => {
     console.log(`Category selected: ${categoryId}`);
@@ -78,7 +86,7 @@ export const useJam3aCreation = () => {
   };
 
   const resetForm = () => {
-    setCurrentStep(0);
+    setCurrentStep(1); // Reset to step 1 instead of 0
     setSelectedCategory('');
     setSelectedProduct(null);
     setGroupSize(5);

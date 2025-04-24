@@ -3,11 +3,19 @@ import React from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, ArrowDownCircle, ShoppingBag } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useJam3aCreation } from '@/hooks/useJam3aCreation';
 
 const Hero: React.FC = () => {
   const { language } = useLanguage();
+  const navigate = useNavigate();
+  const { setCurrentStep } = useJam3aCreation();
+  
+  const handleStartJam3a = () => {
+    setCurrentStep(1);
+    navigate('/start-jam3a');
+  };
   
   return (
     <section className="relative flex items-center justify-center min-h-[580px] md:min-h-[680px] lg:min-h-[780px] px-4 overflow-hidden">
@@ -105,15 +113,14 @@ const Hero: React.FC = () => {
               <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           </Link>
-          <Link to="/start-jam3a">
-            <Button
-              size="lg"
-              variant="outline"
-              className="text-lg border-royal-blue text-royal-blue hover:bg-royal-blue hover:text-white shadow-md px-8 py-6 rounded-full font-semibold transition-all hover:-translate-y-1"
-            >
-              {language === 'en' ? 'Start a Jam3a' : 'ابدأ جمعة'}
-            </Button>
-          </Link>
+          <Button
+            size="lg"
+            variant="outline"
+            className="text-lg border-royal-blue text-royal-blue hover:bg-royal-blue hover:text-white shadow-md px-8 py-6 rounded-full font-semibold transition-all hover:-translate-y-1"
+            onClick={handleStartJam3a}
+          >
+            {language === 'en' ? 'Start a Jam3a' : 'ابدأ جمعة'}
+          </Button>
         </motion.div>
         
         {/* Moved Learn More section down and added more space to avoid overlap with buttons */}
