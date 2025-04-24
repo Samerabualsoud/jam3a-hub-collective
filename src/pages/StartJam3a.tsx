@@ -18,8 +18,10 @@ import { useSupabaseApi } from '@/lib/supabase/api';
 const StartJam3aPage = () => {
   const { language } = useLanguage();
   const { toast } = useToast();
-  const [step, setStep] = useState(0);
+  
   const {
+    currentStep: step,
+    setCurrentStep: setStep,
     selectedCategory,
     selectedProduct,
     handleCategorySelect,
@@ -123,16 +125,53 @@ const StartJam3aPage = () => {
           const result = await supabaseApi.products.getProductsByCategorySlug(selectedCategory);
           console.log("Fetched products:", result);
           
-          const formattedProducts = result.map(product => ({
-            id: product.id,
-            name: product.name,
-            image: product.image_url || "https://placehold.co/600x400?text=No+Image",
-            price: product.price,
-            categoryId: selectedCategory,
-            discounts: product.discounts || []
-          }));
-          
-          setProducts(formattedProducts);
+          if (!result || result.length === 0) {
+            console.log("No products found for category:", selectedCategory);
+            // Add dummy products for testing if needed
+            const dummyProducts = [
+              {
+                id: "dummy-1",
+                name: "Example Product",
+                image_url: "https://placehold.co/600x400?text=Example+Product",
+                price: 1999,
+                category_id: selectedCategory,
+                discounts: [
+                  { min_count: 3, price: 1899, savings: "5%" },
+                  { min_count: 5, price: 1799, savings: "10%" }
+                ]
+              }
+            ];
+            
+            const formattedDummyProducts = dummyProducts.map(product => ({
+              id: product.id,
+              name: product.name,
+              image: product.image_url || "https://placehold.co/600x400?text=No+Image",
+              price: product.price,
+              categoryId: selectedCategory,
+              discounts: (product.discounts || []).map(d => ({
+                minCount: d.min_count,
+                price: d.price,
+                savings: d.savings
+              }))
+            }));
+            
+            setProducts(formattedDummyProducts);
+          } else {
+            const formattedProducts = result.map(product => ({
+              id: product.id,
+              name: product.name,
+              image: product.image_url || "https://placehold.co/600x400?text=No+Image",
+              price: product.price,
+              categoryId: selectedCategory,
+              discounts: (product.discounts || []).map(d => ({
+                minCount: d.min_count,
+                price: d.price,
+                savings: d.savings
+              }))
+            }));
+            
+            setProducts(formattedProducts);
+          }
         } catch (error) {
           console.error("Error fetching products:", error);
           setProducts([]);

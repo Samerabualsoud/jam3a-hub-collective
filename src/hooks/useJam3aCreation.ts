@@ -4,14 +4,15 @@ import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 
 export interface Product {
-  id: number;
+  id: number | string;
   name: string;
-  image: string;
+  image?: string;
   price: number;
-  discounts: {
+  categoryId?: string | number;
+  discounts?: {
     minCount: number;
     price: number;
-    savings: string;
+    savings?: string;
   }[];
 }
 
@@ -38,13 +39,20 @@ export const useJam3aCreation = () => {
 
   const handleGroupSizeChange = (size: number) => {
     setGroupSize(size);
-    if (!selectedProduct) return;
+    if (!selectedProduct || !selectedProduct.discounts || selectedProduct.discounts.length === 0) return;
     
-    const discountIndex = selectedProduct.discounts.findIndex(
-      d => size >= d.minCount && (size < selectedProduct.discounts[discountIndex + 1]?.minCount || discountIndex === selectedProduct.discounts.length - 1)
-    );
+    // Find the appropriate discount tier based on group size
+    let appropriateDiscountIndex = 0;
     
-    setDiscountTier(Math.max(0, discountIndex));
+    for (let i = 0; i < selectedProduct.discounts.length; i++) {
+      if (size >= selectedProduct.discounts[i].minCount) {
+        appropriateDiscountIndex = i;
+      } else {
+        break;
+      }
+    }
+    
+    setDiscountTier(appropriateDiscountIndex);
   };
 
   const handlePayAndPublish = () => {

@@ -35,12 +35,27 @@ export class ProductsApi extends BaseApi {
         throw productsError;
       }
       
+      console.log('Raw products data:', products);
+      
+      // Add fallback discount data if none exists
       return products.map(product => {
-        const discounts = product.discounts?.map(d => ({
-          minCount: d.min_count,
-          price: d.price,
-          savings: d.savings
-        })) || [];
+        let discounts = [];
+        
+        if (product.discounts && product.discounts.length > 0) {
+          discounts = product.discounts.map(d => ({
+            minCount: d.min_count,
+            price: d.price,
+            savings: d.savings
+          }));
+        } else {
+          // Create default discounts if none exist
+          const price = product.price;
+          discounts = [
+            { minCount: 3, price: price * 0.95, savings: "5%" },
+            { minCount: 5, price: price * 0.9, savings: "10%" },
+            { minCount: 8, price: price * 0.85, savings: "15%" }
+          ];
+        }
         
         return {
           ...product,

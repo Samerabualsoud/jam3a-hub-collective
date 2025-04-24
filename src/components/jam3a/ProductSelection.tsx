@@ -44,7 +44,7 @@ const ProductSelection: React.FC<ProductSelectionProps> = ({
     );
   }
 
-  if (products.length === 0) {
+  if (!products || products.length === 0) {
     return (
       <div className="text-center py-12">
         <p className="text-xl font-medium mb-2">
@@ -58,6 +58,8 @@ const ProductSelection: React.FC<ProductSelectionProps> = ({
       </div>
     );
   }
+
+  console.log("Rendering products:", products);
 
   return (
     <div className="space-y-6">
