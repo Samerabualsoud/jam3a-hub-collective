@@ -103,6 +103,7 @@ export const useJam3aCreation = () => {
     } else {
       // Go back to landing page
       setCurrentStep(0);
+      navigate('/');
     }
   };
 
