@@ -72,7 +72,13 @@ export class ProductsApi extends BaseApi {
     try {
       const { data, error } = await this.supabase
         .from('products_catalog')
-        .insert([productData])
+        .insert([{
+          name: productData.name,
+          category_id: productData.categoryId,
+          price: productData.price,
+          description: productData.description,
+          image_url: productData.imageUrl,
+        }])
         .select()
         .single();
         
