@@ -28,38 +28,44 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Admin from './pages/Admin';
 import PaymentSettings from './pages/PaymentSettings';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+// Create a client
+const queryClient = new QueryClient();
 
 function App() {
   return (
-    <LanguageProvider>
-      <AuthProvider>
-        <Router>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/shop" element={<Shop />} />
-            <Route path="/product/:id" element={<ProductDetails />} />
-            <Route path="/my-jam3as" element={<MyJam3as />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/about-us" element={<AboutUs />} />
-            <Route path="/contact-us" element={<ContactUs />} />
-            <Route path="/terms-of-service" element={<TermsOfService />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/payment-callback" element={<PaymentCallback />} />
-            <Route path="/start-jam3a" element={<StartJam3a />} />
-            <Route path="/join-jam3a" element={<JoinJam3a />} />
-            <Route path="/faq" element={<FAQ />} />
-            <Route path="/seller-login" element={<SellerLogin />} />
-            <Route path="/seller-register" element={<SellerRegister />} />
-            <Route path="/order-tracking" element={<OrderTracking />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/payment-settings" element={<PaymentSettings />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Router>
-      </AuthProvider>
-    </LanguageProvider>
+    <QueryClientProvider client={queryClient}>
+      <LanguageProvider>
+        <AuthProvider>
+          <Router>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/shop" element={<Shop />} />
+              <Route path="/product/:id" element={<ProductDetails />} />
+              <Route path="/my-jam3as" element={<MyJam3as />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/about-us" element={<AboutUs />} />
+              <Route path="/contact-us" element={<ContactUs />} />
+              <Route path="/terms-of-service" element={<TermsOfService />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/payment-callback" element={<PaymentCallback />} />
+              <Route path="/start-jam3a" element={<StartJam3a />} />
+              <Route path="/join-jam3a" element={<JoinJam3a />} />
+              <Route path="/faq" element={<FAQ />} />
+              <Route path="/seller-login" element={<SellerLogin />} />
+              <Route path="/seller-register" element={<SellerRegister />} />
+              <Route path="/order-tracking" element={<OrderTracking />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/admin" element={<Admin />} />
+              <Route path="/payment-settings" element={<PaymentSettings />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Router>
+        </AuthProvider>
+      </LanguageProvider>
+    </QueryClientProvider>
   );
 }
 
