@@ -1,33 +1,21 @@
 
 import React from 'react';
-import { Card } from "@/components/ui/card";
-import ProductSelectionCard from "@/components/ProductSelectionCard";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { Loader2 } from "lucide-react";
+import { Card, CardContent } from '@/components/ui/card';
+import { useLanguage } from '@/contexts/LanguageContext';
+import ProductSelectionCard from '@/components/ProductSelectionCard';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Product } from '@/hooks/useJam3aCreation';
 
-export interface Product {
-  id: string | number;
-  name: string;
-  image?: string;
-  price: number;
-  categoryId?: string | number;
-  discounts?: {
-    minCount: number;
-    price: number;
-    savings?: string;
-  }[];
-}
-
-export interface ProductSelectionProps {
+interface ProductSelectionProps {
   products: Product[];
   selectedProductId: string | number | null;
   onSelect: (product: Product) => void;
   loading?: boolean;
 }
 
-const ProductSelection: React.FC<ProductSelectionProps> = ({ 
-  products, 
-  selectedProductId, 
+const ProductSelection: React.FC<ProductSelectionProps> = ({
+  products,
+  selectedProductId,
   onSelect,
   loading = false
 }) => {
@@ -35,70 +23,113 @@ const ProductSelection: React.FC<ProductSelectionProps> = ({
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-12">
-        <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-        <p className="text-muted-foreground">
-          {language === 'en' ? 'Loading products...' : 'جاري تحميل المنتجات...'}
-        </p>
+      <div className="space-y-6">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-xl font-semibold">
+            {language === 'en' ? 'Select a Product' : 'اختر منتجًا'}
+          </h3>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {[1, 2, 3, 4].map((i) => (
+            <Card key={i} className="overflow-hidden">
+              <div className="aspect-video bg-gray-100">
+                <Skeleton className="h-full w-full" />
+              </div>
+              <CardContent className="p-4">
+                <Skeleton className="h-6 w-3/4 mb-2" />
+                <Skeleton className="h-4 w-1/2 mb-2" />
+                <Skeleton className="h-8 w-1/3" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
     );
   }
 
-  if (!products || products.length === 0) {
+  if (products.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-xl font-medium mb-2">
-          {language === 'en' ? 'No products found' : 'لم يتم العثور على منتجات'}
-        </p>
-        <p className="text-muted-foreground">
+        <h3 className="text-lg font-medium text-gray-500">
           {language === 'en' 
-            ? 'Please try selecting a different category' 
-            : 'يرجى محاولة اختيار فئة مختلفة'}
-        </p>
+            ? 'No products found in this category' 
+            : 'لم يتم العثور على منتجات في هذه الفئة'}
+        </h3>
       </div>
     );
   }
 
-  console.log("Rendering products:", products);
+  // Function to extract discount info for ProductSelectionCard
+  const getProductDiscount = (product: Product) => {
+    if (!product.discounts || product.discounts.length === 0) return '0%';
+    
+    // Find the highest discount
+    const highestDiscount = product.discounts.reduce((max, current) => {
+      // Calculate percentage discount
+      const originalPrice = product.price;
+      const discountedPrice = current.price;
+      const discount = ((originalPrice - discountedPrice) / originalPrice) * 100;
+      
+      return discount > max ? discount : max;
+    }, 0);
+    
+    return `${Math.round(highestDiscount)}%`;
+  };
+  
+  // Function to find minimum people required for any discount
+  const getMinPeople = (product: Product) => {
+    if (!product.discounts || product.discounts.length === 0) return 1;
+    return Math.min(...product.discounts.map(d => d.minCount));
+  };
 
   return (
     <div className="space-y-6">
-      <h3 className="text-lg font-medium">
-        {language === 'en' ? 'Select a Product' : 'اختر منتج'}
-      </h3>
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-xl font-semibold">
+          {language === 'en' ? 'Select a Product' : 'اختر منتجًا'}
+        </h3>
+      </div>
+      
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {products.map((product) => {
-          console.log("Processing product:", product.id, product.name);
+          const isSelected = selectedProductId === product.id;
+          const discountPercentage = getProductDiscount(product);
+          const minPeople = getMinPeople(product);
           
-          // Ensure we have valid discount data
-          const discounts = product.discounts && product.discounts.length > 0 
-            ? product.discounts
-            : [{ minCount: 3, price: Math.round(product.price * 0.95), savings: "5%" }];
-          
-          const firstDiscount = discounts[0];
+          // Calculate the best discount price
+          const discounts = product.discounts || [];
+          const lowestPrice = discounts.length > 0 
+            ? Math.min(...discounts.map(d => d.price)) 
+            : product.price;
           
           return (
-            <Card 
-              key={product.id}
-              className={`cursor-pointer transition-colors h-full ${
-                selectedProductId === product.id
-                  ? 'ring-2 ring-primary ring-offset-2'
-                  : 'hover:bg-accent'
-              }`}
+            <div 
+              key={product.id} 
               onClick={() => onSelect(product)}
+              className={`cursor-pointer transition-transform duration-200 ${isSelected ? 'ring-2 ring-royal-blue rounded-lg scale-[1.02]' : 'hover:scale-[1.01]'}`}
             >
               <ProductSelectionCard
-                id={typeof product.id === 'number' ? product.id : 0}
+                id={product.id as number}
                 name={product.name}
-                image={product.image || "https://placehold.co/600x400?text=No+Image"}
+                image={product.image || ''}
                 originalPrice={product.price}
-                discountPrice={firstDiscount.price}
-                discount={firstDiscount.savings || "5%"}
-                minPeople={firstDiscount.minCount}
-                category={typeof product.categoryId === 'string' ? product.categoryId : 'general'}
-                isSelected={selectedProductId === product.id}
+                discountPrice={lowestPrice}
+                discount={discountPercentage}
+                minPeople={minPeople}
+                category={product.categoryId?.toString() || ''}
+                isSelected={isSelected}
+                tag={
+                  discountPercentage !== '0%' 
+                    ? {
+                        en: 'Group Deal',
+                        ar: 'عرض جماعي',
+                        color: 'royal-blue'
+                      }
+                    : undefined
+                }
               />
-            </Card>
+            </div>
           );
         })}
       </div>

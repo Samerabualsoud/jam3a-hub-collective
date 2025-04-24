@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -17,16 +17,38 @@ const PaymentPage = () => {
   const { processPayment, isLoading } = useMoyasarPayment();
 
   const { product, groupSize, discountTier } = location.state || {};
-
+  
+  // If we don't have product data, redirect back to start jam3a
+  useEffect(() => {
+    if (!product) {
+      console.error("No product data found in location state");
+      toast({
+        title: language === 'en' ? 'Missing product information' : 'معلومات المنتج مفقودة',
+        description: language === 'en' ? 'Redirecting back to start page' : 'جاري إعادة التوجيه إلى صفحة البداية',
+        variant: 'destructive'
+      });
+      
+      // Short delay before redirect
+      const timeout = setTimeout(() => {
+        navigate('/start-jam3a');
+      }, 1500);
+      
+      return () => clearTimeout(timeout);
+    }
+    
+    console.log("Payment page loaded with data:", { product, groupSize, discountTier });
+  }, [product, navigate, toast, language]);
+  
   if (!product) {
-    navigate('/start-jam3a');
-    return null;
+    return null; // We'll redirect in the useEffect
   }
 
   const discountPrice = product.discounts?.[discountTier]?.price || product.price;
   
   const handlePayment = async () => {
     try {
+      console.log("Processing payment with amount:", discountPrice);
+      
       const paymentResult = await processPayment({
         amount: discountPrice,
         currency: 'SAR',
@@ -42,6 +64,7 @@ const PaymentPage = () => {
 
       // Redirect to payment processing
       if (paymentResult?.url) {
+        console.log("Redirecting to payment URL:", paymentResult.url);
         window.location.href = paymentResult.url;
       }
     } catch (error) {

@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
@@ -61,6 +62,12 @@ export const useJam3aCreation = () => {
     setIsLoading(true);
     
     // Navigate to payment page with product and group details
+    console.log("Navigating to payment page with:", {
+      product: selectedProduct,
+      groupSize,
+      discountTier
+    });
+    
     navigate('/payment', {
       state: {
         product: selectedProduct,
@@ -82,6 +89,20 @@ export const useJam3aCreation = () => {
     navigate('/my-jam3as');
   };
 
+  const goToNextStep = () => {
+    if (currentStep < 3) {
+      setCurrentStep(currentStep + 1);
+    } else if (currentStep === 3) {
+      handlePayAndPublish();
+    }
+  };
+
+  const goToPreviousStep = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
   return {
     currentStep,
     setCurrentStep,
@@ -96,5 +117,7 @@ export const useJam3aCreation = () => {
     handlePayAndPublish,
     resetForm,
     navigateToMyJam3as,
+    goToNextStep,
+    goToPreviousStep,
   };
 };

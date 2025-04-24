@@ -27,6 +27,9 @@ const StartJam3aPage = () => {
     selectedProduct,
     handleCategorySelect,
     handleProductSelect,
+    handlePayAndPublish,
+    goToNextStep,
+    goToPreviousStep,
   } = useJam3aCreation();
   
   const [formValues, setFormValues] = useState({
@@ -76,11 +79,17 @@ const StartJam3aPage = () => {
       return;
     }
 
-    setStep(prev => Math.min(prev + 1, 3));
+    if (step === 3) {
+      // On the final step, clicking next should initiate payment
+      handlePayAndPublish();
+      return;
+    }
+
+    goToNextStep();
   };
 
   const handlePrevious = () => {
-    setStep(prev => Math.max(prev - 1, 0));
+    goToPreviousStep();
   };
   
   const handleShareJam3a = () => {
@@ -251,10 +260,7 @@ const StartJam3aPage = () => {
             <CardContent className="p-6 md:p-8">
               {step === 0 && (
                 <CategorySelection
-                  onSelect={(categoryId) => {
-                    handleCategorySelect(categoryId);
-                    // Don't auto-advance, let the Next button handle that
-                  }}
+                  onSelect={handleCategorySelect}
                 />
               )}
 
@@ -290,27 +296,26 @@ const StartJam3aPage = () => {
             </CardContent>
           </Card>
 
-          {step < 3 && (
-            <div className="flex justify-between mt-8">
-              <Button
-                variant="outline"
-                onClick={handlePrevious}
-                disabled={step === 0}
-                className="gap-2"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                {content[language].previous}
-              </Button>
-              <Button
-                variant="green"
-                onClick={handleNext}
-                className="gap-2"
-              >
-                {content[language].next}
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </div>
-          )}
+          <div className="flex justify-between mt-8">
+            <Button
+              variant="outline"
+              onClick={handlePrevious}
+              disabled={step === 0}
+              className="gap-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              {content[language].previous}
+            </Button>
+            
+            <Button
+              variant="green"
+              onClick={handleNext}
+              className="gap-2"
+            >
+              {step === 3 ? 'Proceed to Payment' : content[language].next}
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </div>
         </motion.div>
       </main>
       <Footer />
