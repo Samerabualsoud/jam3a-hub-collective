@@ -1,3 +1,4 @@
+
 import { BaseApi } from '../BaseApi';
 
 export class ProductsApi extends BaseApi {
@@ -9,11 +10,11 @@ export class ProductsApi extends BaseApi {
         .from('product_categories')
         .select('id')
         .eq('slug', slug)
-        .single();
+        .maybeSingle();
         
       if (categoryError) {
         console.error('Error fetching category:', categoryError);
-        throw new Error(`Category not found: ${slug}`);
+        return this.getFallbackProducts(slug);
       }
       
       if (!categoryData) {
@@ -45,14 +46,14 @@ export class ProductsApi extends BaseApi {
       }
       
       // Normalize the product data structure
-      return products.map(product => {
+      const normalizedProducts = products.map(product => {
         let discounts = [];
         
-        if (product.discounts && product.discounts.length > 0) {
+        if (product.discounts && Array.isArray(product.discounts) && product.discounts.length > 0) {
           discounts = product.discounts.map(d => ({
-            minCount: d.min_count,
-            price: d.price,
-            savings: d.savings
+            minCount: d.min_count || 3,
+            price: d.price || Math.round(product.price * 0.95),
+            savings: d.savings || "5%"
           }));
         } else {
           // Create default discounts if none exist
@@ -73,6 +74,10 @@ export class ProductsApi extends BaseApi {
           discounts: discounts
         };
       });
+      
+      console.log('Normalized products:', normalizedProducts);
+      return normalizedProducts;
+      
     } catch (error) {
       console.error('Error in getProductsByCategorySlug:', error);
       return this.getFallbackProducts(slug);

@@ -42,7 +42,7 @@ export const useJam3aCreation = () => {
 
   const handleGroupSizeChange = (size: number) => {
     setGroupSize(size);
-    if (!selectedProduct || !selectedProduct.discounts || selectedProduct.discounts.length === 0) return;
+    if (!selectedProduct?.discounts || selectedProduct.discounts.length === 0) return;
     
     // Find the appropriate discount tier based on group size
     let appropriateDiscountIndex = 0;

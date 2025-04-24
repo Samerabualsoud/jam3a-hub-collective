@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, useCallback } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Card, CardContent } from '@/components/ui/card';
@@ -38,6 +39,7 @@ const StartJam3aPage = () => {
 
   const [products, setProducts] = useState([]);
   const [productsLoading, setProductsLoading] = useState(false);
+  const [hasFetched, setHasFetched] = useState(false);
   const supabaseApi = useSupabaseApi();
 
   const content = {
@@ -115,75 +117,110 @@ const StartJam3aPage = () => {
     exit: { opacity: 0, y: -20 }
   };
 
-  useEffect(() => {
-    async function fetchProductsByCategory() {
-      if (step === 1 && selectedCategory) {
-        setProductsLoading(true);
-        console.log("Fetching products for category:", selectedCategory);
-        
-        try {
-          const result = await supabaseApi.products.getProductsByCategorySlug(selectedCategory);
-          console.log("Fetched products:", result);
-          
-          if (!result || result.length === 0) {
-            console.log("No products found for category:", selectedCategory);
-            setProducts([]);
-          } else {
-            const formattedProducts = result.map(product => ({
-              id: product.id,
-              name: product.name,
-              image: product.image_url || "https://placehold.co/600x400?text=No+Image",
-              price: product.price,
-              categoryId: product.category_id || selectedCategory,
-              discounts: Array.isArray(product.discounts) ? product.discounts : []
-            }));
-            
-            console.log("Formatted products:", formattedProducts);
-            setProducts(formattedProducts);
-          }
-        } catch (error) {
-          console.error("Error fetching products:", error);
-          
-          // Create fallback dummy products in case of error
-          const fallbackProducts = [
-            {
-              id: "fallback-1",
-              name: "Fallback Product",
-              image: "https://placehold.co/600x400?text=Fallback+Product",
-              price: 1599,
-              categoryId: selectedCategory,
-              discounts: [
-                { minCount: 3, price: 1499, savings: "6%" },
-                { minCount: 5, price: 1399, savings: "12%" }
-              ]
-            },
-            {
-              id: "fallback-2",
-              name: "Backup Product",
-              image: "https://placehold.co/600x400?text=Backup+Product",
-              price: 3599,
-              categoryId: selectedCategory,
-              discounts: [
-                { minCount: 3, price: 3399, savings: "5%" },
-                { minCount: 5, price: 3299, savings: "8%" }
-              ]
-            }
-          ];
-          
-          setProducts(fallbackProducts);
-          toast({
-            title: language === 'en' ? "Error loading products" : "خطأ في تحميل المنتجات",
-            description: language === 'en' ? "Showing sample products instead" : "عرض منتجات عينة بدلاً من ذلك",
-            variant: "destructive"
-          });
-        } finally {
-          setProductsLoading(false);
-        }
-      }
+  const fetchProductsByCategory = useCallback(async () => {
+    if (step !== 1 || !selectedCategory || hasFetched) {
+      return;
     }
     
-    fetchProductsByCategory();
-  }, [step, selectedCategory, supabaseApi, language, toast]);
+    setProductsLoading(true);
+    setHasFetched(true);
+    console.log("Fetching products for category:", selectedCategory);
+    
+    try {
+      const result = await supabaseApi.products.getProductsByCategorySlug(selectedCategory);
+      console.log("Fetched products:", result);
+      
+      if (!result || result.length === 0) {
+        console.log("No products found for category:", selectedCategory);
+        // Generate fallback products
+        const fallbackProducts = [
+          {
+            id: "fallback-1",
+            name: `${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)} Product 1`,
+            image: `https://placehold.co/600x400?text=${selectedCategory}+Product+1`,
+            price: 1599,
+            categoryId: selectedCategory,
+            discounts: [
+              { minCount: 3, price: 1499, savings: "6%" },
+              { minCount: 5, price: 1399, savings: "12%" }
+            ]
+          },
+          {
+            id: "fallback-2",
+            name: `${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)} Product 2`,
+            image: `https://placehold.co/600x400?text=${selectedCategory}+Product+2`,
+            price: 2599,
+            categoryId: selectedCategory,
+            discounts: [
+              { minCount: 3, price: 2399, savings: "8%" },
+              { minCount: 5, price: 2199, savings: "15%" }
+            ]
+          }
+        ];
+        setProducts(fallbackProducts);
+      } else {
+        const formattedProducts = result.map(product => ({
+          id: product.id,
+          name: product.name,
+          image: product.image_url || "https://placehold.co/600x400?text=No+Image",
+          price: product.price,
+          categoryId: product.category_id || selectedCategory,
+          discounts: Array.isArray(product.discounts) ? product.discounts : []
+        }));
+        
+        console.log("Formatted products:", formattedProducts);
+        setProducts(formattedProducts);
+      }
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      
+      // Create fallback dummy products in case of error
+      const fallbackProducts = [
+        {
+          id: "fallback-1",
+          name: "Fallback Product",
+          image: "https://placehold.co/600x400?text=Fallback+Product",
+          price: 1599,
+          categoryId: selectedCategory,
+          discounts: [
+            { minCount: 3, price: 1499, savings: "6%" },
+            { minCount: 5, price: 1399, savings: "12%" }
+          ]
+        },
+        {
+          id: "fallback-2",
+          name: "Backup Product",
+          image: "https://placehold.co/600x400?text=Backup+Product",
+          price: 3599,
+          categoryId: selectedCategory,
+          discounts: [
+            { minCount: 3, price: 3399, savings: "5%" },
+            { minCount: 5, price: 3299, savings: "8%" }
+          ]
+        }
+      ];
+      
+      setProducts(fallbackProducts);
+      toast({
+        title: language === 'en' ? "Error loading products" : "خطأ في تحميل المنتجات",
+        description: language === 'en' ? "Showing sample products instead" : "عرض منتجات عينة بدلاً من ذلك",
+        variant: "destructive"
+      });
+    } finally {
+      setProductsLoading(false);
+    }
+  }, [step, selectedCategory, supabaseApi, language, toast, hasFetched]);
+
+  useEffect(() => {
+    if (step === 1 && selectedCategory && !hasFetched) {
+      fetchProductsByCategory();
+    }
+    
+    // Reset hasFetched when changing categories
+    if (step === 0) {
+      setHasFetched(false);
+    }
+  }, [step, selectedCategory, fetchProductsByCategory, hasFetched]);
 
   return (
     <div className="flex flex-col min-h-screen">
