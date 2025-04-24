@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Header from '@/components/Header';
@@ -81,7 +82,7 @@ const StartJam3a: React.FC = () => {
 
   // Get products based on selected category
   const filteredProducts = selectedProduct
-    ? sampleProducts.filter(product => product.categoryId === selectedProduct)
+    ? sampleProducts.filter(product => product.categoryId === selectedProduct.categoryId)
     : sampleProducts;
 
   // Form values for the group details step
