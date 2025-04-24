@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { SettingsIcon } from 'lucide-react';
 import Hero from '@/components/Hero';
 import HowItWorks from '@/components/HowItWorks';
 import FeaturedDeals from '@/components/FeaturedDeals';
@@ -10,7 +9,6 @@ import JoinWaitlist from '@/components/JoinWaitlist';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import StartJam3a from '@/components/StartJam3a';
-// Remove Testimonials import as it's no longer used
 import { useAuth } from '@/contexts/AuthContext';
 import AdminButton from '@/components/AdminButton';
 
@@ -26,7 +24,6 @@ const Index = () => {
         <HowItWorks />
         <FeaturedDeals />
         <BilingualProductListing />
-        {/* Removed Testimonials component */}
         <StartJam3a />
         <WhyChooseUs />
         <JoinWaitlist />

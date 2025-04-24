@@ -30,14 +30,14 @@ export const useJam3aCreation = () => {
     console.log(`Category selected: ${categoryId}`);
     setSelectedCategory(categoryId);
     setSelectedProduct(null);
-    setCurrentStep(1);
+    setCurrentStep(2);
   };
 
   const handleProductSelect = (product: Product) => {
     console.log(`Product selected: ${product.name} (${product.id})`);
     console.log("Full product data:", JSON.stringify(product, null, 2));
     setSelectedProduct(product);
-    setCurrentStep(2);
+    setCurrentStep(3);
   };
 
   const handleGroupSizeChange = (size: number) => {
@@ -90,16 +90,19 @@ export const useJam3aCreation = () => {
   };
 
   const goToNextStep = () => {
-    if (currentStep < 3) {
+    if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
-    } else if (currentStep === 3) {
+    } else if (currentStep === 4) {
       handlePayAndPublish();
     }
   };
 
   const goToPreviousStep = () => {
-    if (currentStep > 0) {
+    if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
+    } else {
+      // Go back to landing page
+      setCurrentStep(0);
     }
   };
 

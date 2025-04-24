@@ -6,10 +6,12 @@ import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Jam3aBenefits from '../Jam3aBenefits';
+import { useJam3aCreation } from '@/hooks/useJam3aCreation';
 
 const StartJam3aCTA = () => {
   const { language } = useLanguage();
   const navigate = useNavigate();
+  const { setCurrentStep } = useJam3aCreation();
 
   const content = {
     en: {
@@ -27,8 +29,9 @@ const StartJam3aCTA = () => {
   };
 
   const handleStartJam3a = () => {
-    // Navigate to the category selection page
-    navigate('/join-jam3a');
+    // Set the step to 1 to start the process and navigate
+    setCurrentStep(1);
+    navigate('/start-jam3a');
   };
 
   return (
