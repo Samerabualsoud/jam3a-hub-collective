@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -127,7 +128,7 @@ const StartJam3aPage = () => {
           
           if (!result || result.length === 0) {
             console.log("No products found for category:", selectedCategory);
-            // Add dummy products for testing if needed
+            // Create a few dummy products for testing if needed
             const dummyProducts = [
               {
                 id: "dummy-1",
@@ -138,6 +139,17 @@ const StartJam3aPage = () => {
                 discounts: [
                   { min_count: 3, price: 1899, savings: "5%" },
                   { min_count: 5, price: 1799, savings: "10%" }
+                ]
+              },
+              {
+                id: "dummy-2",
+                name: "Another Product",
+                image_url: "https://placehold.co/600x400?text=Another+Product",
+                price: 2999,
+                category_id: selectedCategory,
+                discounts: [
+                  { min_count: 3, price: 2899, savings: "3%" },
+                  { min_count: 5, price: 2799, savings: "7%" }
                 ]
               }
             ];
@@ -164,7 +176,7 @@ const StartJam3aPage = () => {
               price: product.price,
               categoryId: selectedCategory,
               discounts: (product.discounts || []).map(d => ({
-                minCount: d.min_count,
+                minCount: d.minCount, // Note: This was using minCount (camelCase) from the API
                 price: d.price,
                 savings: d.savings
               }))
@@ -174,10 +186,37 @@ const StartJam3aPage = () => {
           }
         } catch (error) {
           console.error("Error fetching products:", error);
-          setProducts([]);
+          
+          // Create fallback dummy products in case of error
+          const fallbackProducts = [
+            {
+              id: "fallback-1",
+              name: "Fallback Product",
+              image: "https://placehold.co/600x400?text=Fallback+Product",
+              price: 1599,
+              categoryId: selectedCategory,
+              discounts: [
+                { minCount: 3, price: 1499, savings: "6%" },
+                { minCount: 5, price: 1399, savings: "12%" }
+              ]
+            },
+            {
+              id: "fallback-2",
+              name: "Backup Product",
+              image: "https://placehold.co/600x400?text=Backup+Product",
+              price: 3599,
+              categoryId: selectedCategory,
+              discounts: [
+                { minCount: 3, price: 3399, savings: "5%" },
+                { minCount: 5, price: 3299, savings: "8%" }
+              ]
+            }
+          ];
+          
+          setProducts(fallbackProducts);
           toast({
             title: language === 'en' ? "Error loading products" : "خطأ في تحميل المنتجات",
-            description: error.message || "Please try again later",
+            description: language === 'en' ? "Showing sample products instead" : "عرض منتجات عينة بدلاً من ذلك",
             variant: "destructive"
           });
         } finally {

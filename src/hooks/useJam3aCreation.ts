@@ -27,12 +27,14 @@ export const useJam3aCreation = () => {
   const navigate = useNavigate();
 
   const handleCategorySelect = (categoryId: string) => {
+    console.log(`Category selected: ${categoryId}`);
     setSelectedCategory(categoryId);
     setSelectedProduct(null);
     setCurrentStep(1);
   };
 
   const handleProductSelect = (product: Product) => {
+    console.log(`Product selected: ${product.name} (${product.id})`);
     setSelectedProduct(product);
     setCurrentStep(2);
   };
