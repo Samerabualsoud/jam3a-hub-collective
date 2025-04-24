@@ -535,8 +535,9 @@ export const deleteDeal = async (id: string) => {
 };
 
 export const handleSaveDeal = async (dealData: any) => {
+  const api = useSupabaseApi();
+  
   try {
-    const api = useSupabaseApi();
     const deals = await api.deals.getDeals();
     
     // Check if deal already exists
@@ -553,7 +554,6 @@ export const handleSaveDeal = async (dealData: any) => {
     return { success: true };
   } catch (error) {
     console.error("Error saving deal:", error);
-    await api.deals.deleteDeal(dealData.id);
     return { success: false, error: error.message };
   }
 };
