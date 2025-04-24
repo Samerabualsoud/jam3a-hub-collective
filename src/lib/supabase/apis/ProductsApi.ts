@@ -70,6 +70,12 @@ export class ProductsApi extends BaseApi {
 
   async createProduct(productData: any) {
     try {
+      // Generate a slug from the product name
+      const slug = productData.name
+        .toLowerCase()
+        .replace(/[^\w\s]/gi, '')
+        .replace(/\s+/g, '-');
+      
       const { data, error } = await this.supabase
         .from('products_catalog')
         .insert([{
@@ -78,6 +84,7 @@ export class ProductsApi extends BaseApi {
           price: productData.price,
           description: productData.description,
           image_url: productData.imageUrl,
+          slug: slug // Add the required slug field
         }])
         .select()
         .single();
@@ -92,9 +99,19 @@ export class ProductsApi extends BaseApi {
 
   async updateProduct(id: string | number, productData: any) {
     try {
+      // If name is being updated, regenerate the slug
+      let updateData = { ...productData };
+      
+      if (productData.name) {
+        updateData.slug = productData.name
+          .toLowerCase()
+          .replace(/[^\w\s]/gi, '')
+          .replace(/\s+/g, '-');
+      }
+      
       const { data, error } = await this.supabase
         .from('products_catalog')
-        .update(productData)
+        .update(updateData)
         .eq('id', this.ensureStringId(id))
         .select()
         .single();
@@ -124,9 +141,18 @@ export class ProductsApi extends BaseApi {
 
   async createMultipleProducts(products: any[]) {
     try {
+      // Add slug for each product being inserted
+      const productsWithSlug = products.map(product => ({
+        ...product,
+        slug: product.name
+          .toLowerCase()
+          .replace(/[^\w\s]/gi, '')
+          .replace(/\s+/g, '-')
+      }));
+      
       const { data, error } = await this.supabase
         .from('products_catalog')
-        .insert(products)
+        .insert(productsWithSlug)
         .select();
         
       if (error) throw error;
