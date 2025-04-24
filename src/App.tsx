@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
   BrowserRouter as Router,
@@ -31,8 +30,10 @@ import PaymentSettings from './pages/PaymentSettings';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import HowItWorks from './pages/HowItWorks';
 import Sellers from './pages/Sellers';
+import SellerProducts from './pages/seller/SellerProducts';
+import SellerOrders from './pages/seller/SellerOrders';
+import SellerAnalytics from './pages/seller/SellerAnalytics';
 
-// Create a client
 const queryClient = new QueryClient();
 
 function App() {
@@ -50,6 +51,9 @@ function App() {
               <Route path="/about-us" element={<AboutUs />} />
               <Route path="/how-it-works" element={<HowItWorks />} />
               <Route path="/sellers" element={<Sellers />} />
+              <Route path="/seller/products" element={<SellerProducts />} />
+              <Route path="/seller/orders" element={<SellerOrders />} />
+              <Route path="/seller/analytics" element={<SellerAnalytics />} />
               <Route path="/contact-us" element={<ContactUs />} />
               <Route path="/terms-of-service" element={<TermsOfService />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />

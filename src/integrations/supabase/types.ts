@@ -347,6 +347,7 @@ export type Database = {
           image_url: string | null
           name: string
           price: number
+          seller_id: string | null
           slug: string
           source: string | null
           updated_at: string
@@ -360,6 +361,7 @@ export type Database = {
           image_url?: string | null
           name: string
           price: number
+          seller_id?: string | null
           slug: string
           source?: string | null
           updated_at?: string
@@ -373,6 +375,7 @@ export type Database = {
           image_url?: string | null
           name?: string
           price?: number
+          seller_id?: string | null
           slug?: string
           source?: string | null
           updated_at?: string
@@ -383,6 +386,13 @@ export type Database = {
             columns: ["category_id"]
             isOneToOne: false
             referencedRelation: "product_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "products_catalog_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "seller_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -420,6 +430,111 @@ export type Database = {
         }
         Relationships: []
       }
+      seller_orders: {
+        Row: {
+          created_at: string
+          id: string
+          order_id: number
+          seller_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          order_id: number
+          seller_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          order_id?: number
+          seller_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seller_orders_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "seller_orders_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "seller_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      seller_profiles: {
+        Row: {
+          address: string
+          application_status: string
+          approved_at: string | null
+          business_description: string | null
+          business_name: string
+          business_type: string
+          city: string
+          contact_name: string
+          country: string
+          created_at: string
+          email: string
+          id: string
+          phone: string
+          product_categories: string[]
+          tax_id: string | null
+          updated_at: string
+          user_id: string
+          website: string | null
+        }
+        Insert: {
+          address: string
+          application_status?: string
+          approved_at?: string | null
+          business_description?: string | null
+          business_name: string
+          business_type: string
+          city: string
+          contact_name: string
+          country?: string
+          created_at?: string
+          email: string
+          id?: string
+          phone: string
+          product_categories?: string[]
+          tax_id?: string | null
+          updated_at?: string
+          user_id: string
+          website?: string | null
+        }
+        Update: {
+          address?: string
+          application_status?: string
+          approved_at?: string | null
+          business_description?: string | null
+          business_name?: string
+          business_type?: string
+          city?: string
+          contact_name?: string
+          country?: string
+          created_at?: string
+          email?: string
+          id?: string
+          phone?: string
+          product_categories?: string[]
+          tax_id?: string | null
+          updated_at?: string
+          user_id?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -441,6 +556,10 @@ export type Database = {
           role: string | null
           status: string | null
         }[]
+      }
+      is_seller: {
+        Args: { user_id: string }
+        Returns: boolean
       }
     }
     Enums: {
