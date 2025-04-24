@@ -1,7 +1,9 @@
+
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Home from './pages/Home';
-import Shop from './pages/Shop';
+import Index from './pages/Index';
+import FAQ from './pages/FAQ';
+import HowItWorksPage from './pages/HowItWorks'; 
 import ProductDetails from './pages/ProductDetails';
 import StartJam3a from './pages/StartJam3a';
 import MyJam3as from './pages/MyJam3as';
@@ -10,13 +12,15 @@ import AboutUs from './pages/AboutUs';
 import ContactUs from './pages/ContactUs';
 import PaymentCallback from './pages/PaymentCallback';
 import PaymentPage from './pages/Payment';
+import Admin from './pages/Admin';
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/shop" element={<Shop />} />
+        <Route path="/" element={<Index />} />
+        <Route path="/faq" element={<FAQ />} />
+        <Route path="/how-it-works" element={<HowItWorksPage />} />
         <Route path="/product/:id" element={<ProductDetails />} />
         <Route path="/start-jam3a" element={<StartJam3a />} />
         <Route path="/my-jam3as" element={<MyJam3as />} />
@@ -25,6 +29,7 @@ function App() {
         <Route path="/contact-us" element={<ContactUs />} />
         <Route path="/payment-callback" element={<PaymentCallback />} />
         <Route path="/payment" element={<PaymentPage />} />
+        <Route path="/admin" element={<Admin />} />
       </Routes>
     </Router>
   );
