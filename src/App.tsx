@@ -26,6 +26,8 @@ import SellerRegister from './pages/SellerRegister';
 import OrderTracking from './pages/OrderTracking';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Admin from './pages/Admin';
+import PaymentSettings from './pages/PaymentSettings';
 
 function App() {
   return (
@@ -51,6 +53,8 @@ function App() {
             <Route path="/order-tracking" element={<OrderTracking />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/admin" element={<Admin />} />
+            <Route path="/payment-settings" element={<PaymentSettings />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>

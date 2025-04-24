@@ -503,15 +503,15 @@ export const deleteFAQ = async (id: string) => {
 
 // For deals, we'll leverage the existing implementation in src/lib/supabase/api.ts
 // to avoid TypeScript errors since the types aren't yet aware of the deals table
-import { useSupabaseApi } from "@/lib/supabase/api";
+import { SupabaseApi } from "@/lib/supabase/api";
 
 export const fetchDeals = async () => {
-  const api = useSupabaseApi();
+  const api = new SupabaseApi();
   return api.getDeals();
 };
 
 export const saveDeal = async (deal: Partial<Deal>) => {
-  const api = useSupabaseApi();
+  const api = new SupabaseApi();
   const { id, ...dealData } = deal;
   
   if (!dealData.name) {
@@ -530,14 +530,14 @@ export const saveDeal = async (deal: Partial<Deal>) => {
 };
 
 export const deleteDeal = async (id: string) => {
-  const api = useSupabaseApi();
+  const api = new SupabaseApi();
   return api.deleteDeal(id);
 };
 
 export const handleSaveDeal = async (dealData: any) => {
-  const api = useSupabaseApi();
-  
   try {
+    // Create API instance directly instead of using the hook
+    const api = new SupabaseApi();
     const deals = await api.deals.getDeals();
     
     // Check if deal already exists
