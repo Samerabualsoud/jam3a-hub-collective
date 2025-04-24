@@ -19,6 +19,35 @@ export class SupabaseApi {
     this.deals = new DealsApi();
     this.orders = new OrdersApi();
   }
+
+  // Helper methods to access the API directly
+  getProductsByCategorySlug(slug: string) {
+    return this.products.getProductsByCategorySlug(slug);
+  }
+  
+  getProducts() {
+    return this.products.getProducts();
+  }
+  
+  getDeals() {
+    return this.deals.getDeals();
+  }
+  
+  createDeal(dealData: any) {
+    return this.deals.createDeal(dealData);
+  }
+  
+  updateDeal(id: string | number, dealData: any) {
+    return this.deals.updateDeal(id, dealData);
+  }
+  
+  deleteDeal(id: string | number) {
+    return this.deals.deleteDeal(id);
+  }
+  
+  getOrders() {
+    return this.orders.getOrders();
+  }
 }
 
 // Hook for using the Supabase API

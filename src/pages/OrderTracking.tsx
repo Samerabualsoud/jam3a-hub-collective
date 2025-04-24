@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -14,7 +13,7 @@ import { useSupabaseApi } from "@/lib/supabase/api";
 const OrderTracking = () => {
   const { user, isAuthenticated } = useAuth();
   const { language } = useLanguage();
-  const { getOrders } = useSupabaseApi();
+  const api = useSupabaseApi();
   const { toast } = useToast();
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -22,7 +21,7 @@ const OrderTracking = () => {
   useEffect(() => {
     if (!isAuthenticated) return;
     setLoading(true);
-    getOrders()
+    api.orders.getOrders()
       .then(data => {
         // Optionally, filter orders for the current user if email is unique
         const filtered = data.filter(
@@ -42,7 +41,7 @@ const OrderTracking = () => {
         });
       })
       .finally(() => setLoading(false));
-  }, [isAuthenticated, getOrders, user, language, toast]);
+  }, [isAuthenticated, api, user, language, toast]);
 
   if (!isAuthenticated) {
     return (

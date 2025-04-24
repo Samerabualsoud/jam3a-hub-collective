@@ -533,3 +533,27 @@ export const deleteDeal = async (id: string) => {
   const api = useSupabaseApi();
   return api.deleteDeal(id);
 };
+
+export const handleSaveDeal = async (dealData: any) => {
+  try {
+    const api = useSupabaseApi();
+    const deals = await api.deals.getDeals();
+    
+    // Check if deal already exists
+    const existingDeal = deals.find(d => d.id === dealData.id);
+    
+    if (existingDeal) {
+      // Update existing deal
+      await api.deals.updateDeal(dealData.id, dealData);
+    } else {
+      // Create new deal
+      await api.deals.createDeal(dealData);
+    }
+    
+    return { success: true };
+  } catch (error) {
+    console.error("Error saving deal:", error);
+    await api.deals.deleteDeal(dealData.id);
+    return { success: false, error: error.message };
+  }
+};

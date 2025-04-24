@@ -1,5 +1,5 @@
 
-import { supabase } from './client';
+import { supabase } from '@/integrations/supabase/client';
 
 // Base API class for common functionality
 export class BaseApi {

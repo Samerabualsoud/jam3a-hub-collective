@@ -120,7 +120,7 @@ const StartJam3aPage = () => {
         console.log("Fetching products for category:", selectedCategory);
         
         try {
-          const result = await supabaseApi.getProductsByCategorySlug(selectedCategory);
+          const result = await supabaseApi.products.getProductsByCategorySlug(selectedCategory);
           console.log("Fetched products:", result);
           
           const formattedProducts = result.map(product => ({

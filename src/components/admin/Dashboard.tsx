@@ -19,7 +19,7 @@ const Dashboard = () => {
   // Fetch products data
   const { data: productsData = [], isLoading: productsLoading } = useQuery({
     queryKey: ['admin-products'],
-    queryFn: () => api.getProducts(),
+    queryFn: () => api.products.getProducts(),
   });
 
   // Fetch orders data
