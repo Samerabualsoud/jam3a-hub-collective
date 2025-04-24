@@ -131,8 +131,8 @@ const FeaturedDeals = () => {
       try {
         console.log('Fetching deals and products for FeaturedDeals component');
         const [dealsData, productsData] = await Promise.all([
-          api.getDeals(),
-          api.getProducts()
+          api.deals.getDeals(),
+          api.products.getProducts()
         ]);
         
         console.log(`Fetched ${dealsData.length} deals and ${productsData.length} products`);

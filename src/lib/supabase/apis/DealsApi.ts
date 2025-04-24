@@ -1,5 +1,5 @@
 
-import { BaseApi } from '../api';
+import { BaseApi } from '../BaseApi';
 
 export class DealsApi extends BaseApi {
   async getDeals() {

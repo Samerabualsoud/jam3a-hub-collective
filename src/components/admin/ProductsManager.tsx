@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -36,8 +37,8 @@ const ProductsManager = () => {
     setError(null);
     try {
       const [productsData, dealsData] = await Promise.all([
-        api.getProducts(),
-        api.getDeals(),
+        api.products.getProducts(),
+        api.deals.getDeals(),
       ]);
       setProducts(productsData);
       setDeals(dealsData);
@@ -56,7 +57,7 @@ const ProductsManager = () => {
 
   const handleAddProduct = async (product) => {
     try {
-      await api.createProduct(product);
+      await api.products.createProduct(product);
       await loadData();
       setIsAddingProduct(false);
       toast({
@@ -106,8 +107,8 @@ const ProductsManager = () => {
         return;
       }
       
-      // If Supabase is configured, use the API - fix is here:
-      await api.createMultipleProducts(products); // This function now properly accepts the products array
+      // If Supabase is configured, use the API
+      await api.products.createMultipleProducts(products);
       await loadData();
       setShowWebScraper(false);
       toast({
@@ -126,7 +127,7 @@ const ProductsManager = () => {
 
   const handleUpdateProduct = async (updatedProduct) => {
     try {
-      await api.updateProduct(updatedProduct.id, updatedProduct);
+      await api.products.updateProduct(updatedProduct.id, updatedProduct);
       await loadData();
       setEditingProduct(null);
       toast({
@@ -144,7 +145,7 @@ const ProductsManager = () => {
 
   const handleDeleteProduct = async (id) => {
     try {
-      await api.deleteProduct(id);
+      await api.products.deleteProduct(id);
       await loadData();
       toast({
         title: "Success",
@@ -161,7 +162,7 @@ const ProductsManager = () => {
 
   const handleAddDeal = async (deal) => {
     try {
-      await api.createDeal(deal);
+      await api.deals.createDeal(deal);
       await loadData();
       setIsAddingDeal(false);
       toast({
@@ -179,7 +180,7 @@ const ProductsManager = () => {
 
   const handleUpdateDeal = async (updatedDeal) => {
     try {
-      await api.updateDeal(updatedDeal.id, updatedDeal);
+      await api.deals.updateDeal(updatedDeal.id, updatedDeal);
       await loadData();
       setEditingDeal(null);
       toast({
@@ -197,7 +198,7 @@ const ProductsManager = () => {
 
   const handleDeleteDeal = async (id) => {
     try {
-      await api.deleteDeal(id);
+      await api.deals.deleteDeal(id);
       await loadData();
       toast({
         title: "Success",
@@ -214,7 +215,7 @@ const ProductsManager = () => {
 
   const toggleDealStatus = async (id, currentStatus) => {
     try {
-      await api.updateDeal(id, { active: !currentStatus });
+      await api.deals.updateDeal(id, { active: !currentStatus });
       await loadData();
       toast({
         title: "Success",

@@ -1,5 +1,5 @@
 
-import { BaseApi } from '../api';
+import { BaseApi } from '../BaseApi';
 
 export class ProductsApi extends BaseApi {
   async getProductsByCategorySlug(slug: string) {
