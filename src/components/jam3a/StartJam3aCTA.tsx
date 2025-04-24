@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
@@ -9,6 +9,7 @@ import Jam3aBenefits from '../Jam3aBenefits';
 
 const StartJam3aCTA = () => {
   const { language } = useLanguage();
+  const navigate = useNavigate();
 
   const content = {
     en: {
@@ -23,6 +24,11 @@ const StartJam3aCTA = () => {
       orJoin: "أو",
       joinExisting: "انضم إلى جمعة موجودة"
     }
+  };
+
+  const handleStartJam3a = () => {
+    // Navigate to the category selection page
+    navigate('/join-jam3a');
   };
 
   return (
@@ -47,18 +53,17 @@ const StartJam3aCTA = () => {
         transition={{ duration: 0.5, delay: 1 }}
         className="flex flex-col items-center space-y-4"
       >
-        <Link to="/start-jam3a" className="w-full max-w-xs">
-          <Button 
-            variant="green"
-            size="lg" 
-            className="w-full text-white px-8 py-6 text-lg shadow-xl hover:shadow-2xl bg-gradient-to-r from-royal-blue to-royal-blue-light transition-all duration-300 hover:-translate-y-1 group rounded-xl"
-          >
-            <span className="flex items-center gap-2">
-              {content[language].cta}
-              <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-            </span>
-          </Button>
-        </Link>
+        <Button 
+          variant="green"
+          size="lg" 
+          className="w-full max-w-xs text-white px-8 py-6 text-lg shadow-xl hover:shadow-2xl bg-gradient-to-r from-royal-blue to-royal-blue-light transition-all duration-300 hover:-translate-y-1 group rounded-xl"
+          onClick={handleStartJam3a}
+        >
+          <span className="flex items-center gap-2">
+            {content[language].cta}
+            <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+          </span>
+        </Button>
         <div className="flex items-center gap-2 mt-2">
           <span className="text-muted-foreground">{content[language].orJoin}</span>
           <Button variant="link" className="text-royal-blue hover:text-royal-blue-dark">

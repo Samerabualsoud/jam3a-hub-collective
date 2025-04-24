@@ -6,6 +6,7 @@ import FAQ from './pages/FAQ';
 import HowItWorksPage from './pages/HowItWorks'; 
 import ProductDetails from './pages/ProductDetails';
 import StartJam3a from './pages/StartJam3a';
+import JoinJam3a from './pages/JoinJam3a';
 import MyJam3as from './pages/MyJam3as';
 import Profile from './pages/Profile';
 import AboutUs from './pages/AboutUs';
@@ -23,6 +24,7 @@ function App() {
         <Route path="/how-it-works" element={<HowItWorksPage />} />
         <Route path="/product/:id" element={<ProductDetails />} />
         <Route path="/start-jam3a" element={<StartJam3a />} />
+        <Route path="/join-jam3a" element={<JoinJam3a />} />
         <Route path="/my-jam3as" element={<MyJam3as />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/about-us" element={<AboutUs />} />
