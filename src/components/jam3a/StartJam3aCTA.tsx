@@ -32,6 +32,7 @@ const StartJam3aCTA = () => {
     // Set the step to 1 to start the process and navigate
     setCurrentStep(1);
     navigate('/start-jam3a');
+    console.log("Starting Jam3a creation process");
   };
 
   return (
@@ -70,7 +71,7 @@ const StartJam3aCTA = () => {
         <div className="flex items-center gap-2 mt-2">
           <span className="text-muted-foreground">{content[language].orJoin}</span>
           <Button variant="link" className="text-royal-blue hover:text-royal-blue-dark">
-            <Link to="/shop" className="flex items-center gap-1">
+            <Link to="/join-jam3a" className="flex items-center gap-1">
               <Users className="h-4 w-4" />
               {content[language].joinExisting}
             </Link>
