@@ -1,326 +1,39 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import React from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useJam3aCreation } from '@/hooks/useJam3aCreation';
-import CategorySelection from '@/components/jam3a/CategorySelection';
-import ProductSelection from '@/components/jam3a/ProductSelection';
-import GroupDetailsForm from '@/components/jam3a/GroupDetailsForm';
-import ConfirmationStep from '@/components/jam3a/ConfirmationStep';
-import { StepIndicator } from '@/components/ui/step-indicator';
-import { motion } from 'framer-motion';
-import { useSupabaseApi } from '@/lib/supabase/api';
+import StartJam3aHeader from '@/components/jam3a/StartJam3aHeader';
+import StartJam3aSteps from '@/components/jam3a/StartJam3aSteps';
+import StartJam3aCTA from '@/components/jam3a/StartJam3aCTA';
 
-const StartJam3aPage = () => {
+const StartJam3a: React.FC = () => {
   const { language } = useLanguage();
-  const { toast } = useToast();
-  
-  const {
-    currentStep: step,
-    setCurrentStep: setStep,
-    selectedCategory,
-    selectedProduct,
-    handleCategorySelect,
-    handleProductSelect,
-    handlePayAndPublish,
-    goToNextStep,
-    goToPreviousStep,
-  } = useJam3aCreation();
-  
-  const [formValues, setFormValues] = useState({
-    groupSize: 5,
-    duration: 1, // 1 = 24 hours, 2 = 3 days, etc.
-    isPublic: true,
-    paymentType: "upfront",     // Always "upfront"
-    notificationPreference: "email"
-  });
 
-  const [products, setProducts] = useState([]);
-  const [productsLoading, setProductsLoading] = useState(false);
-  const [hasFetched, setHasFetched] = useState(false);
-  const supabaseApi = useSupabaseApi();
-
-  const content = {
-    en: {
-      title: "Start Your Jam3a",
-      steps: ["Choose Category", "Select Product", "Add Details", "Confirm & Share"],
-      next: "Next",
-      previous: "Back",
-      startJam3a: "Start Jam3a",
-    },
-    ar: {
-      title: "ابدأ جمعتك",
-      steps: ["اختر الفئة", "اختر المنتج", "أضف التفاصيل", "التأكيد والمشاركة"],
-      next: "التالي",
-      previous: "السابق",
-      startJam3a: "ابدأ الجمعة",
-    }
+  const stats = {
+    en: [
+      { value: "25%", label: "Average Savings" },
+      { value: "5+", label: "Products Categories" },
+      { value: "1K+", label: "Happy Customers" }
+    ],
+    ar: [
+      { value: "25%", label: "متوسط التوفير" },
+      { value: "5+", label: "فئات المنتجات" },
+      { value: "1K+", label: "عميل سعيد" }
+    ]
   };
-
-  const handleNext = () => {
-    if (step === 0 && !selectedCategory) {
-      toast({
-        title: language === 'en' ? "Please select a category" : "الرجاء اختيار فئة",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    if (step === 1 && !selectedProduct) {
-      toast({
-        title: language === 'en' ? "Please select a product" : "الرجاء اختيار منتج",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    if (step === 3) {
-      // On the final step, clicking next should initiate payment
-      handlePayAndPublish();
-      return;
-    }
-
-    goToNextStep();
-  };
-
-  const handlePrevious = () => {
-    goToPreviousStep();
-  };
-  
-  const handleShareJam3a = () => {
-    try {
-      if (navigator.share) {
-        navigator.share({
-          title: language === 'en' ? 'Join my Jam3a' : 'انضم إلى جمعتي',
-          text: language === 'en' 
-            ? `Join my Jam3a for ${selectedProduct?.name}. Let's save together!` 
-            : `انضم إلى جمعتي لـ ${selectedProduct?.name}. دعونا نوفر معاً!`,
-          url: window.location.href,
-        }).catch(error => {
-          console.log('Sharing failed:', error);
-          fallbackShare();
-        });
-      } else {
-        fallbackShare();
-      }
-    } catch (error) {
-      console.log('Share error:', error);
-      fallbackShare();
-    }
-  };
-  
-  const fallbackShare = () => {
-    toast({
-      title: language === 'en' ? "Share using the link above" : "شارك باستخدام الرابط أعلاه",
-    });
-  };
-
-  const pageVariants = {
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0 },
-    exit: { opacity: 0, y: -20 }
-  };
-
-  const fetchProductsByCategory = useCallback(async () => {
-    if (step !== 1 || !selectedCategory || hasFetched) {
-      return;
-    }
-    
-    setProductsLoading(true);
-    setHasFetched(true);
-    console.log("Fetching products for category:", selectedCategory);
-    
-    try {
-      const result = await supabaseApi.products.getProductsByCategorySlug(selectedCategory);
-      console.log("Fetched products:", result);
-      
-      if (!result || result.length === 0) {
-        console.log("No products found for category:", selectedCategory);
-        // Generate fallback products
-        const fallbackProducts = [
-          {
-            id: "fallback-1",
-            name: `${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)} Product 1`,
-            image: `https://placehold.co/600x400?text=${selectedCategory}+Product+1`,
-            price: 1599,
-            categoryId: selectedCategory,
-            discounts: [
-              { minCount: 3, price: 1499, savings: "6%" },
-              { minCount: 5, price: 1399, savings: "12%" }
-            ]
-          },
-          {
-            id: "fallback-2",
-            name: `${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)} Product 2`,
-            image: `https://placehold.co/600x400?text=${selectedCategory}+Product+2`,
-            price: 2599,
-            categoryId: selectedCategory,
-            discounts: [
-              { minCount: 3, price: 2399, savings: "8%" },
-              { minCount: 5, price: 2199, savings: "15%" }
-            ]
-          }
-        ];
-        setProducts(fallbackProducts);
-      } else {
-        const formattedProducts = result.map(product => ({
-          id: product.id,
-          name: product.name,
-          image: product.image_url || "https://placehold.co/600x400?text=No+Image",
-          price: product.price,
-          categoryId: product.category_id || selectedCategory,
-          discounts: Array.isArray(product.discounts) ? product.discounts : []
-        }));
-        
-        console.log("Formatted products:", formattedProducts);
-        setProducts(formattedProducts);
-      }
-    } catch (error) {
-      console.error("Error fetching products:", error);
-      
-      // Create fallback dummy products in case of error
-      const fallbackProducts = [
-        {
-          id: "fallback-1",
-          name: "Fallback Product",
-          image: "https://placehold.co/600x400?text=Fallback+Product",
-          price: 1599,
-          categoryId: selectedCategory,
-          discounts: [
-            { minCount: 3, price: 1499, savings: "6%" },
-            { minCount: 5, price: 1399, savings: "12%" }
-          ]
-        },
-        {
-          id: "fallback-2",
-          name: "Backup Product",
-          image: "https://placehold.co/600x400?text=Backup+Product",
-          price: 3599,
-          categoryId: selectedCategory,
-          discounts: [
-            { minCount: 3, price: 3399, savings: "5%" },
-            { minCount: 5, price: 3299, savings: "8%" }
-          ]
-        }
-      ];
-      
-      setProducts(fallbackProducts);
-      toast({
-        title: language === 'en' ? "Error loading products" : "خطأ في تحميل المنتجات",
-        description: language === 'en' ? "Showing sample products instead" : "عرض منتجات عينة بدلاً من ذلك",
-        variant: "destructive"
-      });
-    } finally {
-      setProductsLoading(false);
-    }
-  }, [step, selectedCategory, supabaseApi, language, toast, hasFetched]);
-
-  useEffect(() => {
-    if (step === 1 && selectedCategory && !hasFetched) {
-      fetchProductsByCategory();
-    }
-    
-    // Reset hasFetched when changing categories
-    if (step === 0) {
-      setHasFetched(false);
-    }
-  }, [step, selectedCategory, fetchProductsByCategory, hasFetched]);
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <Header />
-      <main className="flex-1 container mx-auto py-8 px-4 lg:py-12">
-        <motion.div
-          className="max-w-4xl mx-auto"
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          variants={pageVariants}
-          transition={{ duration: 0.4 }}
-        >
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold tracking-tight mb-4">
-              {content[language].title}
-            </h1>
-            <div className="mb-8">
-              <StepIndicator
-                steps={content[language].steps}
-                currentStep={step}
-                className="mt-6"
-              />
-            </div>
-          </div>
-
-          <Card className="border-2 border-gray-100 shadow-md">
-            <CardContent className="p-6 md:p-8">
-              {step === 0 && (
-                <CategorySelection
-                  onSelect={handleCategorySelect}
-                />
-              )}
-
-              {step === 1 && (
-                <ProductSelection
-                  products={products}
-                  selectedProductId={selectedProduct?.id || null}
-                  onSelect={handleProductSelect}
-                  loading={productsLoading}
-                />
-              )}
-
-              {step === 2 && selectedProduct && (
-                <GroupDetailsForm
-                  initialValues={{ ...formValues, paymentType: "upfront" }}
-                  onValuesChange={(v) => setFormValues({ ...v, paymentType: "upfront" })}
-                  maxGroupSize={10}
-                  product={selectedProduct}
-                />
-              )}
-
-              {step === 3 && selectedProduct && (
-                <ConfirmationStep
-                  product={selectedProduct}
-                  groupSize={formValues.groupSize}
-                  duration={formValues.duration}
-                  isPublic={formValues.isPublic}
-                  paymentType="upfront"
-                  onShare={handleShareJam3a}
-                  isStartingJam3a={true}
-                />
-              )}
-            </CardContent>
-          </Card>
-
-          <div className="flex justify-between mt-8">
-            <Button
-              variant="outline"
-              onClick={handlePrevious}
-              disabled={step === 0}
-              className="gap-2"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              {content[language].previous}
-            </Button>
-            
-            <Button
-              variant="green"
-              onClick={handleNext}
-              className="gap-2"
-            >
-              {step === 3 ? 'Proceed to Payment' : content[language].next}
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </motion.div>
-      </main>
-      <Footer />
-    </div>
+    <section id="start-jam3a" className="py-16 md:py-24 bg-gradient-to-br from-white via-royal-blue-50/50 to-white overflow-hidden">
+      <div className="container mx-auto px-4 md:px-6 relative" dir={language === 'ar' ? 'rtl' : 'ltr'}>
+        {/* Background decoration elements */}
+        <div className="absolute -top-32 -right-32 w-96 h-96 bg-royal-blue/5 rounded-full filter blur-3xl"></div>
+        <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-royal-blue-accent/5 rounded-full filter blur-3xl"></div>
+        
+        <StartJam3aHeader stats={stats[language]} />
+        <StartJam3aSteps />
+        <StartJam3aCTA />
+      </div>
+    </section>
   );
 };
 
-export default StartJam3aPage;
+export default StartJam3a;
