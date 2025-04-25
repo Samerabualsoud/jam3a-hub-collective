@@ -2,13 +2,12 @@
 import React from 'react';
 import Hero from '@/components/Hero';
 import HowItWorks from '@/components/HowItWorks';
-import FeaturedDeals from '@/components/FeaturedDeals';
 import BilingualProductListing from '@/components/BilingualProductListing';
 import WhyChooseUs from '@/components/WhyChooseUs';
 import JoinWaitlist from '@/components/JoinWaitlist';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
-import StartJam3aCTA from '@/components/jam3a/StartJam3aCTA'; // Update the import to use the CTA component
+import StartJam3aCTA from '@/components/jam3a/StartJam3aCTA';
 import { useAuth } from '@/contexts/AuthContext';
 import AdminButton from '@/components/AdminButton';
 
@@ -22,7 +21,7 @@ const Index = () => {
         {isAdmin && <AdminButton />}
         <Hero />
         <HowItWorks />
-        <FeaturedDeals />
+        {/* Removed FeaturedDeals component */}
         <BilingualProductListing />
         <section className="container mx-auto py-16 px-4">
           <StartJam3aCTA />
