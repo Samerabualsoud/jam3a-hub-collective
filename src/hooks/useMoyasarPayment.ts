@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useSupabaseClient } from '@supabase/auth-helpers-react';
@@ -23,6 +24,7 @@ interface PaymentDetails {
   description: string;
   source: PaymentSource;
   customer: CustomerInfo;
+  callback_url?: string;
 }
 
 interface PaymentResponse {
@@ -47,11 +49,13 @@ interface PaymentResponse {
     number: string;
     message: null | string;
     transaction_url: string;
+    url?: string;
   };
   ip: string;
   callback_url: string;
   created_at: string;
   updated_at: string;
+  url?: string;
 }
 
 export const useMoyasarPayment = () => {
@@ -60,7 +64,7 @@ export const useMoyasarPayment = () => {
   const { toast } = useToast();
   
   const supabase = useSupabaseClient();
-  const isSupabaseAvailable = !!supabase;
+  const isSupabaseAvailable = !!supabase && typeof supabase.functions?.invoke === 'function';
 
   const processPayment = async (paymentDetails: PaymentDetails) => {
     if (!isSupabaseAvailable) {

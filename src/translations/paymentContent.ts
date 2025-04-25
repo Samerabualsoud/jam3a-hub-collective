@@ -8,6 +8,11 @@ interface PaymentContent {
   total: string;
   payNow: string;
   securePayment: string;
+  processing: string;
+  paymentError: string;
+  paymentErrorMessage: string;
+  missingInfo: string;
+  redirecting: string;
 }
 
 interface PaymentTranslations {
@@ -25,6 +30,11 @@ export const paymentContent: PaymentTranslations = {
     total: 'Total',
     payNow: 'Pay Now',
     securePayment: 'Secure payment powered by Moyasar',
+    processing: 'Processing...',
+    paymentError: 'Payment Error',
+    paymentErrorMessage: 'There was an error processing your payment',
+    missingInfo: 'Missing product information',
+    redirecting: 'Redirecting back to start page'
   },
   ar: {
     title: 'تفاصيل الدفع',
@@ -35,6 +45,10 @@ export const paymentContent: PaymentTranslations = {
     total: 'المجموع',
     payNow: 'ادفع الآن',
     securePayment: 'دفع آمن مدعوم من ميسر',
+    processing: 'جاري المعالجة...',
+    paymentError: 'خطأ في الدفع',
+    paymentErrorMessage: 'حدث خطأ أثناء معالجة الدفع',
+    missingInfo: 'معلومات المنتج مفقودة',
+    redirecting: 'جاري إعادة التوجيه إلى صفحة البداية'
   }
 };
-

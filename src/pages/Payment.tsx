@@ -9,6 +9,8 @@ import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useMoyasarPayment } from '@/hooks/useMoyasarPayment';
 import { RadioGroup } from "@/components/ui/radio-group";
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AlertCircle } from 'lucide-react';
 import PaymentMethodOption from '@/components/payment/PaymentMethodOption';
 import PaymentSummary from '@/components/payment/PaymentSummary';
 import PaymentFooter from '@/components/payment/PaymentFooter';
@@ -20,7 +22,7 @@ const PaymentPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { language } = useLanguage();
-  const { processPayment, isLoading } = useMoyasarPayment();
+  const { processPayment, isLoading, isSupabaseAvailable } = useMoyasarPayment();
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethodType>('creditcard');
 
   const { product, groupSize, discountTier } = location.state || {};
@@ -29,8 +31,8 @@ const PaymentPage = () => {
   useEffect(() => {
     if (!product) {
       toast({
-        title: language === 'en' ? 'Missing product information' : 'معلومات المنتج مفقودة',
-        description: language === 'en' ? 'Redirecting back to start page' : 'جاري إعادة التوجيه إلى صفحة البداية',
+        title: language === 'en' ? content.missingInfo : content.missingInfo,
+        description: language === 'en' ? content.redirecting : content.redirecting,
         variant: 'destructive'
       });
       
@@ -40,7 +42,7 @@ const PaymentPage = () => {
       
       return () => clearTimeout(timeout);
     }
-  }, [product, navigate, toast, language]);
+  }, [product, navigate, toast, language, content]);
 
   if (!product) {
     return null;
@@ -52,6 +54,15 @@ const PaymentPage = () => {
     try {
       console.log("Processing payment with method:", selectedMethod);
       console.log("Amount:", discountPrice);
+      
+      if (!isSupabaseAvailable) {
+        toast({
+          title: language === 'en' ? content.paymentError : content.paymentError,
+          description: 'Supabase integration is not configured properly. Please connect to Supabase first.',
+          variant: 'destructive'
+        });
+        return;
+      }
       
       const paymentResult = await processPayment({
         amount: discountPrice,
@@ -73,10 +84,10 @@ const PaymentPage = () => {
     } catch (error) {
       console.error('Payment error:', error);
       toast({
-        title: language === 'en' ? 'Payment Error' : 'خطأ في الدفع',
+        title: language === 'en' ? content.paymentError : content.paymentError,
         description: language === 'en' 
-          ? 'There was an error processing your payment'
-          : 'حدث خطأ أثناء معالجة الدفع',
+          ? content.paymentErrorMessage
+          : content.paymentErrorMessage,
         variant: 'destructive'
       });
     }
@@ -99,6 +110,15 @@ const PaymentPage = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
+            {!isSupabaseAvailable && (
+              <Alert variant="destructive" className="mb-4">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>
+                  Supabase integration is not configured. Payment processing is unavailable.
+                </AlertDescription>
+              </Alert>
+            )}
+            
             <PaymentSummary
               product={product}
               groupSize={groupSize}
@@ -144,11 +164,11 @@ const PaymentPage = () => {
               onClick={handlePayment}
               className="w-full"
               size="lg"
-              disabled={isLoading}
+              disabled={isLoading || !isSupabaseAvailable}
               variant="green"
             >
               {isLoading 
-                ? (language === 'en' ? 'Processing...' : 'جاري المعالجة...')
+                ? (language === 'en' ? content.processing : content.processing)
                 : content.payNow}
             </Button>
 
@@ -162,4 +182,3 @@ const PaymentPage = () => {
 };
 
 export default PaymentPage;
-
