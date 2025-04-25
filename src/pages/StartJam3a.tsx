@@ -36,6 +36,7 @@ const StartJam3a: React.FC = () => {
     if (currentStep === 0) {
       setCurrentStep(1);
     }
+    console.log("StartJam3a mounted, current step:", currentStep);
   }, [currentStep, setCurrentStep]);
 
   // Sample products data - would come from API in production
@@ -109,6 +110,10 @@ const StartJam3a: React.FC = () => {
     handleGroupSizeChange(values.groupSize);
   };
 
+  const handleShare = () => {
+    console.log("Share functionality would be implemented here");
+  };
+
   const pageVariants = {
     initial: { opacity: 0, y: 20 },
     animate: { opacity: 1, y: 0 },
@@ -157,7 +162,7 @@ const StartJam3a: React.FC = () => {
                     duration={groupDetailsValues.duration}
                     isPublic={groupDetailsValues.isPublic}
                     paymentType={groupDetailsValues.paymentType}
-                    onShare={() => {}}
+                    onShare={handleShare}
                   />
                 )}
               </CardContent>
@@ -165,7 +170,7 @@ const StartJam3a: React.FC = () => {
 
             <StepNavigation 
               currentStep={currentStep}
-              onNext={currentStep === 4 ? handlePayAndPublish : goToNextStep}
+              onNext={goToNextStep}
               onPrevious={goToPreviousStep}
               isLoading={isLoading}
             />

@@ -67,7 +67,19 @@ export const useJam3aCreation = () => {
   };
 
   const handlePayAndPublish = () => {
+    console.log("handlePayAndPublish called");
     setIsLoading(true);
+    
+    if (!selectedProduct) {
+      console.error("Cannot proceed to payment: No product selected");
+      toast({
+        title: "Error",
+        description: "No product selected. Please select a product first.",
+        variant: "destructive"
+      });
+      setIsLoading(false);
+      return;
+    }
     
     // Navigate to payment page with product and group details
     console.log("Navigating to payment page with:", {
@@ -98,9 +110,11 @@ export const useJam3aCreation = () => {
   };
 
   const goToNextStep = () => {
+    console.log("goToNextStep called, current step:", currentStep);
     if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
     } else if (currentStep === 4) {
+      console.log("Final step reached, calling handlePayAndPublish");
       handlePayAndPublish();
     }
   };

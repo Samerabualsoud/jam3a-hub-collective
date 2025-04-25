@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CreditCard } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface StepNavigationProps {
@@ -32,6 +32,8 @@ const StepNavigation: React.FC<StepNavigationProps> = ({
     }
   };
 
+  const isFinalStep = currentStep === 4;
+
   return (
     <div className="flex justify-between mt-8">
       <Button 
@@ -43,13 +45,22 @@ const StepNavigation: React.FC<StepNavigationProps> = ({
         {content[language].previous}
       </Button>
       <Button 
-        variant="green"
+        variant={isFinalStep ? "green" : "default"}
         onClick={onNext}
         className="gap-2"
         disabled={isLoading}
       >
-        {currentStep === 4 ? content[language].pay : content[language].next}
-        {currentStep !== 4 && <ArrowRight className="h-4 w-4" />}
+        {isFinalStep ? (
+          <>
+            {content[language].pay}
+            <CreditCard className="h-4 w-4 ml-1" />
+          </>
+        ) : (
+          <>
+            {content[language].next}
+            <ArrowRight className="h-4 w-4" />
+          </>
+        )}
       </Button>
     </div>
   );
