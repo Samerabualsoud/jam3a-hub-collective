@@ -18,7 +18,7 @@ export const useAuthUserData = () => {
         role: 'user' // Default role
       };
       
-      // Special handling for admin user (samer@jam3a.me)
+      // Special handling for admin user
       if (isAdminEmail(email)) {
         console.log("Admin user detected via email. Setting admin role directly.");
         return {
@@ -37,6 +37,14 @@ export const useAuthUserData = () => {
 
       if (error) {
         console.error('Error fetching profile:', error);
+        // Special handling for admin user (fallback if profile fetch fails)
+        if (isAdminEmail(email)) {
+          console.log("Profile fetch failed but admin email detected - using admin role");
+          return {
+            ...basicUserData,
+            role: 'admin'
+          };
+        }
         return basicUserData;
       }
 
@@ -49,11 +57,14 @@ export const useAuthUserData = () => {
 
       // Validate and normalize the role
       const validatedRole = validateRole(profile?.role || null);
+      
+      // Additional admin check based on email
+      const finalRole = isAdminEmail(email) ? 'admin' : validatedRole;
 
       const userData: User = {
         ...basicUserData,
         name: displayName,
-        role: validatedRole
+        role: finalRole
       };
       
       console.log("User authenticated with profile:", userData);

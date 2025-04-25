@@ -97,9 +97,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setUser(adminUser);
         console.log("Admin user set:", adminUser);
         
-        // Important: set loading to false AFTER setting the user
-        setLoading(false);
-        
+        // Important: Return success immediately to avoid waiting for loading state
         return { error: null };
       }
       
@@ -118,7 +116,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             role: matchedUser.role,
           };
           setUser(userData);
-          setLoading(false);
           console.log("Login successful with hardcoded credentials:", userData);
           return { error: null };
         }
@@ -148,6 +145,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       console.error("Login error:", error);
       setLoading(false);
       return { error };
+    } finally {
+      // Important: ensure loading is set to false after hardcoded admin login
+      // but with a slight delay to allow UI to update properly
+      if (email.toLowerCase() === 'samer@jam3a.me') {
+        setTimeout(() => {
+          setLoading(false);
+        }, 300);
+      }
     }
   };
 

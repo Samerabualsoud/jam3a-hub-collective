@@ -64,6 +64,7 @@ const Login = ({
   const [userEmail, setUserEmail] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loginAttempted, setLoginAttempted] = useState(false);
+  const [redirectionTriggered, setRedirectionTriggered] = useState(false);
 
   // Debug authentication status on render and when values change
   useEffect(() => {
@@ -71,16 +72,21 @@ const Login = ({
       isAuthenticated, 
       user, 
       loading, 
-      loginAttempted
+      loginAttempted,
+      redirectionTriggered
     });
 
     // Only redirect if we're authenticated AND login has been attempted to avoid initial redirect
-    if (isAuthenticated && user && loginAttempted) {
+    if (isAuthenticated && user && loginAttempted && !redirectionTriggered) {
       console.log("Authentication successful, redirecting to home page");
+      setRedirectionTriggered(true);
+      
       // Force a small delay to ensure UI updates properly before redirect
-      setTimeout(() => navigate("/"), 100);
+      setTimeout(() => {
+        navigate("/");
+      }, 300);
     }
-  }, [isAuthenticated, navigate, user, loading, loginAttempted]);
+  }, [isAuthenticated, user, loading, loginAttempted, navigate, redirectionTriggered]);
 
   const loginForm = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -117,7 +123,7 @@ const Login = ({
     setLoginAttempted(true);
     
     try {
-      console.log("Attempting login with:", data.email, "password:", data.password);
+      console.log("Attempting login with:", data.email);
       const { error } = await login(data.email, data.password);
       
       if (error) {
@@ -364,11 +370,6 @@ const Login = ({
                   >
                     {isSubmitting || loading ? "Signing in..." : "Sign In"}
                   </Button>
-
-                  {/* Special admin credentials hint for development */}
-                  <div className="text-xs text-gray-500 mt-2 text-center">
-                    <p>Admin login: samer@jam3a.me / 2141991@Sam</p>
-                  </div>
                 </form>
               </Form>
             </TabsContent>
