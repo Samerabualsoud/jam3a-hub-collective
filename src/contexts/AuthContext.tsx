@@ -25,25 +25,47 @@ interface AuthProviderProps {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const { session, supabaseClient } = useSessionContext();
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
   const { updateUserData } = useAuthUserData();
 
   useEffect(() => {
     // Set up auth state listener first to avoid missing events
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, currentSession) => {
+        console.log("Auth state change detected:", _event, currentSession?.user?.id);
         if (currentSession?.user) {
           // Use setTimeout to avoid potential deadlocks with Supabase client
-          setTimeout(() => updateUserData(currentSession).then(setUser), 0);
+          setTimeout(() => {
+            updateUserData(currentSession).then(userData => {
+              console.log("User data updated from auth state change:", userData);
+              setUser(userData);
+              setLoading(false);
+            });
+          }, 0);
         } else {
+          console.log("No session in auth state change, setting user to null");
           setUser(null);
+          setLoading(false);
         }
       }
     );
 
     // Then check for existing session
-    if (session) {
-      updateUserData(session).then(setUser);
-    }
+    const initializeAuth = async () => {
+      if (session) {
+        try {
+          console.log("Existing session found, updating user data");
+          const userData = await updateUserData(session);
+          console.log("User data initialized from existing session:", userData);
+          setUser(userData);
+        } catch (err) {
+          console.error("Error initializing user data:", err);
+        }
+      }
+      setLoading(false);
+    };
+
+    initializeAuth();
 
     return () => {
       subscription.unsubscribe();
@@ -53,6 +75,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const login = async (email: string, password: string) => {
     try {
       console.log("Attempting login with email:", email);
+      setLoading(true);
       
       // Special admin check for Samer
       if (email.toLowerCase() === 'samer@jam3a.me' && password === '2141991@Sam') {
@@ -68,6 +91,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         
         // Set user directly
         setUser(adminUser);
+        setLoading(false);
         
         console.log("Admin user set:", adminUser);
         return { error: null };
@@ -88,39 +112,50 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             role: matchedUser.role,
           };
           setUser(userData);
+          setLoading(false);
           console.log("Login successful with hardcoded credentials:", userData);
           return { error: null };
         }
         
+        setLoading(false);
         return { error: { message: "Invalid email or password" } };
       }
       
       // Standard Supabase authentication
       console.log("Attempting Supabase login");
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
       
       if (error) {
         console.error("Supabase login error:", error);
+        setLoading(false);
+        return { error };
       }
       
-      return { error };
+      console.log("Supabase login successful:", data);
+      // User will be set by onAuthStateChange
+      
+      return { error: null };
     } catch (error) {
       console.error("Login error:", error);
+      setLoading(false);
       return { error };
     }
   };
 
   const logout = async () => {
     try {
+      setLoading(true);
       if (supabaseClient?.auth) {
         await supabase.auth.signOut();
       }
       setUser(null);
     } catch (error) {
       console.error("Logout error:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -130,7 +165,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     isAuthenticated: !!user,
     isAdmin: user?.role === 'admin', 
     login, 
-    logout 
+    logout,
+    loading
   };
 
   // Debug the current auth state

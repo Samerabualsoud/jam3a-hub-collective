@@ -13,6 +13,7 @@ export interface AuthContextType {
   session: Session | null;
   isAuthenticated: boolean;
   isAdmin: boolean;
+  loading?: boolean;
   login: (email: string, password: string) => Promise<{ error: any | null }>;
   logout: () => Promise<void>;
 }

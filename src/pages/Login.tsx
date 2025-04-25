@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -56,21 +57,25 @@ const Login = ({
 }: LoginProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { login, isAuthenticated, user } = useAuth();
+  const { login, isAuthenticated, user, loading } = useAuth();
   const [activeTab, setActiveTab] = useState<"login" | "register">(defaultTab);
   const [showOTPVerification, setShowOTPVerification] = useState<boolean>(false);
   const [otpValue, setOTPValue] = useState<string>("");
   const [userEmail, setUserEmail] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loginAttempted, setLoginAttempted] = useState(false);
 
   useEffect(() => {
-    console.log("Login page rendered with auth state:", { isAuthenticated, user });
+    console.log("Login page rendered with auth state:", { isAuthenticated, user, loading });
     
-    if (isAuthenticated && user) {
+    // Only redirect if we're authenticated AND either:
+    // 1. We've attempted a login (to avoid initial page load redirect)
+    // 2. We already have a user (from a previous session)
+    if (isAuthenticated && user && (loginAttempted || !loading)) {
       console.log("User is authenticated, redirecting to home page");
       navigate("/");
     }
-  }, [isAuthenticated, navigate, user]);
+  }, [isAuthenticated, navigate, user, loading, loginAttempted]);
 
   const loginForm = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -104,6 +109,7 @@ const Login = ({
   const onLoginSubmit = async (data: z.infer<typeof loginSchema>) => {
     console.log("Login data:", data);
     setIsSubmitting(true);
+    setLoginAttempted(true);
     
     try {
       console.log("Attempting login with:", data.email, "password:", data.password);
@@ -125,6 +131,8 @@ const Login = ({
         title: "Login successful",
         description: "Welcome back to Jam3a!",
       });
+      
+      // The redirection will be handled by the useEffect that watches isAuthenticated
       
     } catch (err) {
       console.error("Login exception:", err);
@@ -312,6 +320,7 @@ const Login = ({
                               placeholder="your@email.com" 
                               className="pl-10" 
                               {...field} 
+                              disabled={isSubmitting || loading}
                             />
                           </div>
                         </FormControl>
@@ -334,6 +343,7 @@ const Login = ({
                               placeholder="********" 
                               className="pl-10" 
                               {...field} 
+                              disabled={isSubmitting || loading}
                             />
                           </div>
                         </FormControl>
@@ -345,9 +355,9 @@ const Login = ({
                   <Button 
                     type="submit" 
                     className="w-full bg-jam3a-purple hover:bg-jam3a-deep-purple"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || loading}
                   >
-                    {isSubmitting ? "Signing in..." : "Sign In"}
+                    {isSubmitting || loading ? "Signing in..." : "Sign In"}
                   </Button>
                 </form>
               </Form>
