@@ -17,6 +17,13 @@ const Hero: React.FC = () => {
     navigate('/start-jam3a');
   };
   
+  const scrollToHowItWorks = () => {
+    const howItWorksSection = document.getElementById('how-it-works');
+    if (howItWorksSection) {
+      howItWorksSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+  
   return (
     <section className="relative flex items-center justify-center min-h-[580px] md:min-h-[680px] lg:min-h-[780px] px-4 overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-royal-blue-50/80 via-white to-royal-blue/10 z-0"></div>
@@ -96,7 +103,7 @@ const Hero: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.6 }}
-          className="flex flex-col sm:flex-row gap-5 items-center justify-center mb-12" // Increased margin bottom
+          className="flex flex-col sm:flex-row gap-5 items-center justify-center mb-12"
         >
           <Link to="/shop">
             <Button
@@ -123,14 +130,17 @@ const Hero: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 1 }}
-          className="flex justify-center" 
+          className="flex justify-center"
         >
-          <a href="#how-it-works" className="flex flex-col items-center text-royal-blue hover:text-royal-blue-dark transition-colors">
+          <button 
+            onClick={scrollToHowItWorks}
+            className="flex flex-col items-center text-royal-blue hover:text-royal-blue-dark transition-colors cursor-pointer"
+          >
             <span className="text-sm font-medium mb-1">
               {language === 'en' ? 'Learn More' : 'اعرف المزيد'}
             </span>
             <ArrowDownCircle className="h-6 w-6 animate-bounce-light" />
-          </a>
+          </button>
         </motion.div>
       </div>
     </section>
