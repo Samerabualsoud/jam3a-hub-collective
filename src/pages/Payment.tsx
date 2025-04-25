@@ -211,10 +211,10 @@ const PaymentPage = () => {
             </div>
 
             <div className="flex justify-center space-x-4 items-center mt-6">
-              <img src="/visa.svg" alt="Visa" className="h-6" />
-              <img src="/mastercard.svg" alt="Mastercard" className="h-6" />
-              <img src="/mada.svg" alt="Mada" className="h-6" />
-              <img src="/apple-pay.svg" alt="Apple Pay" className="h-6" />
+              <img src="/images/payment-logos/visa.svg" alt="Visa" className="h-6" />
+              <img src="/images/payment-logos/mastercard.svg" alt="Mastercard" className="h-6" />
+              <img src="/images/payment-logos/mada.svg" alt="Mada" className="h-6" />
+              <img src="/images/payment-logos/apple-pay.svg" alt="Apple Pay" className="h-6" />
             </div>
           </CardContent>
         </Card>
