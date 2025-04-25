@@ -14,6 +14,8 @@ import ContactUs from './pages/ContactUs';
 import PaymentCallback from './pages/PaymentCallback';
 import PaymentPage from './pages/Payment';
 import Admin from './pages/Admin';
+import Login from './pages/Login';
+import SellerLogin from './pages/SellerLogin';
 
 function App() {
   return (
@@ -32,6 +34,8 @@ function App() {
         <Route path="/payment-callback" element={<PaymentCallback />} />
         <Route path="/payment" element={<PaymentPage />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/seller-login" element={<SellerLogin />} />
       </Routes>
     </Router>
   );
