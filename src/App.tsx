@@ -15,6 +15,7 @@ import PaymentCallback from './pages/PaymentCallback';
 import PaymentPage from './pages/Payment';
 import Admin from './pages/Admin';
 import Login from './pages/Login';
+import Register from './pages/Register';
 import SellerLogin from './pages/SellerLogin';
 
 function App() {
@@ -35,7 +36,7 @@ function App() {
         <Route path="/payment" element={<PaymentPage />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Login defaultTab="register" />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/seller-login" element={<SellerLogin />} />
       </Routes>
     </Router>

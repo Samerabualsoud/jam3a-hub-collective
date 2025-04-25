@@ -28,11 +28,17 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 
+interface LoginProps {
+  defaultTab?: string;
+  onRegister?: (email: string, password: string, userData: any) => Promise<void>;
+  isRegistering?: boolean;
+}
+
 const Login = ({ 
   defaultTab = "login",
   onRegister,
   isRegistering = false
-}) => {
+}: LoginProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { login, isAuthenticated, user, loading } = useAuth();
