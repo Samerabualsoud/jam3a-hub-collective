@@ -24,6 +24,7 @@ const PaymentPage = () => {
   const { language } = useLanguage();
   const { processPayment, isLoading, isSupabaseAvailable } = useMoyasarPayment();
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethodType>('creditcard');
+  const [paymentError, setPaymentError] = useState<string | null>(null);
 
   const { product, groupSize, discountTier } = location.state || {};
   const content = paymentContent[language];
@@ -31,8 +32,8 @@ const PaymentPage = () => {
   useEffect(() => {
     if (!product) {
       toast({
-        title: language === 'en' ? content.missingInfo : content.missingInfo,
-        description: language === 'en' ? content.redirecting : content.redirecting,
+        title: content.missingInfo,
+        description: content.redirecting,
         variant: 'destructive'
       });
       
@@ -52,17 +53,28 @@ const PaymentPage = () => {
   
   const handlePayment = async () => {
     try {
+      setPaymentError(null);
+      
       console.log("Processing payment with method:", selectedMethod);
       console.log("Amount:", discountPrice);
       
       if (!isSupabaseAvailable) {
+        setPaymentError('Supabase integration is not configured properly. Please check your Supabase connection.');
         toast({
-          title: language === 'en' ? content.paymentError : content.paymentError,
-          description: 'Supabase integration is not configured properly. Please connect to Supabase first.',
+          title: content.paymentError,
+          description: 'Supabase integration is not configured properly.',
           variant: 'destructive'
         });
         return;
       }
+      
+      // Create a customer object with some default values
+      // In a real app, you should collect this information from the user
+      const customerInfo = {
+        name: 'Customer Name',
+        email: 'customer@example.com',
+        phone: '+966500000000' // Optional but recommended for Saudi payments
+      };
       
       const paymentResult = await processPayment({
         amount: discountPrice,
@@ -71,23 +83,22 @@ const PaymentPage = () => {
         source: {
           type: selectedMethod,
         },
-        customer: {
-          name: 'Customer Name',
-          email: 'customer@example.com'
-        }
+        customer: customerInfo
       });
 
       if (paymentResult?.url) {
         console.log("Redirecting to payment URL:", paymentResult.url);
         window.location.href = paymentResult.url;
+      } else {
+        setPaymentError('Payment processed but no redirect URL was returned.');
+        console.error('No payment URL returned:', paymentResult);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Payment error:', error);
+      setPaymentError(error.message || content.paymentErrorMessage);
       toast({
-        title: language === 'en' ? content.paymentError : content.paymentError,
-        description: language === 'en' 
-          ? content.paymentErrorMessage
-          : content.paymentErrorMessage,
+        title: content.paymentError,
+        description: error.message || content.paymentErrorMessage,
         variant: 'destructive'
       });
     }
@@ -95,7 +106,8 @@ const PaymentPage = () => {
 
   const handleMethodChange = (value: string) => {
     if (value === 'creditcard' || value === 'mada' || value === 'applepay' || value === 'stcpay') {
-      setSelectedMethod(value);
+      setSelectedMethod(value as PaymentMethodType);
+      setPaymentError(null); // Clear any previous errors when changing payment method
     }
   };
 
@@ -115,6 +127,15 @@ const PaymentPage = () => {
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>
                   Supabase integration is not configured. Payment processing is unavailable.
+                </AlertDescription>
+              </Alert>
+            )}
+            
+            {paymentError && (
+              <Alert variant="destructive" className="mb-4">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>
+                  {paymentError}
                 </AlertDescription>
               </Alert>
             )}
@@ -167,9 +188,7 @@ const PaymentPage = () => {
               disabled={isLoading || !isSupabaseAvailable}
               variant="green"
             >
-              {isLoading 
-                ? (language === 'en' ? content.processing : content.processing)
-                : content.payNow}
+              {isLoading ? content.processing : content.payNow}
             </Button>
 
             <PaymentFooter securePayment={content.securePayment} />

@@ -78,6 +78,7 @@ export const useMoyasarPayment = () => {
     
     setIsLoading(true);
     try {
+      // Ensure we have a callback URL - this is critical for Moyasar integration
       const callback_url = window.location.origin + '/payment-callback';
       
       const { data, error } = await supabase.functions.invoke('process-payment', {
@@ -87,7 +88,7 @@ export const useMoyasarPayment = () => {
         },
       });
       
-      if (error) throw new Error(error.message);
+      if (error) throw error;
       setPaymentData(data);
       
       toast({
@@ -97,6 +98,7 @@ export const useMoyasarPayment = () => {
       
       return data;
     } catch (error: any) {
+      console.error('Payment processing error:', error);
       toast({
         title: 'Payment error',
         description: error.message || 'Failed to process payment',
@@ -126,10 +128,11 @@ export const useMoyasarPayment = () => {
         },
       });
       
-      if (error) throw new Error(error.message);
+      if (error) throw error;
       setPaymentData(data);
       return data;
     } catch (error: any) {
+      console.error('Payment verification error:', error);
       toast({
         title: 'Verification error',
         description: error.message || 'Failed to verify payment',

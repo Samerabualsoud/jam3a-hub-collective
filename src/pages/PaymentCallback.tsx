@@ -6,10 +6,12 @@ import Footer from '@/components/Footer';
 import { useMoyasarPayment } from '@/hooks/useMoyasarPayment';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle, CheckCircle2 } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useSupabaseClient } from '@supabase/auth-helpers-react';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { paymentContent } from '@/translations/paymentContent';
 
 const PaymentCallback = () => {
   const [searchParams] = useSearchParams();
@@ -17,8 +19,11 @@ const PaymentCallback = () => {
   const { verifyPayment } = useMoyasarPayment();
   const supabase = useSupabaseClient();
   const { toast } = useToast();
+  const { language } = useLanguage();
+  const content = paymentContent[language];
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [errorMessage, setErrorMessage] = useState('');
+  const [paymentDetails, setPaymentDetails] = useState<any>(null);
 
   useEffect(() => {
     const paymentId = searchParams.get('id');
@@ -29,6 +34,8 @@ const PaymentCallback = () => {
       setErrorMessage('No payment ID found in URL parameters.');
       return;
     }
+
+    console.log("Payment callback received - ID:", paymentId, "Status:", paymentStatus);
 
     // If payment status is already known from the URL, use it
     if (paymentStatus === 'paid') {
@@ -52,20 +59,17 @@ const PaymentCallback = () => {
     // Otherwise, verify the payment
     const verifyPaymentStatus = async () => {
       try {
-        if (!supabase) {
+        if (!supabase || typeof supabase.functions?.invoke !== 'function') {
           throw new Error("Supabase client is not available");
         }
         
-        // Direct function call instead of using hook
-        const { data, error } = await supabase.functions.invoke('verify-payment', {
-          body: {
-            payment_id: paymentId
-          },
-        });
+        console.log("Verifying payment with ID:", paymentId);
+        const result = await verifyPayment(paymentId);
+        console.log("Payment verification result:", result);
         
-        if (error) throw new Error(error.message);
+        setPaymentDetails(result);
         
-        if (data.status === 'paid') {
+        if (result.status === 'paid') {
           setStatus('success');
           toast({
             title: 'Payment Verified',
@@ -73,17 +77,17 @@ const PaymentCallback = () => {
           });
         } else {
           setStatus('error');
-          setErrorMessage(`Payment status: ${data.status}`);
+          setErrorMessage(`Payment status: ${result.status}`);
         }
       } catch (error: any) {
         console.error("Payment verification error:", error);
         setStatus('error');
-        setErrorMessage(error.message || 'Failed to verify payment');
+        setErrorMessage(error.message || content.paymentVerificationError);
       }
     };
 
     verifyPaymentStatus();
-  }, [searchParams, toast, supabase]);
+  }, [searchParams, toast, supabase, verifyPayment, content]);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -103,7 +107,10 @@ const PaymentCallback = () => {
                   Payment Failed
                 </>
               ) : (
-                'Verifying Payment'
+                <>
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  Verifying Payment
+                </>
               )}
             </CardTitle>
           </CardHeader>
@@ -115,12 +122,23 @@ const PaymentCallback = () => {
             )}
             
             {status === 'success' && (
-              <Alert className="bg-green-50 border-green-200">
-                <CheckCircle2 className="h-4 w-4 text-green-500" />
-                <AlertDescription>
-                  Your payment has been processed successfully. Thank you for your purchase!
-                </AlertDescription>
-              </Alert>
+              <>
+                <Alert className="bg-green-50 border-green-200">
+                  <CheckCircle2 className="h-4 w-4 text-green-500" />
+                  <AlertDescription>
+                    Your payment has been processed successfully. Thank you for your purchase!
+                  </AlertDescription>
+                </Alert>
+                
+                {paymentDetails && (
+                  <div className="mt-4 p-4 bg-gray-50 rounded-md">
+                    <h3 className="font-medium mb-2">Payment Details</h3>
+                    <p className="text-sm">Amount: {paymentDetails.amount_format}</p>
+                    <p className="text-sm">Reference: {paymentDetails.id}</p>
+                    <p className="text-sm">Date: {new Date(paymentDetails.created_at).toLocaleString()}</p>
+                  </div>
+                )}
+              </>
             )}
             
             {status === 'error' && (

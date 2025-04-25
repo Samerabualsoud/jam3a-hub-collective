@@ -13,6 +13,8 @@ interface PaymentContent {
   paymentErrorMessage: string;
   missingInfo: string;
   redirecting: string;
+  paymentConnectionError: string;
+  paymentVerificationError: string;
 }
 
 interface PaymentTranslations {
@@ -34,7 +36,9 @@ export const paymentContent: PaymentTranslations = {
     paymentError: 'Payment Error',
     paymentErrorMessage: 'There was an error processing your payment',
     missingInfo: 'Missing product information',
-    redirecting: 'Redirecting back to start page'
+    redirecting: 'Redirecting back to start page',
+    paymentConnectionError: 'Payment system is not properly configured',
+    paymentVerificationError: 'Failed to verify payment'
   },
   ar: {
     title: 'تفاصيل الدفع',
@@ -49,6 +53,8 @@ export const paymentContent: PaymentTranslations = {
     paymentError: 'خطأ في الدفع',
     paymentErrorMessage: 'حدث خطأ أثناء معالجة الدفع',
     missingInfo: 'معلومات المنتج مفقودة',
-    redirecting: 'جاري إعادة التوجيه إلى صفحة البداية'
+    redirecting: 'جاري إعادة التوجيه إلى صفحة البداية',
+    paymentConnectionError: 'نظام الدفع غير مهيأ بشكل صحيح',
+    paymentVerificationError: 'فشل في التحقق من الدفع'
   }
 };

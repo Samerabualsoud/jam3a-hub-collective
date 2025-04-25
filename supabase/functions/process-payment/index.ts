@@ -51,6 +51,12 @@ serve(async (req) => {
     }
     console.log("Moyasar API key is configured");
 
+    // Validate payment amount (Moyasar expects amount in halalas, 100 halalas = 1 SAR)
+    const amountInHalalas = Math.round(amount * 100);
+    if (isNaN(amountInHalalas) || amountInHalalas <= 0) {
+      throw new Error(`Invalid amount: ${amount}`);
+    }
+
     console.log("Creating payment with Moyasar");
     // Create payment using Moyasar API
     const response = await fetch('https://api.moyasar.com/v1/payments', {
@@ -60,7 +66,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        amount: amount * 100, // Moyasar expects amount in the smallest currency unit (halala for SAR)
+        amount: amountInHalalas, // Convert to halalas (SAR cents)
         currency,
         description,
         callback_url,
