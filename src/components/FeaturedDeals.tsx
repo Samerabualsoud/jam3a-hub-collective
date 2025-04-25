@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -44,7 +43,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
 }) => {
   const { language } = useLanguage();
 
-  // Create formatted title for Mobile Jam3a
   const formattedTitle = {
     en: `Mobile Jam3a: ${title.en}`,
     ar: `جمعة الجوالات: ${title.ar}`
@@ -245,4 +243,3 @@ const FeaturedDeals = () => {
 };
 
 export default FeaturedDeals;
-
