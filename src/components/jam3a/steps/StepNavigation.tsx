@@ -23,16 +23,16 @@ const StepNavigation: React.FC<StepNavigationProps> = ({
     en: {
       next: "Next",
       previous: "Back",
-      pay: "Pay & Publish"
+      pay: "Pay Now"
     },
     ar: {
       next: "التالي",
       previous: "السابق",
-      pay: "الدفع والنشر"
+      pay: "ادفع الآن"
     }
   };
 
-  const isFinalStep = currentStep === 4;
+  const isPaymentStep = currentStep === 4;
 
   return (
     <div className="flex justify-between mt-8">
@@ -45,12 +45,12 @@ const StepNavigation: React.FC<StepNavigationProps> = ({
         {content[language].previous}
       </Button>
       <Button 
-        variant={isFinalStep ? "green" : "default"}
+        variant={isPaymentStep ? "green" : "default"}
         onClick={onNext}
         className="gap-2"
         disabled={isLoading}
       >
-        {isFinalStep ? (
+        {isPaymentStep ? (
           <>
             {content[language].pay}
             <CreditCard className="h-4 w-4 ml-1" />

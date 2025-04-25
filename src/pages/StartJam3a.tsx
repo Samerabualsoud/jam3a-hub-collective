@@ -154,8 +154,22 @@ const StartJam3a: React.FC = () => {
                     product={selectedProduct}
                   />
                 )}
-                
+
                 {currentStep === 4 && selectedProduct && (
+                  <div className="text-center">
+                    <h2 className="text-2xl font-bold mb-4">Payment Details</h2>
+                    <p className="text-lg mb-4">Please review your order before proceeding with the payment:</p>
+                    <div className="bg-gray-50 p-4 rounded-lg mb-4">
+                      <div className="font-medium">Product: {selectedProduct.name}</div>
+                      <div>Group Size: {groupSize} people</div>
+                      <div className="text-xl font-bold text-royal-blue mt-2">
+                        Total: {selectedProduct.price} SAR
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {currentStep === 5 && selectedProduct && (
                   <ConfirmationStep
                     product={selectedProduct}
                     groupSize={groupSize}

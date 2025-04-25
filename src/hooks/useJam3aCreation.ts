@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -111,11 +110,13 @@ export const useJam3aCreation = () => {
 
   const goToNextStep = () => {
     console.log("goToNextStep called, current step:", currentStep);
-    if (currentStep < 4) {
-      setCurrentStep(currentStep + 1);
-    } else if (currentStep === 4) {
-      console.log("Final step reached, calling handlePayAndPublish");
-      handlePayAndPublish();
+    if (currentStep < 5) {
+      if (currentStep === 4) {
+        console.log("Payment step reached, calling handlePayAndPublish");
+        handlePayAndPublish();
+      } else {
+        setCurrentStep(currentStep + 1);
+      }
     }
   };
 
