@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -8,12 +9,11 @@ import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useMoyasarPayment } from '@/hooks/useMoyasarPayment';
 import { RadioGroup } from "@/components/ui/radio-group";
-import { Wallet } from 'lucide-react';
 import PaymentMethodOption from '@/components/payment/PaymentMethodOption';
 import PaymentSummary from '@/components/payment/PaymentSummary';
 import PaymentFooter from '@/components/payment/PaymentFooter';
-
-type PaymentMethodType = 'creditcard' | 'mada' | 'applepay' | 'stcpay';
+import { paymentMethods, type PaymentMethodType } from '@/config/paymentMethods';
+import { paymentContent } from '@/translations/paymentContent';
 
 const PaymentPage = () => {
   const location = useLocation();
@@ -24,40 +24,10 @@ const PaymentPage = () => {
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethodType>('creditcard');
 
   const { product, groupSize, discountTier } = location.state || {};
-
-  const paymentMethods = [
-    {
-      id: 'creditcard' as PaymentMethodType,
-      name: language === 'en' ? 'Credit Card' : 'بطاقة ائتمان',
-      description: language === 'en' ? 'Pay with Visa or Mastercard' : 'ادفع باستخدام فيزا أو ماستركارد',
-      icon: <div className="flex items-center gap-2">
-              <img src="/images/payment-logos/visa.svg" alt="Visa" className="h-6" />
-              <img src="/images/payment-logos/mastercard.svg" alt="Mastercard" className="h-6" />
-            </div>
-    },
-    {
-      id: 'mada' as PaymentMethodType,
-      name: 'مدى Mada',
-      description: language === 'en' ? 'Pay with Saudi debit card' : 'ادفع باستخدام بطاقة مدى',
-      icon: <img src="/images/payment-logos/mada.svg" alt="Mada" className="h-6" />
-    },
-    {
-      id: 'applepay' as PaymentMethodType,
-      name: 'Apple Pay',
-      description: language === 'en' ? 'Quick and secure payment' : 'دفع سريع وآمن',
-      icon: <img src="/images/payment-logos/apple-pay.svg" alt="Apple Pay" className="h-6" />
-    },
-    {
-      id: 'stcpay' as PaymentMethodType,
-      name: 'STC Pay',
-      description: language === 'en' ? 'Pay with STC Pay wallet' : 'ادفع باستخدام محفظة STC Pay',
-      icon: <Wallet className="h-6 w-6" />
-    }
-  ];
+  const content = paymentContent[language];
   
   useEffect(() => {
     if (!product) {
-      console.error("No product data found in location state");
       toast({
         title: language === 'en' ? 'Missing product information' : 'معلومات المنتج مفقودة',
         description: language === 'en' ? 'Redirecting back to start page' : 'جاري إعادة التوجيه إلى صفحة البداية',
@@ -91,8 +61,8 @@ const PaymentPage = () => {
           type: selectedMethod,
         },
         customer: {
-          name: 'Customer Name', // You might want to get this from user profile
-          email: 'customer@example.com' // You might want to get this from user profile
+          name: 'Customer Name',
+          email: 'customer@example.com'
         }
       });
 
@@ -112,29 +82,6 @@ const PaymentPage = () => {
     }
   };
 
-  const content = {
-    en: {
-      title: 'Payment Details',
-      subtitle: 'Choose your preferred payment method',
-      product: 'Product',
-      groupSize: 'Group Size',
-      people: 'people',
-      total: 'Total',
-      payNow: 'Pay Now',
-      securePayment: 'Secure payment powered by Moyasar',
-    },
-    ar: {
-      title: 'تفاصيل الدفع',
-      subtitle: 'اختر طريقة الدفع المفضلة لديك',
-      product: 'المنتج',
-      groupSize: 'حجم المجموعة',
-      people: 'أشخاص',
-      total: 'المجموع',
-      payNow: 'ادفع الآن',
-      securePayment: 'دفع آمن مدعوم من ميسر',
-    }
-  };
-
   const handleMethodChange = (value: string) => {
     if (value === 'creditcard' || value === 'mada' || value === 'applepay' || value === 'stcpay') {
       setSelectedMethod(value);
@@ -148,7 +95,7 @@ const PaymentPage = () => {
         <Card className="max-w-2xl mx-auto">
           <CardHeader>
             <CardTitle className="text-2xl">
-              {content[language].title}
+              {content.title}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -157,15 +104,15 @@ const PaymentPage = () => {
               groupSize={groupSize}
               discountPrice={discountPrice}
               content={{
-                product: content[language].product,
-                groupSize: content[language].groupSize,
-                people: content[language].people,
-                total: content[language].total,
+                product: content.product,
+                groupSize: content.groupSize,
+                people: content.people,
+                total: content.total,
               }}
             />
 
             <div className="space-y-4">
-              <h3 className="text-lg font-medium">{content[language].subtitle}</h3>
+              <h3 className="text-lg font-medium">{content.subtitle}</h3>
               <RadioGroup
                 value={selectedMethod}
                 onValueChange={handleMethodChange}
@@ -175,9 +122,17 @@ const PaymentPage = () => {
                   <PaymentMethodOption
                     key={method.id}
                     id={method.id}
-                    name={method.name}
-                    description={method.description}
-                    icon={method.icon}
+                    name={language === 'en' ? method.name : method.nameAr}
+                    description={language === 'en' ? method.description : method.descriptionAr}
+                    icon={typeof method.icon === 'string' ? (
+                      <img 
+                        src={`/images/payment-logos/${method.icon}.svg`}
+                        alt={method.name}
+                        className="h-6"
+                      />
+                    ) : (
+                      <method.icon className="h-6 w-6" />
+                    )}
                     isSelected={selectedMethod === method.id}
                     onSelect={() => handleMethodChange(method.id)}
                   />
@@ -194,10 +149,10 @@ const PaymentPage = () => {
             >
               {isLoading 
                 ? (language === 'en' ? 'Processing...' : 'جاري المعالجة...')
-                : content[language].payNow}
+                : content.payNow}
             </Button>
 
-            <PaymentFooter securePayment={content[language].securePayment} />
+            <PaymentFooter securePayment={content.securePayment} />
           </CardContent>
         </Card>
       </main>
@@ -207,3 +162,4 @@ const PaymentPage = () => {
 };
 
 export default PaymentPage;
+
