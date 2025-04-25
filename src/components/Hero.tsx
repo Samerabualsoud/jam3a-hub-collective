@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
@@ -95,7 +96,7 @@ const Hero: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.6 }}
-          className="flex flex-col sm:flex-row gap-5 items-center justify-center mb-8"
+          className="flex flex-col sm:flex-row gap-5 items-center justify-center mb-12" // Increased margin bottom
         >
           <Link to="/shop">
             <Button
