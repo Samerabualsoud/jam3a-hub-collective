@@ -7,9 +7,11 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useMoyasarPayment } from '@/hooks/useMoyasarPayment';
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
+import { RadioGroup } from "@/components/ui/radio-group";
 import { Wallet } from 'lucide-react';
+import PaymentMethodOption from '@/components/payment/PaymentMethodOption';
+import PaymentSummary from '@/components/payment/PaymentSummary';
+import PaymentFooter from '@/components/payment/PaymentFooter';
 
 type PaymentMethodType = 'creditcard' | 'mada' | 'applepay' | 'stcpay';
 
@@ -150,22 +152,17 @@ const PaymentPage = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">{content[language].product}:</span>
-                  <span className="font-medium">{product.name}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">{content[language].groupSize}:</span>
-                  <span className="font-medium">{groupSize} {content[language].people}</span>
-                </div>
-                <div className="flex justify-between text-lg font-bold mt-2 pt-2 border-t">
-                  <span>{content[language].total}:</span>
-                  <span className="text-royal-blue">{discountPrice} SAR</span>
-                </div>
-              </div>
-            </div>
+            <PaymentSummary
+              product={product}
+              groupSize={groupSize}
+              discountPrice={discountPrice}
+              content={{
+                product: content[language].product,
+                groupSize: content[language].groupSize,
+                people: content[language].people,
+                total: content[language].total,
+              }}
+            />
 
             <div className="space-y-4">
               <h3 className="text-lg font-medium">{content[language].subtitle}</h3>
@@ -175,24 +172,15 @@ const PaymentPage = () => {
                 className="space-y-3"
               >
                 {paymentMethods.map((method) => (
-                  <div
+                  <PaymentMethodOption
                     key={method.id}
-                    className={`flex items-center space-x-3 space-y-0 border rounded-lg p-4 cursor-pointer hover:border-royal-blue transition-colors ${
-                      selectedMethod === method.id ? 'border-royal-blue bg-royal-blue/5' : ''
-                    }`}
-                    onClick={() => handleMethodChange(method.id)}
-                  >
-                    <RadioGroupItem value={method.id} id={method.id} />
-                    <div className="flex-1 flex items-center gap-4">
-                      {method.icon}
-                      <div>
-                        <Label htmlFor={method.id} className="text-base font-medium">
-                          {method.name}
-                        </Label>
-                        <p className="text-sm text-gray-500">{method.description}</p>
-                      </div>
-                    </div>
-                  </div>
+                    id={method.id}
+                    name={method.name}
+                    description={method.description}
+                    icon={method.icon}
+                    isSelected={selectedMethod === method.id}
+                    onSelect={() => handleMethodChange(method.id)}
+                  />
                 ))}
               </RadioGroup>
             </div>
@@ -209,16 +197,7 @@ const PaymentPage = () => {
                 : content[language].payNow}
             </Button>
 
-            <div className="text-center text-sm text-gray-500 mt-4">
-              {content[language].securePayment}
-            </div>
-
-            <div className="flex justify-center gap-4 items-center mt-6">
-              <img src="/images/payment-logos/visa.svg" alt="Visa" className="h-6" />
-              <img src="/images/payment-logos/mastercard.svg" alt="Mastercard" className="h-6" />
-              <img src="/images/payment-logos/mada.svg" alt="Mada" className="h-6" />
-              <img src="/images/payment-logos/apple-pay.svg" alt="Apple Pay" className="h-6" />
-            </div>
+            <PaymentFooter securePayment={content[language].securePayment} />
           </CardContent>
         </Card>
       </main>
