@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
@@ -100,7 +99,7 @@ const Hero: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.6 }}
-          className="flex flex-col sm:flex-row gap-5 items-center justify-center"
+          className="flex flex-col sm:flex-row gap-5 items-center justify-center mb-12" // Added margin bottom
         >
           <Link to="/shop">
             <Button
@@ -123,18 +122,7 @@ const Hero: React.FC = () => {
           </Button>
         </motion.div>
         
-        {/* Moved Learn More section down and added more space to avoid overlap with buttons */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 1 }}
-          className="absolute bottom-3 left-0 right-0 flex justify-center mt-20" 
-        >
-          <a href="#how-it-works" className="flex flex-col items-center text-royal-blue hover:text-royal-blue-dark transition-colors mt-10">
-            <span className="text-sm font-medium mb-1">{language === 'en' ? 'Learn More' : 'اعرف المزيد'}</span>
-            <ArrowDownCircle className="h-6 w-6 animate-bounce-light" />
-          </a>
-        </motion.div>
+        {/* Removed the "Learn More" section */}
       </div>
     </section>
   );
