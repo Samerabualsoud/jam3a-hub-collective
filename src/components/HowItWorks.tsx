@@ -55,7 +55,7 @@ const HowItWorks = () => {
   ];
 
   return (
-    <section className="bg-white py-12 md:py-16">
+    <section id="how-it-works" className="bg-white py-12 md:py-16">
       <div className="container mx-auto px-4 md:px-6" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         <div className="mx-auto max-w-2xl text-center mb-10">
           <h2 className="text-3xl font-bold tracking-tight md:text-4xl mb-3 text-gradient-green">
