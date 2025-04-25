@@ -28,19 +28,19 @@ const PaymentPage = () => {
       id: 'creditcard' as PaymentMethodType,
       name: language === 'en' ? 'Credit Card' : 'بطاقة ائتمان',
       description: language === 'en' ? 'Pay with Visa or Mastercard' : 'ادفع باستخدام فيزا أو ماستركارد',
-      icon: <CreditCard className="h-6 w-6" />
+      icon: <img src="/images/payment-logos/visa.svg" alt="Visa & Mastercard" className="h-6" />
     },
     {
       id: 'mada' as PaymentMethodType,
-      name: 'mada بطاقة مدى',
+      name: 'مدى Mada',
       description: language === 'en' ? 'Pay with Saudi debit card' : 'ادفع باستخدام بطاقة مدى',
-      icon: <img src="/mada-logo.svg" alt="Mada" className="h-6" />
+      icon: <img src="/images/payment-logos/mada.svg" alt="Mada" className="h-6" />
     },
     {
       id: 'applepay' as PaymentMethodType,
       name: 'Apple Pay',
       description: language === 'en' ? 'Quick and secure payment' : 'دفع سريع وآمن',
-      icon: <img src="/apple-pay.svg" alt="Apple Pay" className="h-6" />
+      icon: <img src="/images/payment-logos/apple-pay.svg" alt="Apple Pay" className="h-6" />
     },
     {
       id: 'stcpay' as PaymentMethodType,
