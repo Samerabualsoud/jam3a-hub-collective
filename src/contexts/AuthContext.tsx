@@ -140,7 +140,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const login = async (email: string, password: string) => {
     try {
-      if (!supabaseClient?.auth) {
+      console.log("Attempting login with:", email);
+      
+      // First try with hardcoded credentials if Supabase client is not available or for specific admin users
+      if (!supabaseClient?.auth || email === 'samer@jam3a.me') {
         console.log("Development mode: attempting login with provided credentials");
         const matchedUser = validCredentials.find(
           (cred) => cred.email.toLowerCase() === email.toLowerCase() && cred.password === password
@@ -154,11 +157,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             role: matchedUser.role,
           };
           setUser(userData);
+          console.log("Login successful with hardcoded credentials for:", userData);
           return { error: null };
         }
-        return { error: { message: "Invalid email or password" } };
+        
+        // If we're only checking hardcoded creds, return error if no match
+        if (!supabaseClient?.auth) {
+          console.log("Login failed: Invalid credentials and no Supabase client available");
+          return { error: { message: "Invalid email or password" } };
+        }
       }
       
+      // If we get here, try Supabase authentication
       console.log("Attempting login with Supabase:", email);
       const { error } = await supabase.auth.signInWithPassword({
         email,
