@@ -203,12 +203,12 @@ const FeaturedDeals = () => {
         <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
           <div>
             <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-              {language === 'en' ? 'Active Group Deals' : 'صفقات المجموعات الفعالة'}
+              {language === 'en' ? 'Trending Group Deals' : 'صفقات المجموعات الرائجة'}
             </h2>
             <p className="mt-2 text-muted-foreground">
               {language === 'en'
-                ? 'Join these active groups and save big on premium tech products'
-                : 'انضم إلى هذه المجموعات النشطة ووفر كبير على منتجات التقنية الممتازة'}
+                ? 'Join these trending groups and save big on premium tech products'
+                : 'انضم إلى مجموعات الجمعات الرائجة ووفر كبير على منتجات التقنية الممتازة'}
             </p>
           </div>
           <Button variant="outline" className="shrink-0">
