@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useSupabaseClient } from '@supabase/auth-helpers-react';
@@ -60,7 +59,6 @@ export const useMoyasarPayment = () => {
   const [paymentData, setPaymentData] = useState<PaymentResponse | null>(null);
   const { toast } = useToast();
   
-  // Get Supabase client
   const supabase = useSupabaseClient();
   const isSupabaseAvailable = !!supabase;
 
@@ -76,7 +74,6 @@ export const useMoyasarPayment = () => {
     
     setIsLoading(true);
     try {
-      // Get the URL of the current page
       const callback_url = window.location.origin + '/payment-callback';
       
       const { data, error } = await supabase.functions.invoke('process-payment', {

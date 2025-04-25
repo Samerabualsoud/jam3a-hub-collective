@@ -12,38 +12,41 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { CreditCard, Wallet } from 'lucide-react';
 
+// Define type for payment methods
+type PaymentMethodType = 'creditcard' | 'mada' | 'applepay' | 'stcpay';
+
 const PaymentPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
   const { language } = useLanguage();
   const { processPayment, isLoading } = useMoyasarPayment();
-  const [selectedMethod, setSelectedMethod] = useState<string>('creditcard');
+  const [selectedMethod, setSelectedMethod] = useState<PaymentMethodType>('creditcard');
 
   const { product, groupSize, discountTier } = location.state || {};
 
   // Payment methods offered by Moyasar
   const paymentMethods = [
     {
-      id: 'creditcard',
+      id: 'creditcard' as PaymentMethodType,
       name: language === 'en' ? 'Credit Card' : 'بطاقة ائتمان',
       description: language === 'en' ? 'Pay with Visa or Mastercard' : 'ادفع باستخدام فيزا أو ماستركارد',
       icon: <CreditCard className="h-6 w-6" />
     },
     {
-      id: 'mada',
+      id: 'mada' as PaymentMethodType,
       name: 'mada بطاقة مدى',
       description: language === 'en' ? 'Pay with Saudi debit card' : 'ادفع باستخدام بطاقة مدى',
       icon: <img src="/mada-logo.svg" alt="Mada" className="h-6" />
     },
     {
-      id: 'applepay',
+      id: 'applepay' as PaymentMethodType,
       name: 'Apple Pay',
       description: language === 'en' ? 'Quick and secure payment' : 'دفع سريع وآمن',
       icon: <img src="/apple-pay.svg" alt="Apple Pay" className="h-6" />
     },
     {
-      id: 'stcpay',
+      id: 'stcpay' as PaymentMethodType,
       name: 'STC Pay',
       description: language === 'en' ? 'Pay with STC Pay wallet' : 'ادفع باستخدام محفظة STC Pay',
       icon: <Wallet className="h-6 w-6" />
