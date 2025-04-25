@@ -17,6 +17,7 @@ const StartJam3a: React.FC = () => {
   const { language } = useLanguage();
   const {
     currentStep,
+    selectedCategory,
     selectedProduct,
     groupSize,
     isLoading,
@@ -90,8 +91,8 @@ const StartJam3a: React.FC = () => {
   ];
 
   // Get products based on selected category
-  const filteredProducts = selectedProduct
-    ? sampleProducts.filter(product => product.categoryId === selectedProduct.categoryId)
+  const filteredProducts = selectedCategory
+    ? sampleProducts.filter(product => product.categoryId === selectedCategory)
     : sampleProducts;
 
   // Form values for the group details step

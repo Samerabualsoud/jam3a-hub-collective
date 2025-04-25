@@ -18,7 +18,7 @@ export interface Product {
 
 export const useJam3aCreation = () => {
   const [currentStep, setCurrentStep] = useState(1); // Default to step 1 instead of 0
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [groupSize, setGroupSize] = useState(5);
   const [discountTier, setDiscountTier] = useState(0);
