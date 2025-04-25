@@ -18,17 +18,14 @@ const Hero: React.FC = () => {
   
   return (
     <section className="relative flex items-center justify-center min-h-[580px] md:min-h-[680px] lg:min-h-[780px] px-4 overflow-hidden">
-      {/* Enhanced background with multiple gradients */}
       <div className="absolute inset-0 bg-gradient-to-br from-royal-blue-50/80 via-white to-royal-blue/10 z-0"></div>
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(14,165,233,0.15),transparent_60%)] z-0"></div>
       
-      {/* Animated background elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
         <div className="absolute top-[10%] left-[5%] w-64 h-64 bg-royal-blue/5 rounded-full filter blur-3xl animate-pulse-soft"></div>
         <div className="absolute bottom-[15%] right-[10%] w-72 h-72 bg-royal-blue-accent/5 rounded-full filter blur-3xl animate-pulse-soft" style={{animationDelay: '1s'}}></div>
       </div>
 
-      {/* Decorative product images - enhanced with animation and better positioning */}
       <motion.img
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 0.9, y: 0 }}
@@ -56,7 +53,6 @@ const Hero: React.FC = () => {
         className="absolute bottom-20 -right-10 md:right-24 w-48 h-32 object-cover rounded-xl shadow-xl rotate-3 z-10 hidden lg:block"
       />
 
-      {/* Central content */}
       <div className="relative z-20 flex flex-col items-center text-center max-w-5xl mx-auto">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
@@ -67,7 +63,7 @@ const Hero: React.FC = () => {
           <span className="inline-block px-5 py-2 rounded-full font-medium text-sm bg-gradient-to-r from-royal-blue to-royal-blue-light text-white shadow-lg jam3a-badge">
             {language === 'en'
               ? "Join a Jam3a and save up to 25%"
-              : "انضم إلى جمعة ووفر حتى ٢٥٪"}
+              : "انضم إلى جمعة ووفر حتى ١٥٪"}
           </span>
         </motion.div>
 
@@ -99,7 +95,7 @@ const Hero: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.6 }}
-          className="flex flex-col sm:flex-row gap-5 items-center justify-center mb-12" // Added margin bottom
+          className="flex flex-col sm:flex-row gap-5 items-center justify-center mb-8"
         >
           <Link to="/shop">
             <Button
@@ -122,7 +118,19 @@ const Hero: React.FC = () => {
           </Button>
         </motion.div>
         
-        {/* Removed the "Learn More" section */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 1 }}
+          className="flex justify-center" 
+        >
+          <a href="#how-it-works" className="flex flex-col items-center text-royal-blue hover:text-royal-blue-dark transition-colors">
+            <span className="text-sm font-medium mb-1">
+              {language === 'en' ? 'Learn More' : 'اعرف المزيد'}
+            </span>
+            <ArrowDownCircle className="h-6 w-6 animate-bounce-light" />
+          </a>
+        </motion.div>
       </div>
     </section>
   );
