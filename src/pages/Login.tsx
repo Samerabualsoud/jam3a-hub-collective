@@ -56,7 +56,7 @@ const Login = ({
 }: LoginProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { login, isAuthenticated } = useAuth();
+  const { login, isAuthenticated, user } = useAuth();
   const [activeTab, setActiveTab] = useState<"login" | "register">(defaultTab);
   const [showOTPVerification, setShowOTPVerification] = useState<boolean>(false);
   const [otpValue, setOTPValue] = useState<string>("");
@@ -64,10 +64,13 @@ const Login = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
+    console.log("Login page auth state:", { isAuthenticated, user });
+    
     if (isAuthenticated) {
+      console.log("User is authenticated, redirecting to home page");
       navigate("/");
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, user]);
 
   const loginForm = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -103,9 +106,11 @@ const Login = ({
     setIsSubmitting(true);
     
     try {
+      console.log("Attempting login with:", data.email, "password:", data.password);
       const { error } = await login(data.email, data.password);
       
       if (error) {
+        console.error("Login error:", error);
         toast({
           title: "Login failed",
           description: error.message || "Invalid credentials. Please try again.",
@@ -115,14 +120,15 @@ const Login = ({
         return;
       }
       
+      console.log("Login successful");
       toast({
         title: "Login successful",
         description: "Welcome back to Jam3a!",
       });
       
-      setTimeout(() => navigate("/"), 1000);
+      setTimeout(() => navigate("/"), 500);
     } catch (err) {
-      console.error("Login error:", err);
+      console.error("Login exception:", err);
       toast({
         title: "Login failed",
         description: "An unexpected error occurred",

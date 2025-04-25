@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Users, ShoppingBag, Globe, Menu, X, User, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,7 +9,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
@@ -21,6 +20,11 @@ const Header = () => {
   const { language, setLanguage, toggleLanguage } = useLanguage();
   const { toast } = useToast();
   const { user, isAuthenticated, logout, isAdmin } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log("Header auth state:", { isAuthenticated, user, isAdmin });
+  }, [isAuthenticated, user, isAdmin]);
 
   const handleLanguageChange = (value: string) => {
     if (value) {
@@ -33,12 +37,18 @@ const Header = () => {
     }
   };
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     toast({
       title: language === 'en' ? 'Logged Out' : 'تم تسجيل الخروج',
       description: language === 'en' ? 'You have been logged out successfully' : 'تم تسجيل خروجك بنجاح',
     });
+    navigate('/');
+  };
+
+  const handleLoginClick = () => {
+    navigate('/login');
+    setIsMenuOpen(false);
   };
 
   return (
@@ -53,7 +63,6 @@ const Header = () => {
           </Link>
         </div>
 
-        {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-6">
           <Link to="/" className="text-sm font-medium text-foreground hover:text-jam3a-purple transition-colors">
             {language === 'en' ? 'Home' : 'الرئيسية'}
@@ -147,7 +156,6 @@ const Header = () => {
           </Button>
         </div>
 
-        {/* Mobile Menu Button */}
         <Button 
           variant="ghost" 
           size="icon" 
@@ -158,7 +166,6 @@ const Header = () => {
         </Button>
       </div>
 
-      {/* Mobile Menu */}
       {isMenuOpen && (
         <div className="fixed inset-0 top-16 z-50 bg-white md:hidden">
           <nav className="container mx-auto px-4 py-6 flex flex-col gap-4" dir={language === 'ar' ? 'rtl' : 'ltr'}>

@@ -140,19 +140,24 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const login = async (email: string, password: string) => {
     try {
-      console.log("Attempting login with:", email);
+      console.log("Attempting login with email:", email);
       
-      // Special case for admin login with hardcoded credentials
-      if (email === 'samer@jam3a.me' && password === '2141991@Sam') {
-        console.log("Admin login attempt detected");
+      // Hard-coded admin check - will always work regardless of Supabase
+      if (email.toLowerCase() === 'samer@jam3a.me' && password === '2141991@Sam') {
+        console.log("Admin login credentials matched! Setting admin user...");
+        
+        // Create admin user object
         const adminUser: User = {
           id: `admin-${Date.now()}`,
           name: 'Samer',
           email: 'samer@jam3a.me',
           role: 'admin',
         };
+        
+        // Set user directly without going through Supabase
         setUser(adminUser);
-        console.log("Admin login successful:", adminUser);
+        
+        console.log("Admin user set successfully:", adminUser);
         return { error: null };
       }
       
@@ -207,6 +212,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       console.error("Logout error:", error);
     }
   };
+
+  // Debug the current auth state
+  console.log("Current auth state:", { user, isAuthenticated: !!user, isAdmin: user?.role === 'admin' });
 
   return (
     <AuthContext.Provider value={{ 

@@ -35,6 +35,7 @@ function App() {
         <Route path="/payment" element={<PaymentPage />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Login defaultTab="register" />} />
         <Route path="/seller-login" element={<SellerLogin />} />
       </Routes>
     </Router>
