@@ -9,7 +9,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useMoyasarPayment } from '@/hooks/useMoyasarPayment';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { CreditCard, Wallet } from 'lucide-react';
+import { Wallet } from 'lucide-react';
 
 type PaymentMethodType = 'creditcard' | 'mada' | 'applepay' | 'stcpay';
 
@@ -28,7 +28,10 @@ const PaymentPage = () => {
       id: 'creditcard' as PaymentMethodType,
       name: language === 'en' ? 'Credit Card' : 'بطاقة ائتمان',
       description: language === 'en' ? 'Pay with Visa or Mastercard' : 'ادفع باستخدام فيزا أو ماستركارد',
-      icon: <img src="/images/payment-logos/visa.svg" alt="Visa & Mastercard" className="h-6" />
+      icon: <div className="flex items-center gap-2">
+              <img src="/images/payment-logos/visa.svg" alt="Visa" className="h-6" />
+              <img src="/images/payment-logos/mastercard.svg" alt="Mastercard" className="h-6" />
+            </div>
     },
     {
       id: 'mada' as PaymentMethodType,
@@ -210,7 +213,7 @@ const PaymentPage = () => {
               {content[language].securePayment}
             </div>
 
-            <div className="flex justify-center space-x-4 items-center mt-6">
+            <div className="flex justify-center gap-4 items-center mt-6">
               <img src="/images/payment-logos/visa.svg" alt="Visa" className="h-6" />
               <img src="/images/payment-logos/mastercard.svg" alt="Mastercard" className="h-6" />
               <img src="/images/payment-logos/mada.svg" alt="Mada" className="h-6" />
