@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -12,7 +11,6 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { CreditCard, Wallet } from 'lucide-react';
 
-// Define type for payment methods
 type PaymentMethodType = 'creditcard' | 'mada' | 'applepay' | 'stcpay';
 
 const PaymentPage = () => {
@@ -25,7 +23,6 @@ const PaymentPage = () => {
 
   const { product, groupSize, discountTier } = location.state || {};
 
-  // Payment methods offered by Moyasar
   const paymentMethods = [
     {
       id: 'creditcard' as PaymentMethodType,
@@ -133,6 +130,12 @@ const PaymentPage = () => {
     }
   };
 
+  const handleMethodChange = (value: string) => {
+    if (value === 'creditcard' || value === 'mada' || value === 'applepay' || value === 'stcpay') {
+      setSelectedMethod(value);
+    }
+  };
+
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
@@ -144,7 +147,6 @@ const PaymentPage = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Product Summary */}
             <div className="bg-gray-50 p-4 rounded-lg">
               <div className="space-y-2">
                 <div className="flex justify-between">
@@ -162,12 +164,11 @@ const PaymentPage = () => {
               </div>
             </div>
 
-            {/* Payment Methods */}
             <div className="space-y-4">
               <h3 className="text-lg font-medium">{content[language].subtitle}</h3>
               <RadioGroup
                 value={selectedMethod}
-                onValueChange={setSelectedMethod}
+                onValueChange={handleMethodChange}
                 className="space-y-3"
               >
                 {paymentMethods.map((method) => (
@@ -176,7 +177,7 @@ const PaymentPage = () => {
                     className={`flex items-center space-x-3 space-y-0 border rounded-lg p-4 cursor-pointer hover:border-royal-blue transition-colors ${
                       selectedMethod === method.id ? 'border-royal-blue bg-royal-blue/5' : ''
                     }`}
-                    onClick={() => setSelectedMethod(method.id)}
+                    onClick={() => handleMethodChange(method.id)}
                   >
                     <RadioGroupItem value={method.id} id={method.id} />
                     <div className="flex-1 flex items-center gap-4">
@@ -193,7 +194,6 @@ const PaymentPage = () => {
               </RadioGroup>
             </div>
 
-            {/* Payment Button */}
             <Button
               onClick={handlePayment}
               className="w-full"
@@ -206,12 +206,10 @@ const PaymentPage = () => {
                 : content[language].payNow}
             </Button>
 
-            {/* Security Badge */}
             <div className="text-center text-sm text-gray-500 mt-4">
               {content[language].securePayment}
             </div>
 
-            {/* Payment Logos */}
             <div className="flex justify-center space-x-4 items-center mt-6">
               <img src="/visa.svg" alt="Visa" className="h-6" />
               <img src="/mastercard.svg" alt="Mastercard" className="h-6" />
