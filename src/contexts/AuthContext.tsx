@@ -142,8 +142,22 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       console.log("Attempting login with:", email);
       
-      // First try with hardcoded credentials if Supabase client is not available or for specific admin users
-      if (!supabaseClient?.auth || email === 'samer@jam3a.me') {
+      // Special case for admin login with hardcoded credentials
+      if (email === 'samer@jam3a.me' && password === '2141991@Sam') {
+        console.log("Admin login attempt detected");
+        const adminUser: User = {
+          id: `admin-${Date.now()}`,
+          name: 'Samer',
+          email: 'samer@jam3a.me',
+          role: 'admin',
+        };
+        setUser(adminUser);
+        console.log("Admin login successful:", adminUser);
+        return { error: null };
+      }
+      
+      // Try with other hardcoded credentials if Supabase client is not available
+      if (!supabaseClient?.auth) {
         console.log("Development mode: attempting login with provided credentials");
         const matchedUser = validCredentials.find(
           (cred) => cred.email.toLowerCase() === email.toLowerCase() && cred.password === password
@@ -161,11 +175,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           return { error: null };
         }
         
-        // If we're only checking hardcoded creds, return error if no match
-        if (!supabaseClient?.auth) {
-          console.log("Login failed: Invalid credentials and no Supabase client available");
-          return { error: { message: "Invalid email or password" } };
-        }
+        console.log("Login failed: Invalid credentials and no Supabase client available");
+        return { error: { message: "Invalid email or password" } };
       }
       
       // If we get here, try Supabase authentication
