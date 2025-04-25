@@ -197,49 +197,8 @@ const FeaturedDeals = () => {
     );
   }
 
-  return (
-    <section className="bg-gray-50 py-12 md:py-16">
-      <div className="container mx-auto px-4 md:px-6" dir={language === 'ar' ? 'rtl' : 'ltr'}>
-        <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-          <div>
-            <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-              {language === 'en' ? 'Trending Group Deals' : 'صفقات المجموعات الرائجة'}
-            </h2>
-            <p className="mt-2 text-muted-foreground">
-              {language === 'en'
-                ? 'Join these trending groups and save big on premium tech products'
-                : 'انضم إلى مجموعات الجمعات الرائجة ووفر كبير على منتجات التقنية الممتازة'}
-            </p>
-          </div>
-          <Button variant="outline" className="shrink-0">
-            <Link to="/shop">
-              {language === 'en' ? 'View All Deals' : 'عرض جميع الصفقات'}
-            </Link>
-          </Button>
-        </div>
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {featuredProducts.length > 0 ? (
-            featuredProducts.map((product) => (
-              <ProductCard key={product.id} {...product} />
-            ))
-          ) : (
-            <div className="col-span-4 text-center py-12">
-              <p className="text-muted-foreground">
-                {language === 'en' 
-                  ? 'No active deals found. Check back later or create your own Jam3a!' 
-                  : 'لا توجد صفقات نشطة. تحقق لاحقًا أو أنشئ جمعتك الخاصة!'}
-              </p>
-              <Button variant="default" className="mt-4" asChild>
-                <Link to="/start-jam3a">
-                  {language === 'en' ? 'Start Your Own Jam3a' : 'ابدأ جمعتك الخاصة'}
-                </Link>
-              </Button>
-            </div>
-          )}
-        </div>
-      </div>
-    </section>
-  );
+  // Removing the entire section with the trending group deals
+  return null;
 };
 
 export default FeaturedDeals;
