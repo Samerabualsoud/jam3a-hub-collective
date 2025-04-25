@@ -1,7 +1,7 @@
 
 import { User } from '@/types/auth';
 import { supabase } from '@/integrations/supabase/client';
-import { validateRole } from '@/config/authConfig';
+import { validateRole, isAdminEmail } from '@/config/authConfig';
 import { Session } from '@supabase/supabase-js';
 
 export const useAuthUserData = () => {
@@ -17,7 +17,7 @@ export const useAuthUserData = () => {
       };
       
       // Special handling for admin user (samer@jam3a.me)
-      if (currentSession.user.email?.toLowerCase() === 'samer@jam3a.me') {
+      if (isAdminEmail(currentSession.user.email || '')) {
         console.log("Admin user detected via email. Setting admin role directly.");
         return {
           ...basicUserData,

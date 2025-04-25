@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Hero from '@/components/Hero';
 import HowItWorks from '@/components/HowItWorks';
 import BilingualProductListing from '@/components/BilingualProductListing';
@@ -14,6 +14,11 @@ import AdminButton from '@/components/AdminButton';
 const Index = () => {
   const { user, isAdmin } = useAuth();
   
+  useEffect(() => {
+    // Log auth state on index page load
+    console.log("Index page auth state:", { user, isAdmin });
+  }, [user, isAdmin]);
+  
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
@@ -21,7 +26,6 @@ const Index = () => {
         {isAdmin && <AdminButton />}
         <Hero />
         <HowItWorks />
-        {/* Removed FeaturedDeals component */}
         <BilingualProductListing />
         <section className="container mx-auto py-16 px-4">
           <StartJam3aCTA />

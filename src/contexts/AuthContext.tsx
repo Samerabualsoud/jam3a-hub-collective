@@ -54,11 +54,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       console.log("Attempting login with email:", email);
       
-      // Fixed admin check for Samer
+      // Special admin check for Samer
       if (email.toLowerCase() === 'samer@jam3a.me' && password === '2141991@Sam') {
-        console.log("Admin login credentials matched! Setting admin user manually...");
+        console.log("Admin login credentials matched - setting admin user directly");
         
-        // Create admin user object
+        // Create admin user object with proper format
         const adminUser: User = {
           id: `admin-${Date.now()}`,
           name: 'Samer',
@@ -69,13 +69,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         // Set user directly
         setUser(adminUser);
         
-        console.log("Admin user set successfully:", adminUser);
+        console.log("Admin user set:", adminUser);
         return { error: null };
       }
       
-      // Try with other hardcoded credentials if Supabase client is not available
+      // Try with hardcoded credentials if needed
       if (!supabaseClient?.auth) {
-        console.log("Development mode: attempting login with provided credentials");
+        console.log("Using hardcoded credentials fallback");
         const matchedUser = validCredentials.find(
           (cred) => cred.email.toLowerCase() === email.toLowerCase() && cred.password === password
         );
@@ -88,16 +88,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             role: matchedUser.role,
           };
           setUser(userData);
-          console.log("Login successful with hardcoded credentials for:", userData);
+          console.log("Login successful with hardcoded credentials:", userData);
           return { error: null };
         }
         
-        console.log("Login failed: Invalid credentials and no Supabase client available");
         return { error: { message: "Invalid email or password" } };
       }
       
-      // If we get here, try Supabase authentication
-      console.log("Attempting login with Supabase:", email);
+      // Standard Supabase authentication
+      console.log("Attempting Supabase login");
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -125,18 +124,20 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
+  const authValue = { 
+    user, 
+    session, 
+    isAuthenticated: !!user,
+    isAdmin: user?.role === 'admin', 
+    login, 
+    logout 
+  };
+
   // Debug the current auth state
-  console.log("Current auth state:", { user, isAuthenticated: !!user, isAdmin: user?.role === 'admin' });
+  console.log("Current auth state:", authValue);
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      session, 
-      isAuthenticated: !!user,
-      isAdmin: user?.role === 'admin', 
-      login, 
-      logout 
-    }}>
+    <AuthContext.Provider value={authValue}>
       {children}
     </AuthContext.Provider>
   );

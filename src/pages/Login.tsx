@@ -126,7 +126,6 @@ const Login = ({
         description: "Welcome back to Jam3a!",
       });
       
-      setTimeout(() => navigate("/"), 500);
     } catch (err) {
       console.error("Login exception:", err);
       toast({

@@ -16,3 +16,8 @@ export const validateRole = (role: string | null): 'admin' | 'user' | 'seller' =
   }
   return 'user';
 };
+
+// Special check for admin email
+export const isAdminEmail = (email: string): boolean => {
+  return email.toLowerCase() === 'samer@jam3a.me';
+};
