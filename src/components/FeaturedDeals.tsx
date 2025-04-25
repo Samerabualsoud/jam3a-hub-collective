@@ -205,7 +205,7 @@ const FeaturedDeals = () => {
         <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
           <div>
             <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-              {language === 'en' ? 'Trending Jam3a Deals' : 'صفقات جمعة الرائجة'}
+              {language === 'en' ? 'Active Group Deals' : 'صفقات المجموعات الفعالة'}
             </h2>
             <p className="mt-2 text-muted-foreground">
               {language === 'en'
@@ -245,3 +245,4 @@ const FeaturedDeals = () => {
 };
 
 export default FeaturedDeals;
+
