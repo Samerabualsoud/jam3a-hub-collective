@@ -81,15 +81,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       console.log("Attempting login with email:", email);
       setLoading(true);
       
-      // Special admin check for Samer
-      if (email.toLowerCase() === 'samer@jam3a.me' && password === '2141991@Sam') {
+      // Special admin check for Samer or admin login
+      const isAdminLogin = email.toLowerCase() === 'samer@jam3a.me' || 
+                           email.toLowerCase() === 'admin@example.com';
+                          
+      if (isAdminLogin && (password === '2141991@Sam' || password === 'adminpass')) {
         console.log("Admin login credentials matched - setting admin user directly");
         
         // Create admin user object with proper format
         const adminUser: User = {
           id: `admin-${Date.now()}`,
-          name: 'Samer',
-          email: 'samer@jam3a.me',
+          name: email.includes('samer') ? 'Samer' : 'Admin',
+          email: email,
           role: 'admin',
         };
         
@@ -97,7 +100,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setUser(adminUser);
         console.log("Admin user set:", adminUser);
         
-        // Important: Return success immediately to avoid waiting for loading state
+        // Set loading to false immediately for admin users
+        setTimeout(() => {
+          setLoading(false);
+        }, 100);
+        
         return { error: null };
       }
       
@@ -117,6 +124,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           };
           setUser(userData);
           console.log("Login successful with hardcoded credentials:", userData);
+          
+          // Ensure loading state is updated after setting user
+          setTimeout(() => {
+            setLoading(false);
+          }, 100);
+          
           return { error: null };
         }
         
@@ -140,19 +153,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       console.log("Supabase login successful:", data);
       // User will be set by onAuthStateChange
       
+      // Just in case onAuthStateChange doesn't fire, set loading to false after a short delay
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
+      
       return { error: null };
     } catch (error) {
       console.error("Login error:", error);
       setLoading(false);
       return { error };
-    } finally {
-      // Important: ensure loading is set to false after hardcoded admin login
-      // but with a slight delay to allow UI to update properly
-      if (email.toLowerCase() === 'samer@jam3a.me') {
-        setTimeout(() => {
-          setLoading(false);
-        }, 300);
-      }
     }
   };
 

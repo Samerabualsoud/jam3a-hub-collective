@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -23,14 +24,21 @@ const SellerLogin = () => {
   const { toast } = useToast();
   const { login } = useAuth();
   const { language } = useLanguage();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Create schema based on language
   const formSchema = z.object({
-    email: z.string().email({ message: language === 'en' ? "Invalid email format." : "تنسيق بريد إلكتروني غير صالح." }),
-    password: z.string().min(8, { message: language === 'en' ? "Password must be at least 8 characters." : "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل." }),
+    email: z.string().email({ 
+      message: language === 'en' ? "Invalid email format." : "تنسيق بريد إلكتروني غير صالح." 
+    }),
+    password: z.string().min(8, { 
+      message: language === 'en' ? "Password must be at least 8 characters." : "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل." 
+    }),
     remember: z.boolean().default(false),
   });
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  // Reset form when language changes
+  const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
@@ -39,18 +47,35 @@ const SellerLogin = () => {
     },
   });
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  // Reset form when language changes
+  useEffect(() => {
+    form.reset(form.getValues());
+  }, [language]);
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values) => {
     setIsSubmitting(true);
     try {
-      await login(values.email, values.password);
+      const { error } = await login(values.email, values.password);
+      if (error) {
+        toast({
+          title: language === 'en' ? "Login Failed." : "فشل تسجيل الدخول.",
+          description: error.message || (language === 'en' ? "Invalid credentials." : "بيانات اعتماد غير صالحة."),
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+      }
+      
       toast({
         title: language === 'en' ? "Login Successful!" : "تم تسجيل الدخول بنجاح!",
         description: language === 'en' ? "You are now logged in." : "أنت الآن مسجل الدخول.",
       });
-      navigate('/profile');
-    } catch (error: any) {
+      
+      // Small delay before navigation to ensure the toast message is shown
+      setTimeout(() => {
+        navigate('/profile');
+      }, 300);
+    } catch (error) {
       toast({
         title: language === 'en' ? "Login Failed." : "فشل تسجيل الدخول.",
         description: error.message || (language === 'en' ? "Invalid credentials." : "بيانات اعتماد غير صالحة."),
@@ -80,7 +105,7 @@ const SellerLogin = () => {
                     <FormItem>
                       <FormLabel>{language === 'en' ? 'Email' : 'البريد الإلكتروني'}</FormLabel>
                       <FormControl>
-                        <Input placeholder="seller@example.com" type="email" {...field} />
+                        <Input placeholder={language === 'en' ? "seller@example.com" : "بائع@مثال.كوم"} type="email" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -107,7 +132,7 @@ const SellerLogin = () => {
                             onClick={() => setShowPassword(!showPassword)}
                           >
                             {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                            <span className="sr-only">Toggle password</span>
+                            <span className="sr-only">{language === 'en' ? "Toggle password visibility" : "عرض/إخفاء كلمة المرور"}</span>
                           </Button>
                         </div>
                       </FormControl>

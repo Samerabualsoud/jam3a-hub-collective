@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
@@ -27,68 +26,55 @@ import * as z from "zod";
 import { User, Mail, Lock, ArrowRight, Phone } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-
-const loginSchema = z.object({
-  email: z.string().email({ message: "Invalid email address" }),
-  password: z.string().min(8, { message: "Password must be at least 8 characters" }),
-});
-
-const registerSchema = z.object({
-  name: z.string().min(2, { message: "Name must be at least 2 characters" }),
-  email: z.string().email({ message: "Invalid email address" }),
-  phone: z.string().min(10, { message: "Phone number must be at least 10 digits" }),
-  password: z.string().min(8, { message: "Password must be at least 8 characters" }),
-});
-
-const otpSchema = z.object({
-  otp: z.string().length(6, { message: "OTP must be 6 digits" }),
-});
-
-interface LoginProps {
-  defaultTab?: "login" | "register";
-  onRegister?: (email: string, password: string, userData: any) => Promise<void>;
-  isRegistering?: boolean;
-}
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Login = ({ 
   defaultTab = "login",
   onRegister,
   isRegistering = false
-}: LoginProps) => {
+}) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { login, isAuthenticated, user, loading } = useAuth();
-  const [activeTab, setActiveTab] = useState<"login" | "register">(defaultTab);
-  const [showOTPVerification, setShowOTPVerification] = useState<boolean>(false);
-  const [otpValue, setOTPValue] = useState<string>("");
-  const [userEmail, setUserEmail] = useState<string>("");
+  const { language } = useLanguage();
+  const [activeTab, setActiveTab] = useState(defaultTab);
+  const [showOTPVerification, setShowOTPVerification] = useState(false);
+  const [otpValue, setOTPValue] = useState("");
+  const [userEmail, setUserEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loginAttempted, setLoginAttempted] = useState(false);
-  const [redirectionTriggered, setRedirectionTriggered] = useState(false);
 
-  // Debug authentication status on render and when values change
-  useEffect(() => {
-    console.log("Login page authentication status:", { 
-      isAuthenticated, 
-      user, 
-      loading, 
-      loginAttempted,
-      redirectionTriggered
-    });
+  const loginSchema = z.object({
+    email: z.string().email({ 
+      message: language === 'en' ? "Invalid email address" : "بريد إلكتروني غير صالح" 
+    }),
+    password: z.string().min(8, { 
+      message: language === 'en' ? "Password must be at least 8 characters" : "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل" 
+    }),
+  });
 
-    // Only redirect if we're authenticated AND login has been attempted to avoid initial redirect
-    if (isAuthenticated && user && loginAttempted && !redirectionTriggered) {
-      console.log("Authentication successful, redirecting to home page");
-      setRedirectionTriggered(true);
-      
-      // Force a small delay to ensure UI updates properly before redirect
-      setTimeout(() => {
-        navigate("/");
-      }, 300);
-    }
-  }, [isAuthenticated, user, loading, loginAttempted, navigate, redirectionTriggered]);
+  const registerSchema = z.object({
+    name: z.string().min(2, { 
+      message: language === 'en' ? "Name must be at least 2 characters" : "يجب أن يتكون الاسم من حرفين على الأقل" 
+    }),
+    email: z.string().email({ 
+      message: language === 'en' ? "Invalid email address" : "بريد إلكتروني غير صالح" 
+    }),
+    phone: z.string().min(10, { 
+      message: language === 'en' ? "Phone number must be at least 10 digits" : "يجب أن يتكون رقم الهاتف من 10 أرقام على الأقل" 
+    }),
+    password: z.string().min(8, { 
+      message: language === 'en' ? "Password must be at least 8 characters" : "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل" 
+    }),
+  });
 
-  const loginForm = useForm<z.infer<typeof loginSchema>>({
+  const otpSchema = z.object({
+    otp: z.string().length(6, { 
+      message: language === 'en' ? "OTP must be 6 digits" : "رمز التحقق يجب أن يتكون من 6 أرقام" 
+    }),
+  });
+
+  const loginForm = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
@@ -96,7 +82,7 @@ const Login = ({
     },
   });
 
-  const registerForm = useForm<z.infer<typeof registerSchema>>({
+  const registerForm = useForm({
     resolver: zodResolver(registerSchema),
     defaultValues: {
       name: "",
@@ -106,7 +92,7 @@ const Login = ({
     },
   });
 
-  const otpForm = useForm<z.infer<typeof otpSchema>>({
+  const otpForm = useForm({
     resolver: zodResolver(otpSchema),
     defaultValues: {
       otp: "",
@@ -114,11 +100,39 @@ const Login = ({
   });
 
   useEffect(() => {
+    loginForm.reset();
+    registerForm.reset();
+    otpForm.reset();
+  }, [language]);
+
+  useEffect(() => {
     setActiveTab(defaultTab);
   }, [defaultTab]);
 
-  const onLoginSubmit = async (data: z.infer<typeof loginSchema>) => {
+  const redirectAfterLogin = useCallback(() => {
+    navigate("/", { replace: true });
+    console.log("Redirecting to home page after successful login");
+  }, [navigate]);
+
+  useEffect(() => {
+    console.log("Login page authentication status:", { 
+      isAuthenticated, 
+      user, 
+      loading,
+      loginAttempted
+    });
+
+    if (isAuthenticated && user && loginAttempted && !loading) {
+      console.log("Authentication confirmed, redirecting to home page");
+      setTimeout(() => {
+        redirectAfterLogin();
+      }, 100);
+    }
+  }, [isAuthenticated, user, loading, loginAttempted, redirectAfterLogin]);
+
+  const onLoginSubmit = async (data) => {
     console.log("Login data:", data);
+    
     setIsSubmitting(true);
     setLoginAttempted(true);
     
@@ -129,8 +143,8 @@ const Login = ({
       if (error) {
         console.error("Login error:", error);
         toast({
-          title: "Login failed",
-          description: error.message || "Invalid credentials. Please try again.",
+          title: language === 'en' ? "Login failed" : "فشل تسجيل الدخول",
+          description: error.message || (language === 'en' ? "Invalid credentials. Please try again." : "بيانات غير صالحة. حاول مرة اخرى."),
           variant: "destructive",
         });
         setIsSubmitting(false);
@@ -139,24 +153,23 @@ const Login = ({
       
       console.log("Login successful");
       toast({
-        title: "Login successful",
-        description: "Welcome back to Jam3a!",
+        title: language === 'en' ? "Login successful" : "تم تسجيل الدخول بنجاح",
+        description: language === 'en' ? "Welcome back to Jam3a!" : "مرحبًا بعودتك إلى جمعة!",
       });
-      
-      // The redirection will be handled by the useEffect that watches isAuthenticated
       
     } catch (err) {
       console.error("Login exception:", err);
       toast({
-        title: "Login failed",
-        description: "An unexpected error occurred",
+        title: language === 'en' ? "Login failed" : "فشل تسجيل الدخول",
+        description: language === 'en' ? "An unexpected error occurred" : "حدث خطأ غير متوقع",
         variant: "destructive",
       });
+    } finally {
       setIsSubmitting(false);
     }
   };
 
-  const onRegisterSubmit = async (data: z.infer<typeof registerSchema>) => {
+  const onRegisterSubmit = async (data) => {
     console.log("Register data:", data);
     
     try {
@@ -190,8 +203,8 @@ const Login = ({
           if (error) {
             console.error("Registration error details:", error);
             toast({
-              title: "Registration failed",
-              description: error.message || "There was a problem creating your account.",
+              title: language === 'en' ? "Registration failed" : "فشل التسجيل",
+              description: error.message || (language === 'en' ? "There was a problem creating your account." : "كانت هناك مشكلة في إنشاء حسابك."),
               variant: "destructive",
             });
             setIsSubmitting(false);
@@ -202,31 +215,31 @@ const Login = ({
           setUserEmail(data.email);
           
           toast({
-            title: "Registration successful",
-            description: "Please check your email to verify your account.",
+            title: language === 'en' ? "Registration successful" : "تم التسجيل بنجاح",
+            description: language === 'en' ? "Please check your email to verify your account." : "يرجى التحقق من بريدك الإلكتروني للتحقق من حسابك.",
           });
           
           setShowOTPVerification(true);
           setIsSubmitting(false);
         });
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error("Registration error:", err);
       toast({
-        title: "Registration failed",
-        description: err.message || "An unexpected error occurred",
+        title: language === 'en' ? "Registration failed" : "فشل التسجيل",
+        description: err.message || (language === 'en' ? "An unexpected error occurred" : "حدث خطأ غير متوقع"),
         variant: "destructive",
       });
       if (!onRegister) setIsSubmitting(false);
     }
   };
 
-  const onOTPSubmit = (data: z.infer<typeof otpSchema>) => {
+  const onOTPSubmit = (data) => {
     console.log("OTP verification:", data);
     
     toast({
-      title: "Registration successful",
-      description: "Your account has been created successfully!",
+      title: language === 'en' ? "Registration successful" : "تم التسجيل بنجاح",
+      description: language === 'en' ? "Your account has been created successfully!" : "تم إنشاء حسابك بنجاح!",
     });
     
     setTimeout(() => {
@@ -235,7 +248,7 @@ const Login = ({
     }, 1500);
   };
 
-  const handleOTPChange = (value: string) => {
+  const handleOTPChange = (value) => {
     setOTPValue(value);
     if (value.length === 6) {
       otpForm.setValue("otp", value);
@@ -248,9 +261,13 @@ const Login = ({
         <Header />
         <main className="flex-1 container mx-auto px-4 py-8">
           <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
-            <h2 className="text-2xl font-bold text-center mb-6">Verify Your Email</h2>
+            <h2 className="text-2xl font-bold text-center mb-6">
+              {language === 'en' ? "Verify Your Email" : "تحقق من بريدك الإلكتروني"}
+            </h2>
             <p className="text-center text-muted-foreground mb-6">
-              We've sent a verification code to {userEmail}
+              {language === 'en' 
+                ? `We've sent a verification code to ${userEmail}` 
+                : `لقد أرسلنا رمز التحقق إلى ${userEmail}`}
             </p>
             
             <Form {...otpForm}>
@@ -278,7 +295,7 @@ const Login = ({
                 />
                 
                 <Button type="submit" className="w-full bg-jam3a-purple hover:bg-jam3a-deep-purple">
-                  Verify OTP
+                  {language === 'en' ? "Verify OTP" : "تحقق من الرمز"}
                 </Button>
                 
                 <div className="text-center mt-4">
@@ -287,7 +304,7 @@ const Login = ({
                     className="text-jam3a-purple"
                     onClick={() => setShowOTPVerification(false)}
                   >
-                    Go back to registration
+                    {language === 'en' ? "Go back to registration" : "العودة إلى التسجيل"}
                   </Button>
                 </div>
               </form>
@@ -307,12 +324,16 @@ const Login = ({
           <Tabs 
             defaultValue={activeTab} 
             value={activeTab}
-            onValueChange={(value) => setActiveTab(value as "login" | "register")}
+            onValueChange={(value) => setActiveTab(value)}
             className="w-full"
           >
             <TabsList className="grid w-full grid-cols-2 mb-8">
-              <TabsTrigger value="login">Sign In</TabsTrigger>
-              <TabsTrigger value="register">Sign Up</TabsTrigger>
+              <TabsTrigger value="login">
+                {language === 'en' ? "Sign In" : "تسجيل الدخول"}
+              </TabsTrigger>
+              <TabsTrigger value="register">
+                {language === 'en' ? "Sign Up" : "التسجيل"}
+              </TabsTrigger>
             </TabsList>
             
             <TabsContent value="login">
@@ -323,12 +344,12 @@ const Login = ({
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Email</FormLabel>
+                        <FormLabel>{language === 'en' ? "Email" : "البريد الإلكتروني"}</FormLabel>
                         <FormControl>
                           <div className="relative">
                             <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                             <Input 
-                              placeholder="your@email.com" 
+                              placeholder={language === 'en' ? "your@email.com" : "بريدك@مثال.كوم"} 
                               className="pl-10" 
                               {...field} 
                               disabled={isSubmitting || loading}
@@ -345,7 +366,7 @@ const Login = ({
                     name="password"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Password</FormLabel>
+                        <FormLabel>{language === 'en' ? "Password" : "كلمة المرور"}</FormLabel>
                         <FormControl>
                           <div className="relative">
                             <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -368,7 +389,9 @@ const Login = ({
                     className="w-full bg-jam3a-purple hover:bg-jam3a-deep-purple"
                     disabled={isSubmitting || loading}
                   >
-                    {isSubmitting || loading ? "Signing in..." : "Sign In"}
+                    {isSubmitting || loading 
+                      ? (language === 'en' ? "Signing in..." : "جاري تسجيل الدخول...") 
+                      : (language === 'en' ? "Sign In" : "تسجيل الدخول")}
                   </Button>
                 </form>
               </Form>
@@ -382,12 +405,12 @@ const Login = ({
                     name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Full Name</FormLabel>
+                        <FormLabel>{language === 'en' ? "Full Name" : "الاسم الكامل"}</FormLabel>
                         <FormControl>
                           <div className="relative">
                             <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                             <Input 
-                              placeholder="John Doe" 
+                              placeholder={language === 'en' ? "John Doe" : "محمد احمد"} 
                               className="pl-10" 
                               {...field} 
                             />
@@ -403,12 +426,12 @@ const Login = ({
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Email</FormLabel>
+                        <FormLabel>{language === 'en' ? "Email" : "البريد الإلكتروني"}</FormLabel>
                         <FormControl>
                           <div className="relative">
                             <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                             <Input 
-                              placeholder="your@email.com" 
+                              placeholder={language === 'en' ? "your@email.com" : "بريدك@مثال.كوم"}
                               className="pl-10" 
                               {...field} 
                             />
@@ -424,12 +447,12 @@ const Login = ({
                     name="phone"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Phone Number</FormLabel>
+                        <FormLabel>{language === 'en' ? "Phone Number" : "رقم الهاتف"}</FormLabel>
                         <FormControl>
                           <div className="relative">
                             <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                             <Input 
-                              placeholder="+966 5X XXX XXXX" 
+                              placeholder={language === 'en' ? "+966 5X XXX XXXX" : "+966 5X XXX XXXX"} 
                               className="pl-10" 
                               {...field} 
                             />
@@ -445,7 +468,7 @@ const Login = ({
                     name="password"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Password</FormLabel>
+                        <FormLabel>{language === 'en' ? "Password" : "كلمة المرور"}</FormLabel>
                         <FormControl>
                           <div className="relative">
                             <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -467,7 +490,10 @@ const Login = ({
                     className="w-full bg-jam3a-purple hover:bg-jam3a-deep-purple"
                     disabled={isSubmitting || isRegistering}
                   >
-                    {isSubmitting || isRegistering ? "Creating Account..." : "Create Account"} {!(isSubmitting || isRegistering) && <ArrowRight className="h-4 w-4 ml-2" />}
+                    {isSubmitting || isRegistering 
+                      ? (language === 'en' ? "Creating Account..." : "جاري إنشاء الحساب...")
+                      : (language === 'en' ? "Create Account" : "إنشاء حساب")} 
+                    {!(isSubmitting || isRegistering) && <ArrowRight className="h-4 w-4 ml-2" />}
                   </Button>
                 </form>
               </Form>
