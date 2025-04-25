@@ -1,7 +1,7 @@
-
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useSupabaseClient } from '@supabase/auth-helpers-react';
+import { MOYASAR_PUBLISHABLE_KEY, MOYASAR_IS_TEST_MODE } from '@/integrations/moyasar/config';
 
 interface PaymentSource {
   type: 'creditcard' | 'applepay' | 'stcpay' | 'mada';
@@ -81,10 +81,13 @@ export const useMoyasarPayment = () => {
       // Ensure we have a callback URL - this is critical for Moyasar integration
       const callback_url = window.location.origin + '/payment-callback';
       
+      // Add test mode flag and publishable key for additional context
       const { data, error } = await supabase.functions.invoke('process-payment', {
         body: {
           ...paymentDetails,
-          callback_url
+          callback_url,
+          is_test_mode: MOYASAR_IS_TEST_MODE,
+          publishable_key: MOYASAR_PUBLISHABLE_KEY
         },
       });
       
@@ -124,7 +127,9 @@ export const useMoyasarPayment = () => {
     try {
       const { data, error } = await supabase.functions.invoke('verify-payment', {
         body: {
-          payment_id: paymentId
+          payment_id: paymentId,
+          is_test_mode: MOYASAR_IS_TEST_MODE,
+          publishable_key: MOYASAR_PUBLISHABLE_KEY
         },
       });
       
