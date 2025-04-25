@@ -65,15 +65,20 @@ const Login = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loginAttempted, setLoginAttempted] = useState(false);
 
+  // Debug authentication status on render and when values change
   useEffect(() => {
-    console.log("Login page rendered with auth state:", { isAuthenticated, user, loading });
-    
-    // Only redirect if we're authenticated AND either:
-    // 1. We've attempted a login (to avoid initial page load redirect)
-    // 2. We already have a user (from a previous session)
-    if (isAuthenticated && user && (loginAttempted || !loading)) {
-      console.log("User is authenticated, redirecting to home page");
-      navigate("/");
+    console.log("Login page authentication status:", { 
+      isAuthenticated, 
+      user, 
+      loading, 
+      loginAttempted
+    });
+
+    // Only redirect if we're authenticated AND login has been attempted to avoid initial redirect
+    if (isAuthenticated && user && loginAttempted) {
+      console.log("Authentication successful, redirecting to home page");
+      // Force a small delay to ensure UI updates properly before redirect
+      setTimeout(() => navigate("/"), 100);
     }
   }, [isAuthenticated, navigate, user, loading, loginAttempted]);
 
@@ -359,6 +364,11 @@ const Login = ({
                   >
                     {isSubmitting || loading ? "Signing in..." : "Sign In"}
                   </Button>
+
+                  {/* Special admin credentials hint for development */}
+                  <div className="text-xs text-gray-500 mt-2 text-center">
+                    <p>Admin login: samer@jam3a.me / 2141991@Sam</p>
+                  </div>
                 </form>
               </Form>
             </TabsContent>

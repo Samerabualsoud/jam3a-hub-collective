@@ -8,16 +8,18 @@ export const useAuthUserData = () => {
   const updateUserData = async (currentSession: Session): Promise<User> => {
     try {
       console.log("Starting to update user data from session:", currentSession.user.id);
-      // Set up basic user data regardless of profile fetch success
+      const email = currentSession.user.email || '';
+      
+      // Basic user data regardless of profile fetch success
       const basicUserData: User = {
         id: currentSession.user.id,
-        name: currentSession.user.user_metadata?.name || currentSession.user.email?.split('@')[0] || 'User',
-        email: currentSession.user.email || '',
-        role: 'user' // Default role until profile is loaded
+        name: currentSession.user.user_metadata?.name || email.split('@')[0] || 'User',
+        email: email,
+        role: 'user' // Default role
       };
       
       // Special handling for admin user (samer@jam3a.me)
-      if (isAdminEmail(currentSession.user.email || '')) {
+      if (isAdminEmail(email)) {
         console.log("Admin user detected via email. Setting admin role directly.");
         return {
           ...basicUserData,
@@ -43,7 +45,7 @@ export const useAuthUserData = () => {
       const lastName = profile?.last_name || '';
       const displayName = (firstName || lastName) 
         ? `${firstName} ${lastName}`.trim()
-        : currentSession.user.email?.split('@')[0] || 'User';
+        : email.split('@')[0] || 'User';
 
       // Validate and normalize the role
       const validatedRole = validateRole(profile?.role || null);
@@ -59,11 +61,12 @@ export const useAuthUserData = () => {
     } catch (error) {
       console.error('Error in user profile handling:', error);
       // Fallback to basic user data if profile fetch fails completely
+      const email = currentSession.user.email || '';
       return {
         id: currentSession.user.id,
-        name: currentSession.user.user_metadata?.name || currentSession.user.email?.split('@')[0] || 'User',
-        email: currentSession.user.email || '',
-        role: 'user'
+        name: currentSession.user.user_metadata?.name || email.split('@')[0] || 'User',
+        email: email,
+        role: isAdminEmail(email) ? 'admin' : 'user' // Ensure admin emails still get admin role even in error case
       };
     }
   };

@@ -12,6 +12,7 @@ const AuthContext = createContext<AuthContextType>({
   session: null,
   isAuthenticated: false,
   isAdmin: false,
+  loading: false,
   login: async () => ({ error: null }),
   logout: async () => {},
 });
@@ -29,6 +30,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const { updateUserData } = useAuthUserData();
 
   useEffect(() => {
+    console.log("AuthProvider mounted, initializing...");
+    
     // Set up auth state listener first to avoid missing events
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, currentSession) => {
@@ -52,17 +55,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     // Then check for existing session
     const initializeAuth = async () => {
-      if (session) {
-        try {
+      try {
+        if (session) {
           console.log("Existing session found, updating user data");
           const userData = await updateUserData(session);
           console.log("User data initialized from existing session:", userData);
           setUser(userData);
-        } catch (err) {
-          console.error("Error initializing user data:", err);
         }
+      } catch (err) {
+        console.error("Error initializing user data:", err);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     initializeAuth();
@@ -91,9 +95,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         
         // Set user directly
         setUser(adminUser);
+        console.log("Admin user set:", adminUser);
+        
+        // Important: set loading to false AFTER setting the user
         setLoading(false);
         
-        console.log("Admin user set:", adminUser);
         return { error: null };
       }
       

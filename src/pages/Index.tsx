@@ -16,7 +16,7 @@ const Index = () => {
   
   useEffect(() => {
     // Log auth state on index page load
-    console.log("Index page auth state:", { user, isAdmin });
+    console.log("Index page auth state:", { user, isAdmin, userRole: user?.role });
   }, [user, isAdmin]);
   
   return (
