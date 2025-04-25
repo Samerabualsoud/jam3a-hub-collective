@@ -7,6 +7,7 @@ import { Session } from '@supabase/supabase-js';
 export const useAuthUserData = () => {
   const updateUserData = async (currentSession: Session): Promise<User> => {
     try {
+      console.log("Starting to update user data from session:", currentSession.user.id);
       // Set up basic user data regardless of profile fetch success
       const basicUserData: User = {
         id: currentSession.user.id,
@@ -14,6 +15,16 @@ export const useAuthUserData = () => {
         email: currentSession.user.email || '',
         role: 'user' // Default role until profile is loaded
       };
+      
+      // Special handling for admin user (samer@jam3a.me)
+      if (currentSession.user.email?.toLowerCase() === 'samer@jam3a.me') {
+        console.log("Admin user detected via email. Setting admin role directly.");
+        return {
+          ...basicUserData,
+          role: 'admin',
+          name: currentSession.user.user_metadata?.name || 'Samer'
+        };
+      }
       
       // Attempt to fetch profile data
       const { data: profile, error } = await supabase

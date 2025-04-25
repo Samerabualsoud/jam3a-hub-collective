@@ -54,9 +54,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       console.log("Attempting login with email:", email);
       
-      // Hard-coded admin check - will always work regardless of Supabase
+      // Fixed admin check for Samer
       if (email.toLowerCase() === 'samer@jam3a.me' && password === '2141991@Sam') {
-        console.log("Admin login credentials matched! Setting admin user...");
+        console.log("Admin login credentials matched! Setting admin user manually...");
         
         // Create admin user object
         const adminUser: User = {
@@ -66,7 +66,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           role: 'admin',
         };
         
-        // Set user directly without going through Supabase
+        // Set user directly
         setUser(adminUser);
         
         console.log("Admin user set successfully:", adminUser);

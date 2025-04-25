@@ -64,9 +64,9 @@ const Login = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    console.log("Login page auth state:", { isAuthenticated, user });
+    console.log("Login page rendered with auth state:", { isAuthenticated, user });
     
-    if (isAuthenticated) {
+    if (isAuthenticated && user) {
       console.log("User is authenticated, redirecting to home page");
       navigate("/");
     }
@@ -153,11 +153,11 @@ const Login = ({
       };
       
       if (onRegister) {
-        await onRegister(data.email, data.password, userData);
+        onRegister(data.email, data.password, userData);
       } else {
         setIsSubmitting(true);
         
-        const { data: userData, error } = await supabase.auth.signUp({
+        supabase.auth.signUp({
           email: data.email,
           password: data.password,
           options: {
@@ -168,29 +168,29 @@ const Login = ({
             },
             emailRedirectTo: `${window.location.origin}/login`
           }
-        });
-        
-        if (error) {
-          console.error("Registration error details:", error);
-          toast({
-            title: "Registration failed",
-            description: error.message || "There was a problem creating your account.",
-            variant: "destructive",
-          });
-          setIsSubmitting(false);
-          return;
-        }
+        }).then(({ data: userData, error }) => {
+          if (error) {
+            console.error("Registration error details:", error);
+            toast({
+              title: "Registration failed",
+              description: error.message || "There was a problem creating your account.",
+              variant: "destructive",
+            });
+            setIsSubmitting(false);
+            return;
+          }
 
-        console.log("Registration success:", userData);
-        setUserEmail(data.email);
-        
-        toast({
-          title: "Registration successful",
-          description: "Please check your email to verify your account.",
+          console.log("Registration success:", userData);
+          setUserEmail(data.email);
+          
+          toast({
+            title: "Registration successful",
+            description: "Please check your email to verify your account.",
+          });
+          
+          setShowOTPVerification(true);
+          setIsSubmitting(false);
         });
-        
-        setShowOTPVerification(true);
-        setIsSubmitting(false);
       }
     } catch (err: any) {
       console.error("Registration error:", err);
