@@ -34,17 +34,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     
     // Set up auth state listener first to avoid missing events
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, currentSession) => {
+      async (_event, currentSession) => {
         console.log("Auth state change detected:", _event, currentSession?.user?.id);
         if (currentSession?.user) {
-          // Use setTimeout to avoid potential deadlocks with Supabase client
-          setTimeout(() => {
-            updateUserData(currentSession).then(userData => {
-              console.log("User data updated from auth state change:", userData);
-              setUser(userData);
-              setLoading(false);
-            });
-          }, 0);
+          try {
+            const userData = await updateUserData(currentSession);
+            console.log("User data updated from auth state change:", userData);
+            setUser(userData);
+          } catch (err) {
+            console.error("Error updating user data:", err);
+          } finally {
+            setLoading(false);
+          }
         } else {
           console.log("No session in auth state change, setting user to null");
           setUser(null);
@@ -74,7 +75,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     return () => {
       subscription.unsubscribe();
     };
-  }, [session]);
+  }, [session, updateUserData]);
 
   const login = async (email: string, password: string) => {
     try {
@@ -96,15 +97,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           role: 'admin',
         };
         
-        // Set user directly
+        // Set user directly for admin users
         setUser(adminUser);
         console.log("Admin user set:", adminUser);
-        
-        // Set loading to false immediately for admin users
-        setTimeout(() => {
-          setLoading(false);
-        }, 100);
-        
         return { error: null };
       }
       
@@ -124,12 +119,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           };
           setUser(userData);
           console.log("Login successful with hardcoded credentials:", userData);
-          
-          // Ensure loading state is updated after setting user
-          setTimeout(() => {
-            setLoading(false);
-          }, 100);
-          
           return { error: null };
         }
         
@@ -152,17 +141,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       
       console.log("Supabase login successful:", data);
       // User will be set by onAuthStateChange
-      
-      // Just in case onAuthStateChange doesn't fire, set loading to false after a short delay
-      setTimeout(() => {
-        setLoading(false);
-      }, 1000);
-      
       return { error: null };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Login error:", error);
       setLoading(false);
       return { error };
+    } finally {
+      // Ensure loading is set to false here
+      setTimeout(() => {
+        setLoading(false);
+      }, 100);
     }
   };
 

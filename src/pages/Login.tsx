@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -50,6 +51,7 @@ const Login = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loginAttempted, setLoginAttempted] = useState(false);
 
+  // Define schemas based on language
   const loginSchema = z.object({
     email: z.string().email({ 
       message: language === 'en' ? "Invalid email address" : "بريد إلكتروني غير صالح" 
@@ -80,6 +82,7 @@ const Login = ({
     }),
   });
 
+  // Initialize forms
   const loginForm = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -105,21 +108,19 @@ const Login = ({
     },
   });
 
+  // Reset forms when language changes
   useEffect(() => {
     loginForm.reset();
     registerForm.reset();
     otpForm.reset();
   }, [language]);
 
+  // Set active tab based on prop
   useEffect(() => {
     setActiveTab(defaultTab);
   }, [defaultTab]);
 
-  const redirectAfterLogin = useCallback(() => {
-    navigate("/", { replace: true });
-    console.log("Redirecting to home page after successful login");
-  }, [navigate]);
-
+  // Handle redirection after successful login
   useEffect(() => {
     console.log("Login page authentication status:", { 
       isAuthenticated, 
@@ -128,15 +129,15 @@ const Login = ({
       loginAttempted
     });
 
+    // Only redirect if authentication is confirmed and login was attempted
     if (isAuthenticated && user && loginAttempted && !loading) {
       console.log("Authentication confirmed, redirecting to home page");
-      setTimeout(() => {
-        redirectAfterLogin();
-      }, 100);
+      navigate("/", { replace: true });
     }
-  }, [isAuthenticated, user, loading, loginAttempted, redirectAfterLogin]);
+  }, [isAuthenticated, user, loading, loginAttempted, navigate]);
 
-  const onLoginSubmit = async (data) => {
+  // Login form submission handler
+  const onLoginSubmit = async (data: any) => {
     console.log("Login data:", data);
     
     setIsSubmitting(true);
@@ -163,7 +164,14 @@ const Login = ({
         description: language === 'en' ? "Welcome back to Jam3a!" : "مرحبًا بعودتك إلى جمعة!",
       });
       
-    } catch (err) {
+      // Wait a moment for auth state to update
+      setTimeout(() => {
+        if (!isAuthenticated) {
+          navigate("/", { replace: true });
+        }
+      }, 500);
+      
+    } catch (err: any) {
       console.error("Login exception:", err);
       toast({
         title: language === 'en' ? "Login failed" : "فشل تسجيل الدخول",
@@ -175,7 +183,8 @@ const Login = ({
     }
   };
 
-  const onRegisterSubmit = async (data) => {
+  // Register form submission handler
+  const onRegisterSubmit = async (data: any) => {
     console.log("Register data:", data);
     
     try {
@@ -229,7 +238,7 @@ const Login = ({
           setIsSubmitting(false);
         });
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Registration error:", err);
       toast({
         title: language === 'en' ? "Registration failed" : "فشل التسجيل",
@@ -240,7 +249,8 @@ const Login = ({
     }
   };
 
-  const onOTPSubmit = (data) => {
+  // OTP verification handler
+  const onOTPSubmit = (data: any) => {
     console.log("OTP verification:", data);
     
     toast({
@@ -254,13 +264,15 @@ const Login = ({
     }, 1500);
   };
 
-  const handleOTPChange = (value) => {
+  // Handle OTP input change
+  const handleOTPChange = (value: string) => {
     setOTPValue(value);
     if (value.length === 6) {
       otpForm.setValue("otp", value);
     }
   };
 
+  // Render OTP verification screen
   if (showOTPVerification) {
     return (
       <div className="flex min-h-screen flex-col">
@@ -322,6 +334,7 @@ const Login = ({
     );
   }
 
+  // Main login/register form
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
